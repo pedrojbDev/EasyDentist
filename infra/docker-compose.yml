@@ -7,10 +7,15 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-easydentist}
       POSTGRES_USER: ${POSTGRES_USER:-easydentist}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-easydentist-local-only}
+      APP_DB_USER: ${APP_DB_USER:-easydentist_app}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:-easydentist-app-local-only}
+      MIGRATION_DB_USER: ${MIGRATION_DB_USER:-easydentist_migrator}
+      MIGRATION_DB_PASSWORD: ${MIGRATION_DB_PASSWORD:-easydentist-migrator-local-only}
     ports:
       - '127.0.0.1:${POSTGRES_HOST_PORT:-5433}:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB']
       interval: 5s
@@ -58,11 +63,12 @@ services:
     restart: unless-stopped
 
   api:
+    image: ${API_IMAGE:-easydentist-api:local}
     build:
       context: ../apps/api
       dockerfile: Dockerfile
     environment:
-      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-easydentist}:${POSTGRES_PASSWORD:-easydentist-local-only}@db:5432/${POSTGRES_DB:-easydentist}
+      DATABASE_URL: ${APP_DATABASE_URL:-postgresql+asyncpg://${APP_DB_USER:-easydentist_app}:${APP_DB_PASSWORD:-easydentist-app-local-only}@db:5432/${POSTGRES_DB:-easydentist}}
       SMTP_HOST: mailpit
       SMTP_PORT: '1025'
       S3_ENDPOINT_URL: http://storage:8333
@@ -88,6 +94,20 @@ services:
       retries: 12
       start_period: 10s
     restart: unless-stopped
+
+  migrate:
+    profiles: [tools]
+    image: ${API_IMAGE:-easydentist-api:local}
+    build:
+      context: ../apps/api
+      dockerfile: Dockerfile
+    environment:
+      MIGRATION_DATABASE_URL: ${MIGRATION_DATABASE_URL:-postgresql+asyncpg://${MIGRATION_DB_USER:-easydentist_migrator}:${MIGRATION_DB_PASSWORD:-easydentist-migrator-local-only}@db:5432/${POSTGRES_DB:-easydentist}}
+    depends_on:
+      db:
+        condition: service_healthy
+    command: [alembic, upgrade, head]
+    restart: no
 
   web:
     build:

@@ -45,7 +45,15 @@ RBAC será default-deny e terá OWNER, ADMIN, DENTIST, ASSISTANT e RECEPTIONIST;
 somente OWNER promove OWNER e o último OWNER não pode ser removido/rebaixado.
 Registros clínicos serão aditivos e terão autor profissional.
 
-## Operação local no M1.1
+## Roles PostgreSQL (M1.2.1)
+
+A role runtime `easydentist_app` não é dona do schema `app`, não executa DDL e
+possui `NOBYPASSRLS`. Alembic usa exclusivamente `easydentist_migrator`, também
+sem privilégios administrativos ou `BYPASSRLS`. A credencial de migration não é
+injetada no processo normal da API. RLS e o contexto transacional de tenant ainda
+não estão implementados; entram nos próximos incrementos de M1.2.
+
+## Operação local
 
 `infra/.env.example` contém apenas credenciais de desenvolvimento. O arquivo
 `infra/.env` é ignorado por Git. Produção deverá injetar segredos externamente e

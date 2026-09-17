@@ -1,6 +1,6 @@
 # Arquitetura
 
-## Decisão materializada no M1.1
+## Decisão materializada
 
 EasyDentist será um monólito modular próprio. O frontend Next.js e a API FastAPI
 são aplicações independentes no monorepo, executadas junto de PostgreSQL, Mailpit
@@ -59,10 +59,14 @@ factory centraliza a criação de FastAPI e o registro de routers. Ports/`Protoc
 só aparecem em fronteiras externas substituíveis; não existem `BaseService` nem
 `BaseRepository` genéricos.
 
-## Estado do M1.1
+## Estado do M1.2.1
 
 A fundação fornece somente `GET /health` na web e `GET /api/v1/health` na API.
 São endpoints operacionais sem dados, credenciais ou autorização. Eles não são a
-API pública do Marco 1 e não introduzem autenticação, tenancy ou domínio.
-Migrations são deliberadamente inexistentes e não aplicáveis até M1.2, quando
-Alembic será introduzido.
+API pública do Marco 1 e não introduzem autenticação, tenancy ou domínio. O
+backend agora possui engine e sessões SQLAlchemy assíncronas, metadata no schema
+`app` e Alembic com uma baseline vazia. A ADR 0004 define a separação entre as
+roles administrativa, de migration e de runtime.
+
+Ainda não existem tabelas de domínio, RLS, `TenantContext`, repositories,
+autenticação ou RBAC. Esses limites permanecem nos incrementos seguintes.

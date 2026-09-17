@@ -28,6 +28,12 @@ jobs:
 
   api:
     runs-on: ubuntu-24.04
+    env:
+      DATABASE_URL: postgresql+asyncpg://easydentist_app:easydentist-app-local-only@127.0.0.1:5433/easydentist
+      MIGRATION_DATABASE_URL: postgresql+asyncpg://easydentist_migrator:easydentist-migrator-local-only@127.0.0.1:5433/easydentist
+      TEST_ADMIN_DATABASE_URL: postgresql://easydentist:easydentist-local-only@127.0.0.1:5433/easydentist
+      TEST_APP_DATABASE_URL: postgresql://easydentist_app:easydentist-app-local-only@127.0.0.1:5433/easydentist
+      TEST_MIGRATION_DATABASE_URL: postgresql://easydentist_migrator:easydentist-migrator-local-only@127.0.0.1:5433/easydentist
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: astral-sh/setup-uv@e58605a9b6da7c637471fab8847a5e5a6b8df081 # v5
@@ -37,8 +43,11 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: 3.12.14
+      - run: docker compose -p easydentist-api-ci -f infra/docker-compose.yml up -d --wait db
       - working-directory: apps/api
         run: uv sync --locked --all-groups
+      - working-directory: apps/api
+        run: uv run alembic upgrade head
       - working-directory: apps/api
         run: uv run ruff check .
       - working-directory: apps/api
@@ -48,9 +57,17 @@ jobs:
       - working-directory: apps/api
         run: uv run pytest
       - working-directory: apps/api
+        run: uv run alembic check
+      - working-directory: apps/api
+        run: uv run alembic downgrade base
+      - working-directory: apps/api
+        run: uv run alembic upgrade head
+      - working-directory: apps/api
         run: uv run python scripts/check_licenses.py
       - working-directory: apps/api
         run: env XDG_CACHE_HOME="$RUNNER_TEMP/pip-audit" uv run pip-audit
+      - if: always()
+        run: docker compose -p easydentist-api-ci -f infra/docker-compose.yml down --volumes --remove-orphans
 
   compose:
     runs-on: ubuntu-24.04
@@ -58,6 +75,8 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - run: docker compose -f infra/docker-compose.yml config --quiet
       - run: docker compose -f infra/docker-compose.yml build
+      - run: docker compose -f infra/docker-compose.yml up -d --wait db
+      - run: docker compose -f infra/docker-compose.yml --profile tools run --rm migrate
       - run: docker compose -f infra/docker-compose.yml up --wait --wait-timeout 180
       - run: ./scripts/verify-compose-health.sh
       - if: always()

@@ -15,8 +15,13 @@ Fundação do monólito modular EasyDentist, conforme `plan.md`.
 ```sh
 pnpm install --frozen-lockfile
 (cd apps/api && uv sync --locked --all-groups)
-docker compose -f infra/docker-compose.yml up --build
+docker compose -f infra/docker-compose.yml up -d --build --wait db
+docker compose -f infra/docker-compose.yml --profile tools run --rm migrate
+docker compose -f infra/docker-compose.yml up -d --build --wait
 ```
+
+Na primeira execução com volume limpo, o PostgreSQL cria separadamente as roles
+de runtime e migration; o segundo comando aplica a baseline antes da aplicação.
 
 Endereços locais:
 
@@ -27,6 +32,10 @@ Endereços locais:
 
 As credenciais locais são valores de desenvolvimento e vivem em `infra/.env.example`.
 Copie-o para `infra/.env` antes de executar a composição fora da automação.
+O container `migrate` é uma tarefa sob demanda, não um serviço permanente. Ele
+usa as credenciais efetivas de `infra/.env`; a API continua recebendo somente a
+URL runtime. Para senhas com caracteres reservados de URL, defina explicitamente
+`APP_DATABASE_URL` e `MIGRATION_DATABASE_URL` com credenciais percent-encoded.
 
 ## Comandos de qualidade
 
@@ -36,13 +45,15 @@ pnpm lint && pnpm format:check && pnpm typecheck && pnpm test
 pnpm run licenses && (cd apps/api && uv run python scripts/check_licenses.py)
 pnpm run audit && (cd apps/api && uv run pip-audit)
 docker compose -f infra/docker-compose.yml config --quiet && \
-  docker compose -f infra/docker-compose.yml up --build --wait && \
+  docker compose -f infra/docker-compose.yml up -d --build --wait db && \
+  docker compose -f infra/docker-compose.yml --profile tools run --rm migrate && \
+  docker compose -f infra/docker-compose.yml up -d --build --wait && \
   ./scripts/verify-compose-health.sh
 ```
 
-Não há autenticação, tenancy, RLS, RBAC, migrations ou entidades de domínio neste
-incremento. Migrations são deliberadamente não aplicáveis no M1.1; Alembic começa
-no M1.2. Não há código copiado ou adaptado do OpenDentist neste marco.
+O M1.2.1 adiciona SQLAlchemy async, roles de menor privilégio e Alembic com uma
+baseline vazia. Ainda não há autenticação, tenancy, RLS, RBAC ou entidades de
+domínio. Não há código copiado ou adaptado do OpenDentist neste incremento.
 
 SeaweedFS é infraestrutura exclusivamente local nesta fase. Antes de produção,
 o armazenamento deverá ser gerenciado ou ter signing keys explícitas,
