@@ -107,13 +107,18 @@ autorização respondem 403 (`PermissionDeniedError`). O contexto tenant é
 revalidado por requisição (404 cross-tenant para qualquer papel), as transições
 de vínculo ocorrem somente nas funções `SECURITY DEFINER`
 `create_member_invitation`, `change_member_role`, `remove_membership` e
-`consume_invitation` v2, a serialização por clínica impede que dois OWNERs se
-auto-rebaixem/removam em paralelo (testes concorrentes dedicados), o aceite de
-convite de equipe preserva a credencial e as sessões de quem já tem senha
-(`password_not_allowed` se o cliente enviar senha) e o e-mail dos membros é
-restrito a OWNER/ADMIN (`memberships:read-contact`). A auditoria de clínica
-(`membership.invited`, `membership.role_changed`, `membership.removed`,
-`invitation.accepted`) não contém token, senha, cookie ou IP bruto.
+`consume_invitation` v2 — as três primeiras **verificam que `p_clinic_id` e
+`p_actor_user_id` coincidem com os GUCs `app.current_clinic_id` e
+`app.current_user_id` da transação** (`context_mismatch`, fail-closed; o
+serviço as executa sempre em `tenant_transaction`), de modo que uma chamada
+direta com ator ou clínica forjados não é aceita —, a serialização por clínica
+impede que dois OWNERs se auto-rebaixem/removam em paralelo (testes
+concorrentes dedicados), o aceite de convite de equipe preserva a credencial e
+as sessões de quem já tem senha (`password_not_allowed` se o cliente enviar
+senha) e o e-mail dos membros é restrito a OWNER/ADMIN
+(`memberships:read-contact`). A auditoria de clínica (`membership.invited`,
+`membership.role_changed`, `membership.removed`, `invitation.accepted`) não
+contém token, senha, cookie ou IP bruto.
 
 ## Roles PostgreSQL e schema (M1.2)
 
