@@ -1,0 +1,46 @@
+# Third-party notices
+
+No source file from OpenDentist was adapted in M1.1.
+
+## shadcn/ui Button
+
+`apps/web/src/components/ui/button.tsx` is generated/copied from the shadcn/ui
+Button component, using the `new-york` registry's `button` item.
+
+- Origin: <https://github.com/shadcn-ui/ui/tree/3ba91b1cc83e1bbe4ab35a422ff2a694849c5048>
+- Registry item: `new-york` / `button`
+- Upstream license: <https://raw.githubusercontent.com/shadcn-ui/ui/3ba91b1cc83e1bbe4ab35a422ff2a694849c5048/LICENSE.md>
+- Local change: generated into this repository for the configured neutral theme;
+  no product behavior was added.
+
+Its declared dependencies include Radix Slot, class-variance-authority, clsx,
+tailwind-merge and Lucide. Dependency licenses are checked by the automated gates.
+
+```text
+MIT License
+
+Copyright (c) 2023 shadcn
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+When an allowed third-party source file is adapted, add its origin URL, pinned
+commit, license text or notice, and a concise description of changes here before
+merging it. Dependency licences are inventoried and checked in CI; this file is
+reserved for notices that must travel with copied or adapted source material.

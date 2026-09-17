@@ -1,0 +1,37 @@
+[
+  {
+    "package": "certifi",
+    "version": "2026.7.22",
+    "license": "MPL-2.0",
+    "reviewed_on": "2026-09-16",
+    "reason": "Dependência transitiva de ferramentas HTTP/auditoria; MPL-2.0 aprovada somente para esta versão, sem modificar seus arquivos."
+  },
+  {
+    "package": "defusedxml",
+    "version": "0.7.1",
+    "license": "PSF-2.0",
+    "reviewed_on": "2026-09-16",
+    "reason": "Dependência transitiva de pip-audit; licença PSF permissiva, sem copyleft, aprovada somente nesta versão."
+  },
+  {
+    "package": "greenlet",
+    "version": "3.5.6",
+    "license": "MIT AND PSF-2.0",
+    "reviewed_on": "2026-09-16",
+    "reason": "Dependência transitiva de SQLAlchemy/Alembic; ambas as licenças são permissivas e a exceção vale somente para esta versão."
+  },
+  {
+    "package": "pathspec",
+    "version": "1.1.1",
+    "license": "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
+    "reviewed_on": "2026-09-16",
+    "reason": "Dependência transitiva de mypy; MPL-2.0 aprovada somente para esta versão de ferramenta de desenvolvimento."
+  },
+  {
+    "package": "typing-extensions",
+    "version": "4.16.0",
+    "license": "PSF-2.0",
+    "reviewed_on": "2026-09-16",
+    "reason": "Dependência transitiva de execução de FastAPI/Pydantic; licença permissiva sem copyleft, aprovada somente nesta versão."
+  }
+]

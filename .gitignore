@@ -1,0 +1,24 @@
+# JavaScript
+node_modules/
+.pnpm-store/
+.next/
+coverage/
+*.tsbuildinfo
+
+# Python
+.venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.py[cod]
+
+# Local environment and generated security artefacts
+.env
+.env.*
+!.env.example
+artifacts/
+graphify-out/
+
+# Compose volumes are named, but keep accidental local data out of Git.
+data/

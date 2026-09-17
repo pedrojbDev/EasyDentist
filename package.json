@@ -1,0 +1,23 @@
+{
+  "name": "easydentist",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.10.0",
+  "engines": {
+    "node": "24.19.0",
+    "pnpm": "11.10.0"
+  },
+  "scripts": {
+    "build": "pnpm --filter @easydentist/web build",
+    "test": "node scripts/check-js-licenses.test.mjs && pnpm --filter @easydentist/web test",
+    "lint": "pnpm --filter @easydentist/web lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "pnpm --filter @easydentist/web typecheck",
+    "licenses": "node scripts/check-js-licenses.mjs",
+    "audit": "pnpm audit --audit-level=high"
+  },
+  "devDependencies": {
+    "prettier": "3.6.2"
+  }
+}

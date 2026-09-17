@@ -1,0 +1,8 @@
+node_modules/
+.next/
+.venv/
+uv.lock
+pnpm-lock.yaml
+artifacts/
+graphify-out/
+plan.md
