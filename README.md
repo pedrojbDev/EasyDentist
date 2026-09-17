@@ -49,11 +49,19 @@ docker compose -f infra/docker-compose.yml config --quiet && \
   docker compose -f infra/docker-compose.yml --profile tools run --rm migrate && \
   docker compose -f infra/docker-compose.yml up -d --build --wait && \
   ./scripts/verify-compose-health.sh
+./scripts/verify-migrations.sh
 ```
 
-O M1.2.1 adiciona SQLAlchemy async, roles de menor privilégio e Alembic com uma
-baseline vazia. Ainda não há autenticação, tenancy, RLS, RBAC ou entidades de
-domínio. Não há código copiado ou adaptado do OpenDentist neste incremento.
+`scripts/verify-migrations.sh` é destrutivo: remove os volumes locais do
+Compose e reexecuta a cadeia completa (upgrade, `alembic check`, downgrade até
+`base` e upgrade novamente) contra um banco recém-criado, provando que as
+migrations são aplicáveis do zero e reversíveis.
+
+O M1.2 entrega o schema do Marco 1 (oito tabelas globais e seis tenant-aware),
+RLS fail-closed por tenant com `TenantContext`, repositories tenant-aware com
+`FeatureFlagService` tipado e a suíte de isolamento entre duas clínicas. Ainda
+não há autenticação, RBAC ou rotas de domínio; nenhuma rota da API expõe dados.
+Não há código copiado ou adaptado do OpenDentist.
 
 SeaweedFS é infraestrutura exclusivamente local nesta fase. Antes de produção,
 o armazenamento deverá ser gerenciado ou ter signing keys explícitas,

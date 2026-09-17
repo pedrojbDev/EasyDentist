@@ -31,27 +31,48 @@ incrementos indicados.
 
 ## Tenant e autorização (M1.2 e M1.4)
 
-Rotas tenant-aware usarão `/api/v1/clinics/{clinic_id}/...`. O contexto obrigatório
-valida a sessão, relê membership ativa, calcula permissões, abre transação e usa
-`set_config(..., true)` para `app.current_user_id` e `app.current_clinic_id`.
+**Implementado no M1.2.3 (ADR 0005).** O contexto de tenant viaja em
+`app.current_user_id` e `app.current_clinic_id`, sempre definidos dentro da
+transação com `set_config(..., is_local = true)`; toda policy lê os parâmetros
+com `NULLIF(current_setting(..., true), '')` e falha fechado sem contexto. As
+seis tabelas tenant-aware usam `FORCE ROW LEVEL SECURITY`, com policies
+user-scoped (`clinics`, `memberships`) e tenant-scoped (as demais), verificação
+de membership ativa por função `SECURITY DEFINER` mínima e exceção permissiva
+restrita à role de migration. A role da aplicação não é dona das tabelas e não
+tem `BYPASSRLS`.
 
-Todas as tabelas de domínio terão `clinic_id NOT NULL`, FKs compostas e RLS com
-`FORCE ROW LEVEL SECURITY`. A role da aplicação não será dona nem terá
-`BYPASSRLS`; migrations usarão role distinta. Repositories exigirão
-`TenantContext`, e updates/deletes combinarão `id` e `clinic_id`. Falhas
-cross-tenant responderão 404.
+Repositories exigem `TenantContext`/`UserContext` como primeiro parâmetro, e
+updates combinam `id` e `clinic_id` (M1.2.4). O contexto recebido é validado
+contra o contexto gravado na transação: divergência falha com
+`ContextMismatchError`, fechando o cenário de usuário pertencente a duas
+clínicas em que um `clinic_id` incorreto chegaria ao repository. Violações de
+integridade são traduzidas para erros de domínio que não revelam existência (FK
+→ `NotFoundError`; unique → `ConflictError`). A prova automatizada de isolamento
+(M1.2.5) cobre duas clínicas em ambas as direções, SQL cru com IDs válidos da
+outra clínica, transações intercaladas/concorrentes no mesmo pool, conexões
+reutilizadas sem contexto e referências cross-tenant.
+
+Falhas cross-tenant responderão 404 quando os routers existirem (M1.3+). Rotas
+tenant-aware seguirão `/api/v1/clinics/{clinic_id}/...` e o `clinic_id`
+recebido do frontend nunca será autorização por si só.
 
 RBAC será default-deny e terá OWNER, ADMIN, DENTIST, ASSISTANT e RECEPTIONIST;
 somente OWNER promove OWNER e o último OWNER não pode ser removido/rebaixado.
 Registros clínicos serão aditivos e terão autor profissional.
 
-## Roles PostgreSQL (M1.2.1)
+## Roles PostgreSQL e schema (M1.2)
 
 A role runtime `easydentist_app` não é dona do schema `app`, não executa DDL e
 possui `NOBYPASSRLS`. Alembic usa exclusivamente `easydentist_migrator`, também
 sem privilégios administrativos ou `BYPASSRLS`. A credencial de migration não é
-injetada no processo normal da API. RLS e o contexto transacional de tenant ainda
-não estão implementados; entram nos próximos incrementos de M1.2.
+injetada no processo normal da API.
+
+As 14 tabelas do Marco 1 existem no schema `app`, com grants de DML mínimos por
+finalidade (auditoria append-only; `users` e `clinic_settings` sem `DELETE`;
+`memberships` somente leitura para a role runtime, pois escrita de vínculo e
+papel fica reservada às funções dedicadas do M1.3/M1.4). RLS e o contexto
+transacional estão implementados no M1.2.3 (ADR 0005). Nenhuma rota da API
+expõe essas tabelas neste incremento.
 
 ## Operação local
 

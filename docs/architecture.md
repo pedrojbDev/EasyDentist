@@ -70,3 +70,56 @@ roles administrativa, de migration e de runtime.
 
 Ainda não existem tabelas de domínio, RLS, `TenantContext`, repositories,
 autenticação ou RBAC. Esses limites permanecem nos incrementos seguintes.
+
+## Estado do M1.2.2
+
+As 14 tabelas do Marco 1 já existem no schema `app`: oito globais de identidade
+e autenticação (`users`, `password_credentials`, `external_identities`,
+`auth_sessions`, `auth_action_tokens`, `auth_rate_limit_buckets`,
+`auth_audit_events`, `email_outbox`) e seis tenant-aware (`clinics`,
+`clinic_settings`, `clinic_feature_flags`, `memberships`,
+`membership_invitations`, `clinic_audit_events`), criadas pelas migrations
+`0002_global_identity` e `0003_tenant_structure`. O padrão de FK composta
+`(clinic_id, parent_id)` está materializado em
+`membership_invitations → memberships`. A extensão `citext` é criada pelo
+bootstrap local do PostgreSQL.
+
+Os grants de DML são emitidos na migration e limitados por finalidade
+(auditoria é append-only; `users` não tem `DELETE`). Ainda não existem RLS,
+`TenantContext`, repositories, autenticação ou RBAC: nenhuma rota da API expõe
+essas tabelas e a proteção por linha entra no M1.2.3.
+
+## Estado do M1.2.3
+
+RLS está ativo e forçado nas seis tabelas tenant-aware, com duas classes de
+policy (user-scoped em `clinics`/`memberships`; tenant-scoped nas demais),
+verificação de membership ativa via `app.is_active_member()` e exceção
+permissiva restrita ao `easydentist_migrator`, conforme a ADR 0005. O contexto
+transacional existe em `app/core/context.py` e `app/core/tenancy.py`
+(`UserContext`/`TenantContext`, `user_transaction`/`tenant_transaction`) e o
+comportamento é fail-closed: sem contexto, nenhuma linha é visível e `WITH
+CHECK` rejeita escrita. Repositories, autenticação e RBAC ainda não existem.
+
+## Estado do M1.2.4
+
+Repositories tenant-aware existem em `app/clinics/repositories/`
+(`ClinicRepository`, `MembershipRepository`, `ClinicSettingsRepository`): o
+contexto é sempre o primeiro parâmetro, não há método unscoped e updates
+combinam `id` e `clinic_id`. Erros de integridade são traduzidos em
+`app/core/errors.py` (violação de FK → `NotFoundError`; unique →
+`ConflictError`), sem revelar a existência de recursos de outro tenant. O
+registro tipado de feature flags (`FeatureKey`, vazio no Marco 1, sem chave
+especulativa) e o `FeatureFlagService` ficam em `app/clinics/feature_flags.py`,
+com default sempre desabilitado. Autenticação e RBAC permanecem nos marcos
+seguintes.
+
+## Estado do M1.2.5 (M1.2 concluído)
+
+A suíte de isolamento cobre os repositories nas duas direções, SQL cru com IDs
+válidos da outra clínica, transações intercaladas e concorrentes no mesmo pool,
+conexões reutilizadas sem contexto e referências cross-tenant (FK traduzida em
+`NotFoundError`). O ciclo completo de migrations contra banco novo é validado
+por `scripts/verify-migrations.sh`. O critério do M1.2 — uma segunda clínica não
+consegue acessar nenhum dado da primeira — está demonstrado por testes
+automatizados. Autenticação (M1.3), RBAC (M1.4) e frontend operacional (M1.5)
+seguem nos próximos incrementos.

@@ -10,7 +10,10 @@ from sqlalchemy.engine import Connection, make_url
 from sqlalchemy.exc import ArgumentError
 from sqlalchemy.ext.asyncio import AsyncEngine, async_engine_from_config
 
+from app.auth import models as auth_models  # noqa: F401
+from app.clinics import models as clinics_models  # noqa: F401
 from app.core.database import Base
+from app.users import models as users_models  # noqa: F401
 
 config = context.config
 

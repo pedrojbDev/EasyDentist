@@ -97,7 +97,7 @@ async def test_migrator_can_create_objects_in_app_schema() -> None:
 
 
 @pytest.mark.anyio
-async def test_foundation_contains_only_alembic_control_table() -> None:
+async def test_foundation_contains_alembic_control_table() -> None:
     admin = await asyncpg.connect(required_url("TEST_ADMIN_DATABASE_URL"))
     try:
         tables = await admin.fetch(
@@ -106,4 +106,4 @@ async def test_foundation_contains_only_alembic_control_table() -> None:
     finally:
         await admin.close()
 
-    assert [record["tablename"] for record in tables] == ["alembic_version"]
+    assert "alembic_version" in {record["tablename"] for record in tables}
