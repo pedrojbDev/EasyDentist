@@ -13,6 +13,7 @@ from app.auth.provisioning import ProvisionService
 from app.auth.settings import AuthSettings
 
 PASSWORD = "another correct battery staple"
+EXISTING_PASSWORD = "correct horse battery staple"
 CSRF_COOKIE = "easydent_csrf"
 SESSION_COOKIE = "easydent_session"
 ORIGIN = "http://testserver"
@@ -302,3 +303,39 @@ async def test_accept_requires_csrf(
 
     assert response.status_code == 403
     assert response.json()["title"] == "Acesso negado"
+
+
+@pytest.mark.anyio
+async def test_accept_revokes_existing_sessions_when_password_changes(
+    api_client: httpx.AsyncClient,
+    session_factory: async_sessionmaker[AsyncSession],
+    auth_settings: AuthSettings,
+    email_sender: RecordingEmailSender,
+    seed_user_with_password,
+    migrator_connection: asyncpg.Connection,
+    provisioned_clinics: list[uuid.UUID],
+) -> None:
+    email = make_test_email("accept-revoke")
+    user_id = await seed_user_with_password(email=email, password=EXISTING_PASSWORD)
+    old_login = await login(api_client, email, EXISTING_PASSWORD)
+    assert old_login.status_code == 200
+    old_session = old_login.cookies.get(SESSION_COOKIE)
+    assert old_session
+    clinic_id = await provision_invitation(
+        session_factory, auth_settings, email_sender, email=email
+    )
+    provisioned_clinics.append(clinic_id)
+
+    response = await accept(api_client, invitation_token(email_sender, email))
+
+    assert response.status_code == 204
+    revoked = await api_client.get(
+        "/api/v1/auth/me", headers={"Cookie": f"{SESSION_COOKIE}={old_session}"}
+    )
+    assert revoked.status_code == 401
+    active_sessions = await migrator_connection.fetchval(
+        "SELECT count(*) FROM app.auth_sessions WHERE user_id = $1 AND revoked_at IS NULL",
+        user_id,
+    )
+    assert active_sessions == 0
+    assert (await login(api_client, email, PASSWORD)).status_code == 200

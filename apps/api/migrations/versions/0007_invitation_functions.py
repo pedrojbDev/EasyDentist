@@ -82,6 +82,8 @@ def upgrade() -> None:
             ON CONFLICT ON CONSTRAINT pk_password_credentials DO UPDATE
               SET password_hash = EXCLUDED.password_hash,
                   changed_at = EXCLUDED.changed_at;
+          UPDATE app.auth_sessions s SET revoked_at = v_now
+            WHERE s.user_id = v_membership.user_id AND s.revoked_at IS NULL;
           UPDATE app.memberships m SET status = 'ACTIVE', updated_at = v_now
             WHERE m.id = v_membership.id;
           UPDATE app.clinics c SET status = 'ACTIVE', updated_at = v_now
