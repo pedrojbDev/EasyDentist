@@ -317,7 +317,7 @@ GRANT EXECUTE  ON FUNCTION app.consume_invitation(bytea, text) TO easydentist_ap
 - [x] **T2 — `GET /auth/csrf`**: cookie anônimo + token no corpo; reemissão vinculada à sessão pós-login; testes.
 - [x] **T3 — Enforcement em mutações** (dependência nos routers; POST/PUT/PATCH/DELETE): header == cookie, assinatura válida para o binding atual, `Origin`/`Referer` na allowlist (ausência rejeita) + **matriz de rejeição** em integração (sem header, sem cookie, mismatch, assinatura inválida, origin estranha, sem origin/referer, GET isento).
 - [x] **T4 — Migration `0006_rate_limit_function`** + `RateLimiter` + integração: **concorrência determinística** (10 falhas simultâneas ⇒ exatamente 5×401 e 5×429), backoff progressivo cresce entre bloqueios, janela expirada reseta contagem, bloqueio persiste na janela nova.
-- [x] **T5 — Wiring login** (consume pré-autenticação conta+IP; sucesso limpa bucket da conta; 429 com `Retry-After`; audit `rate_limit_triggered`) + testes de lockout por conta e por IP. _Parcial: os limites de recuperação/reenvio (`RECOVERY_*` prontos em `app/auth/ratelimit.py`) ficam para o M1.3.4, quando os endpoints 8–11 existirem._
+- [x] **T5 — Wiring login** (consume pré-autenticação conta+IP; sucesso limpa bucket da conta; 429 com `Retry-After`; audit `rate_limit_triggered`) + testes de lockout por conta e por IP. _Parcial: os limites de recuperação/reenvio (`RECOVERY_\*`prontos em`app/auth/ratelimit.py`) ficam para o M1.3.4, quando os endpoints 8–11 existirem.\_
 - [x] **T6 — Resolução de IP do cliente** (`TRUSTED_PROXIES`; `X-Forwarded-For` aceito só de proxies confiáveis, senão endereço do socket) + unit.
 - [x] **T7 — Docs + gate + relatório (AGUARDAR aprovação).**
 

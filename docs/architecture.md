@@ -202,7 +202,8 @@ token; slug duplicado vira `ConflictError` sem criar tenant. O endpoint
 concorrentes produzem exatamente um sucesso), responde 400 genérico para token
 inválido/expirado/reutilizado com estado intacto, 422 para senha fora de
 12–128 caracteres, registra `invitation.accepted` (clínica) e
-`invitation_accepted` (auditoria de auth) e não faz login automático. O
+`invitation_accepted` (auditoria de auth), revoga todas as sessões ativas do
+usuário ao trocar a senha e não faz login automático. O
 template pt-BR do convite usa link em fragmento e nome da clínica. A prova de
 segurança consolidada do M1.3 entra no M1.3.6.
 
