@@ -32,10 +32,6 @@ from app.auth.ratelimit import (
     LOGIN_ACCOUNT_WINDOW_SECONDS,
     LOGIN_IP_LIMIT,
     LOGIN_IP_WINDOW_SECONDS,
-    RECOVERY_IP_LIMIT,
-    RECOVERY_IP_WINDOW_SECONDS,
-    RECOVERY_RECIPIENT_LIMIT,
-    RECOVERY_RECIPIENT_WINDOW_SECONDS,
     RateLimiter,
 )
 from app.auth.repositories.password_credential_repository import PasswordCredentialRepository
@@ -52,7 +48,6 @@ from app.auth.schemas import (
     UserResponse,
 )
 from app.auth.sessions import SessionService
-from app.auth.settings import AuthSettings
 from app.auth.templates import (
     EMAIL_VERIFICATION_TEMPLATE,
     PASSWORD_RESET_TEMPLATE,
@@ -63,42 +58,13 @@ from app.auth.templates import (
 from app.core.clock import utcnow
 from app.core.database import transaction_scope
 from app.platform.network import client_ip
+from app.platform.rate_limit import enforce_recovery_rate_limit
 from app.users.repositories.user_repository import UserRepository
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"], dependencies=[Depends(require_csrf)])
 invitations_router = APIRouter(
     prefix="/api/v1/invitations", tags=["auth"], dependencies=[Depends(require_csrf)]
 )
-
-
-async def enforce_recovery_rate_limit(
-    request: Request,
-    settings: AuthSettings,
-    session_factory: async_sessionmaker[AsyncSession],
-    identifier: str,
-) -> None:
-    limiter = RateLimiter(session_factory, settings)
-    recipient_decision = await limiter.consume(
-        "recovery_recipient",
-        identifier,
-        limit=RECOVERY_RECIPIENT_LIMIT,
-        window_seconds=RECOVERY_RECIPIENT_WINDOW_SECONDS,
-    )
-    ip_decision = await limiter.consume(
-        "recovery_ip",
-        client_ip(request, settings.trusted_proxies),
-        limit=RECOVERY_IP_LIMIT,
-        window_seconds=RECOVERY_IP_WINDOW_SECONDS,
-    )
-    if recipient_decision.allowed and ip_decision.allowed:
-        return
-    retry_after = max(recipient_decision.retry_after_seconds, ip_decision.retry_after_seconds)
-    async with transaction_scope(session_factory) as session:
-        await AuthAuditService(session).record("rate_limit_triggered")
-    raise HTTPException(
-        status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-        headers={"Retry-After": str(retry_after)},
-    )
 
 
 async def user_response(

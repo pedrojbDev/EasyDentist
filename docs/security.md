@@ -99,6 +99,22 @@ RBAC será default-deny e terá OWNER, ADMIN, DENTIST, ASSISTANT e RECEPTIONIST;
 somente OWNER promove OWNER e o último OWNER não pode ser removido/rebaixado.
 Registros clínicos serão aditivos e terão autor profissional.
 
+**Implementado no M1.4 (ADR 0007, incrementos M1.4.1 a M1.4.6):** a matriz papel
+× permissão vive em `app/clinics/rbac.py` com default deny e cobre as nove
+permissões dos endpoints de clínica, settings, membros e convites; permissões
+clínicas são declaradas nos marcos que criarem os endpoints. Erros de
+autorização respondem 403 (`PermissionDeniedError`). O contexto tenant é
+revalidado por requisição (404 cross-tenant para qualquer papel), as transições
+de vínculo ocorrem somente nas funções `SECURITY DEFINER`
+`create_member_invitation`, `change_member_role`, `remove_membership` e
+`consume_invitation` v2, a serialização por clínica impede que dois OWNERs se
+auto-rebaixem/removam em paralelo (testes concorrentes dedicados), o aceite de
+convite de equipe preserva a credencial e as sessões de quem já tem senha
+(`password_not_allowed` se o cliente enviar senha) e o e-mail dos membros é
+restrito a OWNER/ADMIN (`memberships:read-contact`). A auditoria de clínica
+(`membership.invited`, `membership.role_changed`, `membership.removed`,
+`invitation.accepted`) não contém token, senha, cookie ou IP bruto.
+
 ## Roles PostgreSQL e schema (M1.2)
 
 A role runtime `easydentist_app` não é dona do schema `app`, não executa DDL e

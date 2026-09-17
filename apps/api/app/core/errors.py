@@ -18,6 +18,14 @@ class ConflictError(DomainError):
     """The operation conflicts with existing state."""
 
 
+class PermissionDeniedError(DomainError):
+    """The current role does not grant the requested permission."""
+
+
+class InvalidInputError(DomainError):
+    """The request is well-formed but carries a value the domain rejects."""
+
+
 class ContextMismatchError(DomainError):
     """The provided context diverges from the transaction context."""
 

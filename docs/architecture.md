@@ -224,3 +224,108 @@ valida a cadeia completa (0001→0007) em banco descartável, e o Compose comple
 sobe com saúde verde para db, storage, api e web, incluindo o proxy same-origin
 e o round-trip S3 assinado. Os 11 endpoints de auth do Marco 1 estão
 implementados; RBAC e convites de equipe entram no M1.4.
+
+## Estado do M1.4.1
+
+A fundação do RBAC existe: `app/clinics/rbac.py` declara `Role` e `Permission`
+como `StrEnum`, o mapa `ROLE_PERMISSIONS` e `role_allows(role, permission)` com
+default deny — nesta etapa as nove permissões dos endpoints de clínica, settings,
+membros e convites (`clinic:read`, `clinic:update-legal-name`, `settings:read`,
+`settings:update`, `memberships:read`, `memberships:read-contact`,
+`memberships:manage-role`, `memberships:remove`, `invitations:create`); OWNER
+detém todas, ADMIN acumula a leitura com a gestão (sem `clinic:update-legal-name`),
+e DENTIST, ASSISTANT e RECEPTIONIST têm apenas leitura. A matriz é exercitada
+por teste parametrizado (todos os papéis × todas as permissões, positivo e
+negativo, papel desconhecido e permissão não declarada). `PermissionDeniedError`
+em `app/core/errors.py` é mapeada para 403 pelo handler de Problem Details. O
+ADR 0007 fixa as demais decisões (contexto tenant por requisição, transições via
+funções `SECURITY DEFINER`, serialização do último OWNER, aceite com senha
+opcional e exposição de contato restrita). O contexto tenant, os endpoints e a
+gestão de equipe entram nos incrementos M1.4.2 a M1.4.6.
+
+## Estado do M1.4.2
+
+O contexto tenant por requisição e a leitura de clínicas existem:
+`app/clinics/dependencies.py` expõe `get_membership`, que resolve o `Principal`
+e o `clinic_id` da rota, consulta a membership do usuário em `user_transaction`
+(policy `memberships_user_select`) e devolve
+`ClinicMembership(TenantContext, Role)`; qualquer membership ausente ou não
+`ACTIVE` (assim como clínica inexistente ou de outro tenant) resulta em
+**404 genérico**, e o resultado é cacheado por requisição. O router
+`/api/v1/clinics` oferece `GET /clinics` (somente memberships `ACTIVE`, com o
+papel de cada clínica para o seletor do M1.5) e `GET /clinics/{clinic_id}`
+(clínica + papel), este último rodando em `tenant_transaction` para a RLS
+revalidar. A revogação de um vínculo tem efeito na requisição seguinte. Os
+A escrita de clínica e settings, a gestão de equipe e os convites entram nos
+incrementos seguintes.
+
+## Estado do M1.4.3
+
+Clínica e settings estão editáveis: `PATCH /clinics/{clinic_id}` altera apenas
+`legal_name` e exige `clinic:update-legal-name` (exclusiva de OWNER — a matriz
+de teste confirma 403 para ADMIN, DENTIST, ASSISTANT e RECEPTIONIST);
+`GET/PATCH /clinics/{clinic_id}/settings` expõe `display_name`, `timezone`,
+`locale` e `currency`, com leitura para todos os papéis e escrita para
+OWNER/ADMIN (`settings:update`). A timezone é validada contra
+`zoneinfo.available_timezones()` e a moeda contra `^[A-Z]{3}$`, ambos → 422;
+`require_permission` no RBAC traduz papel sem permissão em
+`PermissionDeniedError` → 403. Todos os acessos cross-tenant (com IDs válidos
+da outra clínica) respondem 404 para qualquer papel. A gestão de equipe entra
+no M1.4.4.
+
+## Estado do M1.4.4
+
+A gestão de equipe existe: a migration `0008_membership_management` traz
+`create_member_invitation`, `change_member_role` e `remove_membership`
+(SECURITY DEFINER, `EXECUTE` só para a role runtime) e a `consume_invitation`
+v2 — senha opcional, exigida apenas para usuário sem credencial, e
+`password_not_allowed` quando já existe credencial. `change_member_role` e
+`remove_membership` serializam toda operação por clínica
+(`SELECT … FROM app.clinics … FOR UPDATE`) antes de travar o alvo e contar
+OWNERs, de modo que dois OWNERs não consigam se rebaixar ou remover
+simultaneamente (testes concorrentes: 1×200 + 1×409 e 1×204 + 1×403 com
+exatamente um OWNER restante). O `MembershipService` traduz os erros nomeados
+das funções (`not_permitted`→403, `last_owner`→409, `invalid_role`→422,
+`membership_not_found`→404) e os endpoints `GET/PATCH/DELETE
+/clinics/{id}/memberships` exigem `memberships:read`, `memberships:manage-role`
+e `memberships:remove`; ADMIN gerencia apenas papéis não-OWNER/ADMIN, e o e-mail
+dos membros só aparece com `memberships:read-contact` (OWNER/ADMIN). A remoção
+é física, auditada (`membership.removed`) e tem efeito imediato, liberando a
+constraint única para reconvite. O aceite com `password` opcional também está
+adaptado (`password_required`/`password_not_allowed` → 422). Os convites de
+equipe por endpoint entram no M1.4.5.
+
+## Estado do M1.4.5
+
+Convites de equipe e o aceite completo existem: `POST
+/clinics/{id}/invitations` exige `invitations:create`, valida o papel no schema
+(desconhecido ⇒ 422) e aplica o rate limit compartilhado de recuperação
+(3/destinatário/h e 20/IP/h, consumido antes da ação — tentativas duplicadas
+também gastam orçamento e a 4ª responde 429 com `Retry-After`). A função
+`create_member_invitation` reutiliza ou cria o usuário, grava membership
+`PENDING` e invitation de 72 h na mesma transação da linha de outbox, com audit
+`membership.invited`; e-mail `team-invitation` em pt-BR com nome da clínica,
+papel rotulado, link em fragmento e `idempotency_key` semântico. Usuário já
+membro ⇒ 409; ADMIN convida apenas papéis não-OWNER/ADMIN; DENTIST, ASSISTANT e
+RECEPTIONIST recebem 403. O aceite (`POST /invitations/accept`, senha opcional)
+ativa a membership: novo usuário define senha (verificação de e-mail e
+revogação de sessões), usuário existente entra sem trocar senha nem revogar
+sessões (`password_not_allowed` se enviar senha); sem senha para usuário novo ⇒
+`password_required` 422. O helper de rate limit foi movido para
+`app/platform/rate_limit.py` e reusado por auth e clinics. A prova de
+autorização consolidada entra no M1.4.6.
+
+## Estado do M1.4.6 (M1.4 concluído)
+
+A prova de autorização do M1.4 existe: `tests/integration/test_rbac_matrix.py`
+cobre os cinco papéis contra os nove endpoints de tenancy (positivo e negativo,
+incluindo 403 para ADMIN em `legal_name` e para papéis operacionais na gestão),
+o 404 cross-tenant para todos os papéis com IDs válidos da outra clínica,
+`memberships:read-contact` (e-mail só para OWNER/ADMIN), efeito imediato do
+rebaixamento, as guardas de último OWNER e "ADMIN não promove OWNER", e a
+redaction da auditoria de clínica (sem token, senha, cookie ou IP). O gate
+completo fecha o marco: `scripts/verify-migrations.sh` valida 0001→0008 em
+banco descartável, o Compose completo sobe com saúde verde (db, storage, api e
+web, proxy same-origin e round-trip S3) e os 10 endpoints de Tenancy do §4
+estão implementados. RBAC e convites de equipe do Marco 1 estão concluídos;
+Playwright e hardening final entram no M1.6 e o frontend no M1.5.

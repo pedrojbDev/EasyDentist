@@ -73,3 +73,23 @@ criar extensões; por isso a criação pertence ao bootstrap administrativo.
 - **Auditoria do aceite em duas tabelas.** Além do `invitation.accepted` em
   `clinic_audit_events` gravado pela função, o router registra
   `invitation_accepted` em `auth_audit_events`, conforme a lista do D12.
+
+## Ajustes de execução do M1.4
+
+- **`membership_not_found` separado de `not_permitted` (migration 0008).** O
+  SQL esboçado no plano misturava alvo inexistente com falta de permissão
+  (403); a tabela de endpoints exige 404 para membership desconhecida ou de
+  outro tenant, então a função levanta `membership_not_found` antes das
+  checagens de papel, mapeado para `NotFoundError`.
+- **DROP e CREATE em `op.execute` separados.** O `asyncpg` não aceita múltiplos
+  comandos em um prepared statement; a 0008 emite o `DROP FUNCTION` da
+  `consume_invitation` v1 em um statement próprio antes do `CREATE` da v2.
+- **Aceite com senha opcional antecipado para o M1.4.4.** A v2 da
+  `consume_invitation` mudou a semântica no M1.4.4 (migration), então o schema
+  do `POST /invitations/accept` e o `InvitationService` foram adaptados no mesmo
+  incremento (`password_required`/`password_not_allowed` → 422) para manter a
+  suíte coerente; o endpoint de convite de equipe e seus testes por papel
+  permanecem no M1.4.5.
+- **`InvalidInputError` (422) no domínio.** Necessário para os erros de valor
+  dos guards (`invalid_role`, `password_*`), que não são conflito nem falta de
+  permissão.

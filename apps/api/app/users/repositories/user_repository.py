@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from datetime import datetime
 from uuid import UUID
 
@@ -19,6 +20,12 @@ class UserRepository:
 
     async def get(self, user_id: UUID) -> User | None:
         return await self._session.get(User, user_id)
+
+    async def list_by_ids(self, user_ids: Sequence[UUID]) -> Sequence[User]:
+        if not user_ids:
+            return []
+        result = await self._session.execute(select(User).where(User.id.in_(user_ids)))
+        return result.scalars().all()
 
     def set_email_verified(self, user: User, *, now: datetime) -> None:
         user.email_verified_at = now

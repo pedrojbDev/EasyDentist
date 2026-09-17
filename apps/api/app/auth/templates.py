@@ -6,10 +6,23 @@ from app.auth.tokens import token_digest
 EMAIL_VERIFICATION_TEMPLATE = "email-verification"
 PASSWORD_RESET_TEMPLATE = "password-reset"
 INVITATION_TEMPLATE = "invitation"
+TEAM_INVITATION_TEMPLATE = "team-invitation"
 
 EMAIL_VERIFICATION_PATH = "/verify-email"
 PASSWORD_RESET_PATH = "/reset-password"
 INVITATION_PATH = "/accept-invitation"
+
+ROLE_LABELS: dict[str, str] = {
+    "OWNER": "Proprietário",
+    "ADMIN": "Administrador",
+    "DENTIST": "Dentista",
+    "ASSISTANT": "Assistente",
+    "RECEPTIONIST": "Recepcionista",
+}
+
+
+def role_label(role: str) -> str:
+    return ROLE_LABELS.get(role, role)
 
 
 def email_idempotency_key(template: str, token: str) -> str:
@@ -54,6 +67,23 @@ def invitation_message(settings: AuthSettings, token: str, *, clinic_name: str) 
         f"Olá!\n\n"
         f"Você foi convidado a administrar a clínica {clinic_name} no EasyDentist.\n"
         f"Defina sua senha e ative a conta pelo link:\n"
+        f"{link}\n\n"
+        "O link é de uso único e expira em 72 horas.\n"
+        "Se você não esperava este convite, ignore esta mensagem.\n"
+    )
+    return subject, body
+
+
+def team_invitation_message(
+    settings: AuthSettings, token: str, *, clinic_name: str, role_label: str
+) -> tuple[str, str]:
+    link = _link(settings, INVITATION_PATH, token)
+    subject = f"Convite para a equipe de {clinic_name} — EasyDentist"
+    body = (
+        f"Olá!\n\n"
+        f"Você foi convidado para integrar a equipe de {clinic_name} no EasyDentist "
+        f"como {role_label}.\n"
+        f"Ative seu acesso pelo link:\n"
         f"{link}\n\n"
         "O link é de uso único e expira em 72 horas.\n"
         "Se você não esperava este convite, ignore esta mensagem.\n"
