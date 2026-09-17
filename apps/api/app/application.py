@@ -10,6 +10,7 @@ from app.auth.emails import SmtpEmailSender
 from app.auth.routers import invitations_router
 from app.auth.routers import router as auth_router
 from app.auth.settings import AuthSettings
+from app.clinics.routers import router as clinics_router
 from app.core.database import DatabaseSettings, create_database_engine, create_session_factory
 from app.platform.health import router as platform_router
 from app.platform.middleware import RequestIdMiddleware
@@ -37,4 +38,5 @@ def create_app() -> FastAPI:
     app.include_router(platform_router)
     app.include_router(auth_router)
     app.include_router(invitations_router)
+    app.include_router(clinics_router)
     return app

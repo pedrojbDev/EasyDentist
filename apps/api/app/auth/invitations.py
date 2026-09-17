@@ -15,6 +15,7 @@ from app.auth.settings import AuthSettings
 from app.auth.tokens import token_digest
 from app.core.clock import utcnow
 from app.core.database import transaction_scope
+from app.core.errors import DomainError, InvalidInputError
 
 UNUSABLE_INVITATION_SQLSTATE = "P0001"
 
@@ -23,6 +24,17 @@ def is_invitation_unusable(error: DBAPIError) -> bool:
     return getattr(
         error.orig, "sqlstate", None
     ) == UNUSABLE_INVITATION_SQLSTATE and "invitation_unusable" in str(error.orig)
+
+
+def translate_invitation_error(error: DBAPIError) -> DomainError | None:
+    if getattr(error.orig, "sqlstate", None) != UNUSABLE_INVITATION_SQLSTATE:
+        return None
+    message = str(error.orig)
+    if "password_required" in message:
+        return InvalidInputError("a password is required for new users")
+    if "password_not_allowed" in message:
+        return InvalidInputError("the user already has a password")
+    return None
 
 
 @dataclass(frozen=True, slots=True)
@@ -43,8 +55,10 @@ class InvitationService:
         self._settings = settings
         self._clock = clock
 
-    async def accept(self, *, token: str, password: str) -> AcceptedInvitation | None:
-        password_hash = PasswordHasher(self._settings).hash(password)
+    async def accept(self, *, token: str, password: str | None = None) -> AcceptedInvitation | None:
+        password_hash = (
+            PasswordHasher(self._settings).hash(password) if password is not None else None
+        )
         try:
             async with transaction_scope(self._session_factory) as session:
                 row = (
@@ -60,5 +74,8 @@ class InvitationService:
         except DBAPIError as error:
             if is_invitation_unusable(error):
                 return None
+            translated = translate_invitation_error(error)
+            if translated is not None:
+                raise translated from error
             raise
         return AcceptedInvitation(user_id=row.user_id, clinic_id=row.clinic_id)

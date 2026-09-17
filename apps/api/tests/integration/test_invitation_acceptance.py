@@ -52,10 +52,15 @@ def invitation_token(sender: RecordingEmailSender, email: str) -> str:
     return body[index:].splitlines()[0].strip()
 
 
-async def accept(client: httpx.AsyncClient, token: str, password: str = PASSWORD) -> httpx.Response:
+async def accept(
+    client: httpx.AsyncClient, token: str, password: str | None = PASSWORD
+) -> httpx.Response:
+    payload: dict[str, str] = {"token": token}
+    if password is not None:
+        payload["password"] = password
     response = await client.post(
         "/api/v1/invitations/accept",
-        json={"token": token, "password": password},
+        json=payload,
         headers=mutation_headers(await anonymous_csrf(client)),
     )
     client.cookies.clear()
@@ -306,7 +311,7 @@ async def test_accept_requires_csrf(
 
 
 @pytest.mark.anyio
-async def test_accept_revokes_existing_sessions_when_password_changes(
+async def test_accept_for_existing_user_keeps_password_and_sessions(
     api_client: httpx.AsyncClient,
     session_factory: async_sessionmaker[AsyncSession],
     auth_settings: AuthSettings,
@@ -315,7 +320,7 @@ async def test_accept_revokes_existing_sessions_when_password_changes(
     migrator_connection: asyncpg.Connection,
     provisioned_clinics: list[uuid.UUID],
 ) -> None:
-    email = make_test_email("accept-revoke")
+    email = make_test_email("accept-existing")
     user_id = await seed_user_with_password(email=email, password=EXISTING_PASSWORD)
     old_login = await login(api_client, email, EXISTING_PASSWORD)
     assert old_login.status_code == 200
@@ -325,17 +330,31 @@ async def test_accept_revokes_existing_sessions_when_password_changes(
         session_factory, auth_settings, email_sender, email=email
     )
     provisioned_clinics.append(clinic_id)
+    token = invitation_token(email_sender, email)
 
-    response = await accept(api_client, invitation_token(email_sender, email))
+    with_password = await accept(api_client, token, password=PASSWORD)
 
-    assert response.status_code == 204
-    revoked = await api_client.get(
+    assert with_password.status_code == 422
+    assert with_password.json()["title"] == "Dados inválidos"
+    pending = await migrator_connection.fetchval(
+        "SELECT status FROM app.memberships WHERE clinic_id = $1", clinic_id
+    )
+    assert pending == "PENDING"
+
+    accepted = await accept(api_client, token, password=None)
+
+    assert accepted.status_code == 204
+    membership = await migrator_connection.fetchval(
+        "SELECT status FROM app.memberships WHERE clinic_id = $1", clinic_id
+    )
+    assert membership == "ACTIVE"
+    retained = await api_client.get(
         "/api/v1/auth/me", headers={"Cookie": f"{SESSION_COOKIE}={old_session}"}
     )
-    assert revoked.status_code == 401
-    active_sessions = await migrator_connection.fetchval(
-        "SELECT count(*) FROM app.auth_sessions WHERE user_id = $1 AND revoked_at IS NULL",
-        user_id,
+    assert retained.status_code == 200
+    credential = await migrator_connection.fetchval(
+        "SELECT count(*) FROM app.password_credentials WHERE user_id = $1", user_id
     )
-    assert active_sessions == 0
-    assert (await login(api_client, email, PASSWORD)).status_code == 200
+    assert credential == 1
+    assert (await login(api_client, email, EXISTING_PASSWORD)).status_code == 200
+    assert (await login(api_client, email, PASSWORD)).status_code == 401

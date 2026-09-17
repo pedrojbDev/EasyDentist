@@ -8,7 +8,13 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from app.core.errors import ConflictError, DomainError, NotFoundError
+from app.core.errors import (
+    ConflictError,
+    DomainError,
+    InvalidInputError,
+    NotFoundError,
+    PermissionDeniedError,
+)
 
 PROBLEM_CONTENT_TYPE = "application/problem+json"
 
@@ -69,8 +75,12 @@ async def validation_exception_handler(request: Request, exc: Exception) -> JSON
 async def domain_error_handler(request: Request, exc: Exception) -> JSONResponse:
     if isinstance(exc, NotFoundError):
         status = 404
+    elif isinstance(exc, PermissionDeniedError):
+        status = 403
     elif isinstance(exc, ConflictError):
         status = 409
+    elif isinstance(exc, InvalidInputError):
+        status = 422
     else:
         status = 500
     return problem_response(status=status, request_id=request_id_from(request))
