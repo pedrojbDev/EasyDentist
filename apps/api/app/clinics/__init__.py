@@ -1,0 +1,1 @@
+"""Clinic tenancy models."""

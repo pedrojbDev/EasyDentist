@@ -42,4 +42,7 @@ REVOKE CREATE ON SCHEMA public FROM PUBLIC;
 REVOKE ALL ON SCHEMA app FROM PUBLIC;
 SELECT format('GRANT USAGE ON SCHEMA app TO %I', :'app_user') \gexec
 SELECT format('REVOKE CREATE ON SCHEMA app FROM %I', :'app_user') \gexec
+
+-- M1.2.2: case-insensitive identifiers (users.email, clinics.slug).
+CREATE EXTENSION IF NOT EXISTS citext;
 SQL

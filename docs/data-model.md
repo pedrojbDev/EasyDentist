@@ -1,5 +1,10 @@
 # Modelo de dados planejado
 
+> **Estado (M1.2.3):** as tabelas abaixo existem como models SQLAlchemy
+> (`app/users/models.py`, `app/auth/models.py`, `app/clinics/models.py`) e
+> migrations (`0002_global_identity`, `0003_tenant_structure`), com RLS ativo e
+> contexto transacional de tenant implementados (`0004_rls_policies`, ADR 0005).
+
 O M1.1 não cria banco, migration, role ou tabela. Esta referência fixa os
 limites para M1.2 e posteriores, evitando que a fundação induza um modelo errado.
 
