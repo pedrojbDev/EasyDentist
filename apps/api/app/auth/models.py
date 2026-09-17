@@ -7,6 +7,7 @@ from sqlalchemy import (
     CheckConstraint,
     DateTime,
     ForeignKey,
+    Index,
     Integer,
     LargeBinary,
     Text,
@@ -46,6 +47,7 @@ class ExternalIdentity(Base):
 
 class AuthSession(Base):
     __tablename__ = "auth_sessions"
+    __table_args__ = (Index("ix_auth_sessions_user_id", "user_id"),)
 
     id: Mapped[uuid.UUID] = mapped_column(
         Uuid(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid()
@@ -66,6 +68,7 @@ class AuthActionToken(Base):
     __tablename__ = "auth_action_tokens"
     __table_args__ = (
         CheckConstraint("purpose IN ('EMAIL_VERIFICATION', 'PASSWORD_RESET')", name="purpose"),
+        Index("ix_auth_action_tokens_user_id", "user_id"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -108,7 +111,10 @@ class AuthAuditEvent(Base):
 
 class EmailOutbox(Base):
     __tablename__ = "email_outbox"
-    __table_args__ = (CheckConstraint("status IN ('PENDING', 'SENT', 'FAILED')", name="status"),)
+    __table_args__ = (
+        CheckConstraint("status IN ('PENDING', 'SENT', 'FAILED')", name="status"),
+        Index("ix_email_outbox_delivery", "status", "next_attempt_at"),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(
         Uuid(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid()

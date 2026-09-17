@@ -7,6 +7,45 @@ incrementos indicados.
 
 ## Autenticação (M1.3)
 
+**Implementado no M1.3.1 a M1.3.6:** hashing Argon2id v19 (64 MiB, três
+iterações, paralelismo 1, salt de 16 bytes, hash de 32 bytes) com rehash
+transparente; tokens de 256 bits em base64url com apenas `SHA-256` persistido e
+comparação em tempo constante; sessões opacas com expiração por inatividade de
+12 horas e absoluta de 30 dias, `last_seen_at` com throttle de cinco minutos,
+revogação individual e global, e cookies com flags por ambiente; CSRF
+signed double-submit exigido em toda mutação, com `Origin`/`Referer` na
+allowlist e token reemitido vinculado à sessão após o login; rate limiting
+atômico em PostgreSQL com backoff progressivo, chaves HMAC e `Retry-After`
+(login 5/conta/15min e 20/IP/15min; recuperação e reenvio 3/destinatário/h e
+20/IP/h); resolução de IP confiando em `X-Forwarded-For` apenas de proxies
+declarados; `AuthSettings` com validação fail-fast (`AUTH_SECRET` de no mínimo
+32 bytes em produção); Problem Details (RFC 9457) com `request_id`; outbox de
+e-mail com tentativas idempotentes e backoff exponencial; auditoria de eventos
+de segurança sem dados sensíveis; verificação de e-mail e recuperação de senha
+com tokens de uso único (24 h e 30 min) consumidos atomicamente, respostas
+genéricas contra enumeração, e-mails pt-BR com link em fragmento de URL e
+entrega outbox-first; reset revogando todas as sessões sem auto-login; e
+provisionamento operacional sem cadastro público pela CLI
+`python -m app.auth.provision` (usuário sem senha, clínica `PROVISIONING`,
+membership OWNER pendente e convite de 72 h) cujo aceite
+(`POST /invitations/accept`) consome o token atomicamente, define a senha,
+verifica o e-mail e ativa clínica e vínculo. As escritas em `clinics`,
+`memberships`, `clinic_settings` e `membership_invitations` ocorrem somente nas
+funções `SECURITY DEFINER` `provision_clinic_owner` e `consume_invitation`,
+com `EXECUTE` restrito à role runtime.
+
+A prova automatizada do M1.3.6 consolida a matriz do §5 em
+`tests/integration/test_auth_security_matrix.py` (banco contendo apenas hashes
+— `auth_sessions.token_hash` = SHA-256 do token emitido, credencial Argon2id e
+nenhum token bruto em coluna; flags de cookie por ambiente; expiração
+idle/absoluta; token revogado/reutilizado ⇒ 401; duas sessões de dispositivos
+distintos coexistem; rotação no login preservando o outro dispositivo;
+anti-enumeração em login e recuperação; matriz CSRF completa com `GET` isento;
+rate limit atômico sob concorrência e consumo single-use concorrente), além da
+redaction em `tests/integration/test_auth_redaction.py` (nenhuma senha, token,
+cookie ou IP bruto em logs, `auth_audit_events`, `clinic_audit_events` ou
+buckets de rate limit — as chaves são HMAC).
+
 - Credenciais locais e providers externos convergirão para
   `Principal(user_id, session_id, auth_method)`; autorização conhecerá apenas
   `user_id`.

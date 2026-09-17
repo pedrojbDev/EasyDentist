@@ -52,3 +52,24 @@ criar extensões; por isso a criação pertence ao bootstrap administrativo.
 - As migrations `0003` e `0004` foram emendadas antes do merge (nunca
   publicadas fora do ambiente local) para incorporar o lockdown de
   `memberships`.
+
+## Decisões de execução do M1.3
+
+- **Sessão explícita nos serviços de token.** `ActionTokenService.issue/consume`
+  e `InvitationService.accept` recebem a `AsyncSession` corrente para que a
+  linha de outbox (D7) e o reset/aceite (token + credencial + revogação) sejam
+  atômicos na mesma transação; o contrato esboçado do plano não fixava a
+  assinatura com sessão.
+- **`p_display_name` na `provision_clinic_owner`.** O SQL do plano derivava o
+  nome comercial do `p_name`; a CLI tem `--display-name` opcional, então a
+  função ganhou o parâmetro separado (emenda pré-merge da migration 0007).
+- **`ON CONFLICT` em `consume_invitation`.** `ON CONFLICT (user_id)` do SQL do
+  plano é ambíguo no plpgsql por causa do parâmetro OUT `user_id`
+  (`AmbiguousColumnError`); a emenda pré-merge usa
+  `ON CONFLICT ON CONSTRAINT pk_password_credentials`.
+- **Rotas do frontend nos links de e-mail.** Escolhidas `/verify-email`,
+  `/reset-password` e `/accept-invitation` com fragmento `#token=`; o M1.5 pode
+  ajustá-las sem impacto na API (o token viaja no corpo).
+- **Auditoria do aceite em duas tabelas.** Além do `invitation.accepted` em
+  `clinic_audit_events` gravado pela função, o router registra
+  `invitation_accepted` em `auth_audit_events`, conforme a lista do D12.
