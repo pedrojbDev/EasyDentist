@@ -7,6 +7,13 @@
     "reason": "Dependência transitiva de ferramentas HTTP/auditoria; MPL-2.0 aprovada somente para esta versão, sem modificar seus arquivos."
   },
   {
+    "package": "cffi",
+    "version": "2.1.1",
+    "license": "MIT-0",
+    "reviewed_on": "2026-09-17",
+    "reason": "Dependência transitiva de argon2-cffi-bindings; MIT-0 é variante permissiva do MIT sem exigência de atribuição, aprovada somente para esta versão."
+  },
+  {
     "package": "defusedxml",
     "version": "0.7.1",
     "license": "PSF-2.0",

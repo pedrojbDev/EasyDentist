@@ -21,6 +21,7 @@ e `apps/api/uv.lock`.
 | Uvicorn                             | 0.40.0                           | Servidor ASGI estável compatível com FastAPI.                                                                               |
 | Starlette                           | 1.6.0                            | Transitivo de FastAPI, atualizado no lockfile para as correções de segurança; permanece sob controle do framework.          |
 | SQLAlchemy / Alembic / asyncpg      | 2.0.44 / 1.16.5 / 0.30.0         | Preparados e lockados para o M1.2 sem introduzir schema agora.                                                              |
+| argon2-cffi                         | 25.1.0                           | Hashing Argon2id do M1.3; bindings 26.1.0 (MIT), cffi 2.1.1 (MIT-0, exceção exata) e pycparser 3.0 (BSD) aprovados.         |
 | PostgreSQL                          | 17.6                             | Major definido no plano; imagem oficial Alpine com tag exata.                                                               |
 | Mailpit                             | 1.27.5                           | SMTP e interface de inspeção local estáveis.                                                                                |
 | SeaweedFS                           | 4.29                             | Endpoint S3 compatível local sob Apache-2.0, selecionado em lugar de MinIO (AGPLv3, bloqueada pela política).               |
