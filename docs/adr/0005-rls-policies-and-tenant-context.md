@@ -116,14 +116,14 @@ e auditadas, desenhadas no M1.3/M1.4, com validação de token e de último
 
 ## Matriz de policies da role `easydentist_app`
 
-| Tabela                   | Classe       | Comandos e escopo                                                             |
-| ------------------------ | ------------ | ----------------------------------------------------------------------------- |
-| `clinics`                | user-scoped  | `SELECT` via membership `ACTIVE`; `UPDATE` tenant-scoped                      |
-| `memberships`            | ambas        | `SELECT` próprio usuário; `SELECT` tenant-scoped (sem escrita)                |
-| `clinic_settings`        | tenant-scoped | `SELECT`; `UPDATE`                                                           |
-| `clinic_feature_flags`   | tenant-scoped | `SELECT`                                                                     |
-| `membership_invitations` | tenant-scoped | `SELECT`; `INSERT`                                                           |
-| `clinic_audit_events`    | tenant-scoped | `SELECT`; `INSERT` (append-only; sem `UPDATE`/`DELETE`)                       |
+| Tabela                   | Classe        | Comandos e escopo                                              |
+| ------------------------ | ------------- | -------------------------------------------------------------- |
+| `clinics`                | user-scoped   | `SELECT` via membership `ACTIVE`; `UPDATE` tenant-scoped       |
+| `memberships`            | ambas         | `SELECT` próprio usuário; `SELECT` tenant-scoped (sem escrita) |
+| `clinic_settings`        | tenant-scoped | `SELECT`; `UPDATE`                                             |
+| `clinic_feature_flags`   | tenant-scoped | `SELECT`                                                       |
+| `membership_invitations` | tenant-scoped | `SELECT`; `INSERT`                                             |
+| `clinic_audit_events`    | tenant-scoped | `SELECT`; `INSERT` (append-only; sem `UPDATE`/`DELETE`)        |
 
 Leituras cross-tenant retornam zero linhas e não revelam existência; a camada
 HTTP responderá `404` quando os routers existirem (M1.3+).
