@@ -93,3 +93,18 @@ criar extensões; por isso a criação pertence ao bootstrap administrativo.
 - **`InvalidInputError` (422) no domínio.** Necessário para os erros de valor
   dos guards (`invalid_role`, `password_*`), que não são conflito nem falta de
   permissão.
+
+## Correção após revisão do M1.4 (pré-merge)
+
+- **Funções `SECURITY DEFINER` vinculadas aos GUCs da transação.** As funções
+  `create_member_invitation`, `change_member_role` e `remove_membership` agora
+  verificam, antes de qualquer outra checagem, se `p_clinic_id` e
+  `p_actor_user_id` coincidem com `app.current_clinic_id` e
+  `app.current_user_id` (`RAISE EXCEPTION 'context_mismatch'` — mesmo princípio
+  do `ensure_context_matches` dos repositories no M1.2). Sem isso, uma chamada
+  SQL direta com a role runtime poderia informar o UUID de um OWNER e operar em
+  outra clínica. Em consequência, `MembershipService._call` passou a abrir
+  `tenant_transaction` (instala os GUCs) em vez de `transaction_scope`, e os
+  testes SQL dedicados em `test_membership_function_guards.py` cobrem ausência
+  de contexto, ator estrangeiro, clínica estrangeira e o ataque com UUID de
+  OWNER. A migration `0008` foi emendada pré-merge para incorporar as guardas.

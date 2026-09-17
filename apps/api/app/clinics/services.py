@@ -10,15 +10,16 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.auth.tokens import token_digest
 from app.core.context import TenantContext
-from app.core.database import transaction_scope
 from app.core.errors import (
     ConflictError,
+    ContextMismatchError,
     DomainError,
     InvalidInputError,
     NotFoundError,
     PermissionDeniedError,
     translate_integrity_error,
 )
+from app.core.tenancy import tenant_transaction
 
 FUNCTION_RAISE_SQLSTATE = "P0001"
 
@@ -45,6 +46,8 @@ def translate_membership_error(error: DBAPIError) -> DomainError | None:
         return InvalidInputError("unknown role")
     if "membership_not_found" in message:
         return NotFoundError("membership not found")
+    if "context_mismatch" in message:
+        return ContextMismatchError("transaction context does not match membership operation")
     return None
 
 
@@ -88,6 +91,7 @@ class MembershipService:
         self, context: TenantContext, *, membership_id: UUID, new_role: str
     ) -> None:
         await self._call(
+            context,
             "SELECT membership_id, old_role, new_role "
             "FROM app.change_member_role(:clinic_id, :actor_user_id, :membership_id, :new_role)",
             {
@@ -100,6 +104,7 @@ class MembershipService:
 
     async def remove(self, context: TenantContext, *, membership_id: UUID) -> None:
         await self._call(
+            context,
             "SELECT membership_id "
             "FROM app.remove_membership(:clinic_id, :actor_user_id, :membership_id)",
             {
@@ -109,9 +114,11 @@ class MembershipService:
             },
         )
 
-    async def _call(self, statement: str, parameters: dict[str, object]) -> None:
+    async def _call(
+        self, context: TenantContext, statement: str, parameters: dict[str, object]
+    ) -> None:
         try:
-            async with transaction_scope(self._session_factory) as session:
+            async with tenant_transaction(self._session_factory, context) as session:
                 await session.execute(text(statement), parameters)
         except DBAPIError as error:
             translated = translate_membership_error(error)

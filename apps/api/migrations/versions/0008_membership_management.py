@@ -90,6 +90,12 @@ def upgrade() -> None:
           v_invitation_id uuid;
           v_expires_at timestamptz := now() + interval '72 hours';
         BEGIN
+          IF p_clinic_id::text IS DISTINCT FROM
+               NULLIF(current_setting('app.current_clinic_id', true), '')
+             OR p_actor_user_id::text IS DISTINCT FROM
+               NULLIF(current_setting('app.current_user_id', true), '') THEN
+            RAISE EXCEPTION 'context_mismatch';
+          END IF;
           IF p_role NOT IN ('OWNER','ADMIN','DENTIST','ASSISTANT','RECEPTIONIST') THEN
             RAISE EXCEPTION 'invalid_role';
           END IF;
@@ -134,6 +140,12 @@ def upgrade() -> None:
           v_actor_role text;
           v_owner_count int;
         BEGIN
+          IF p_clinic_id::text IS DISTINCT FROM
+               NULLIF(current_setting('app.current_clinic_id', true), '')
+             OR p_actor_user_id::text IS DISTINCT FROM
+               NULLIF(current_setting('app.current_user_id', true), '') THEN
+            RAISE EXCEPTION 'context_mismatch';
+          END IF;
           IF p_new_role NOT IN ('OWNER','ADMIN','DENTIST','ASSISTANT','RECEPTIONIST') THEN
             RAISE EXCEPTION 'invalid_role';
           END IF;
@@ -185,6 +197,12 @@ def upgrade() -> None:
           v_actor_role text;
           v_owner_count int;
         BEGIN
+          IF p_clinic_id::text IS DISTINCT FROM
+               NULLIF(current_setting('app.current_clinic_id', true), '')
+             OR p_actor_user_id::text IS DISTINCT FROM
+               NULLIF(current_setting('app.current_user_id', true), '') THEN
+            RAISE EXCEPTION 'context_mismatch';
+          END IF;
           PERFORM 1 FROM app.clinics c WHERE c.id = p_clinic_id FOR UPDATE;
           SELECT * INTO v_target FROM app.memberships m
             WHERE m.id = p_membership_id AND m.clinic_id = p_clinic_id FOR UPDATE;
