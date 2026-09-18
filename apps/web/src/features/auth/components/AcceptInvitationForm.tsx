@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 
+import { Button } from '@/components/ui/button';
+import { Feedback } from '@/components/ui/feedback';
 import { ApiError, GENERIC_ERROR_MESSAGE } from '@/lib/api/problem';
 import { useFocusFirstInvalid } from '@/lib/use-focus-first-invalid';
 
@@ -45,10 +47,8 @@ export function AcceptInvitationForm() {
   if (token === null) {
     return (
       <div className="flex flex-col gap-3">
-        <p role="alert" className="text-sm text-destructive">
-          {INVALID_INVITATION_MESSAGE}
-        </p>
-        <Link href="/login" className="text-sm underline">
+        <Feedback tone="error">{INVALID_INVITATION_MESSAGE}</Feedback>
+        <Link href="/login" className="app-link text-sm">
           Ir para o login
         </Link>
       </div>
@@ -94,10 +94,8 @@ export function AcceptInvitationForm() {
   if (done) {
     return (
       <div className="flex flex-col gap-3">
-        <p role="status" className="text-sm">
-          Convite aceito com sucesso.
-        </p>
-        <Link href="/login" className="text-sm underline">
+        <Feedback tone="success">Convite aceito com sucesso.</Feedback>
+        <Link href="/login" className="app-link text-sm">
           Entrar
         </Link>
       </div>
@@ -112,7 +110,7 @@ export function AcceptInvitationForm() {
       </p>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="accept-password" className="text-sm font-medium">
+        <label htmlFor="accept-password" className="app-label">
           Senha (opcional)
         </label>
         <input
@@ -126,7 +124,7 @@ export function AcceptInvitationForm() {
           aria-describedby={
             fieldErrors.password !== undefined ? 'accept-password-error' : undefined
           }
-          className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+          className="app-field"
         />
         {fieldErrors.password !== undefined && (
           <p id="accept-password-error" className="text-sm text-destructive">
@@ -136,7 +134,7 @@ export function AcceptInvitationForm() {
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="accept-password-confirmation" className="text-sm font-medium">
+        <label htmlFor="accept-password-confirmation" className="app-label">
           Confirme a senha
         </label>
         <input
@@ -150,7 +148,7 @@ export function AcceptInvitationForm() {
           aria-describedby={
             fieldErrors.confirmation !== undefined ? 'accept-confirmation-error' : undefined
           }
-          className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+          className="app-field"
         />
         {fieldErrors.confirmation !== undefined && (
           <p id="accept-confirmation-error" className="text-sm text-destructive">
@@ -159,19 +157,11 @@ export function AcceptInvitationForm() {
         )}
       </div>
 
-      {formError !== null && (
-        <p role="alert" className="text-sm text-destructive">
-          {formError}
-        </p>
-      )}
+      {formError !== null && <Feedback tone="error">{formError}</Feedback>}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
-      >
+      <Button type="submit" size="lg" disabled={pending} className="w-full">
         {pending ? 'Ativando...' : 'Ativar convite'}
-      </button>
+      </Button>
     </form>
   );
 }

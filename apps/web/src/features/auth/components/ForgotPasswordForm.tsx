@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useMemo, useRef, useState } from 'react';
 
+import { Button } from '@/components/ui/button';
+import { Feedback } from '@/components/ui/feedback';
 import { ApiError, GENERIC_ERROR_MESSAGE } from '@/lib/api/problem';
 import { useFocusFirstInvalid } from '@/lib/use-focus-first-invalid';
 
@@ -59,10 +61,8 @@ export function ForgotPasswordForm() {
   if (sent) {
     return (
       <div className="flex flex-col gap-4">
-        <p role="status" className="text-sm">
-          {CONFIRMATION}
-        </p>
-        <Link href="/login" className="text-sm underline">
+        <Feedback tone="success">{CONFIRMATION}</Feedback>
+        <Link href="/login" className="app-link text-sm">
           Voltar para o login
         </Link>
       </div>
@@ -72,7 +72,7 @@ export function ForgotPasswordForm() {
   return (
     <form ref={formRef} onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
       <div className="flex flex-col gap-1">
-        <label htmlFor="forgot-email" className="text-sm font-medium">
+        <label htmlFor="forgot-email" className="app-label">
           E-mail
         </label>
         <input
@@ -84,7 +84,7 @@ export function ForgotPasswordForm() {
           onChange={(event) => setEmail(event.target.value)}
           aria-invalid={fieldError !== null}
           aria-describedby={fieldError !== null ? 'forgot-email-error' : undefined}
-          className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+          className="app-field"
         />
         {fieldError !== null && (
           <p id="forgot-email-error" className="text-sm text-destructive">
@@ -93,19 +93,11 @@ export function ForgotPasswordForm() {
         )}
       </div>
 
-      {formError !== null && (
-        <p role="alert" className="text-sm text-destructive">
-          {formError}
-        </p>
-      )}
+      {formError !== null && <Feedback tone="error">{formError}</Feedback>}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
-      >
+      <Button type="submit" size="lg" disabled={pending} className="w-full">
         {pending ? 'Enviando...' : 'Enviar instruções'}
-      </button>
+      </Button>
     </form>
   );
 }
