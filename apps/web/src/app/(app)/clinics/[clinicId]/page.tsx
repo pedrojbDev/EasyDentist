@@ -1,6 +1,8 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { PageHeader } from '@/components/ui/page-header';
+import { StatusBadge } from '@/components/ui/status-badge';
+import { ClinicNav } from '@/features/clinics/components/ClinicNav';
 import { roleLabel, statusLabel } from '@/features/clinics/components/ClinicList';
 import { LegalNameForm } from '@/features/clinics/components/LegalNameForm';
 import { getClinicOnServer } from '@/features/clinics/server';
@@ -22,29 +24,35 @@ export default async function ClinicPage({ params }: { params: Promise<{ clinicI
   }
 
   return (
-    <section className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-xl font-semibold">{clinic.legal_name}</h1>
-        <p className="text-sm text-muted-foreground">{clinic.slug}</p>
-      </div>
-      <dl className="grid gap-2 text-sm sm:grid-cols-2">
-        <div>
-          <dt className="text-muted-foreground">Papel</dt>
-          <dd>{roleLabel(clinic.role)}</dd>
-        </div>
-        <div>
-          <dt className="text-muted-foreground">Situação</dt>
-          <dd>{statusLabel(clinic.status)}</dd>
-        </div>
-      </dl>
-      <LegalNameForm clinicId={clinic.id} role={clinic.role} initialLegalName={clinic.legal_name} />
-      <div className="flex gap-4 text-sm">
-        <Link href={`/clinics/${clinic.id}/settings`} className="underline">
-          Configurações da clínica
-        </Link>
-        <Link href={`/clinics/${clinic.id}/members`} className="underline">
-          Equipe e convites
-        </Link>
+    <section className="flex flex-col gap-7">
+      <PageHeader
+        eyebrow="Visão geral da clínica"
+        title={clinic.legal_name}
+        description={`Identificador: ${clinic.slug}`}
+      />
+      <ClinicNav clinicId={clinic.id} active="overview" />
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(19rem,0.65fr)]">
+        <LegalNameForm
+          clinicId={clinic.id}
+          role={clinic.role}
+          initialLegalName={clinic.legal_name}
+        />
+        <dl className="app-panel grid gap-5 sm:grid-cols-2 lg:grid-cols-1">
+          <div>
+            <dt className="text-sm font-medium text-muted-foreground">Seu papel</dt>
+            <dd className="mt-2">
+              <StatusBadge tone="info">{roleLabel(clinic.role)}</StatusBadge>
+            </dd>
+          </div>
+          <div>
+            <dt className="text-sm font-medium text-muted-foreground">Situação da clínica</dt>
+            <dd className="mt-2">
+              <StatusBadge tone={clinic.status === 'ACTIVE' ? 'success' : 'warning'}>
+                {statusLabel(clinic.status)}
+              </StatusBadge>
+            </dd>
+          </div>
+        </dl>
       </div>
     </section>
   );
