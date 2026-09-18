@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 
 import { AppSidebar } from '@/components/layout/app-sidebar';
+import { ConnectivityNotice } from '@/components/ui/connectivity-notice';
 import { AppHeader } from '@/features/auth/components/AppHeader';
 import type { User } from '@/features/auth/api';
 
@@ -16,6 +17,7 @@ export function AppShell({ user, children }: { user: User; children: ReactNode }
       <AppSidebar />
       <div className="min-w-0">
         <AppHeader user={user} />
+        <ConnectivityNotice />
         <main
           id="main-content"
           className="mx-auto w-full max-w-6xl px-5 py-7 sm:px-7 sm:py-9 lg:px-10"
