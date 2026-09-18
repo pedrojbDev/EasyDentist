@@ -2,7 +2,10 @@
 
 import { useState } from 'react';
 
+import { Button } from '@/components/ui/button';
 import { ConfirmButton } from '@/components/ui/confirm-button';
+import { Feedback } from '@/components/ui/feedback';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { roleLabel } from '@/features/clinics/components/ClinicList';
 import { ApiError } from '@/lib/api/problem';
 
@@ -107,40 +110,44 @@ export function MembersTable({
   }
 
   return (
-    <div className="flex flex-col gap-3">
+    <section className="app-panel min-w-0">
+      <div className="mb-5">
+        <h2 className="font-semibold text-foreground">Pessoas vinculadas</h2>
+        <p className="mt-1 text-sm text-muted-foreground">Papéis e situação de acesso à clínica.</p>
+      </div>
       {error !== null && (
-        <p role="alert" className="text-sm text-destructive">
+        <Feedback tone="error" className="mb-3">
           {error}
-        </p>
+        </Feedback>
       )}
       {message !== null && (
-        <p role="status" className="text-sm">
+        <Feedback tone="success" className="mb-3">
           {message}
-        </p>
+        </Feedback>
       )}
 
       {rows.length === 0 ? (
         <p className="text-sm text-muted-foreground">Nenhum vínculo encontrado.</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-sm">
+        <div className="overflow-x-auto rounded-lg border border-border">
+          <table className="w-full min-w-[44rem] border-collapse text-sm">
             <thead>
-              <tr className="border-b border-border text-left">
+              <tr className="border-b border-border bg-muted/55 text-left text-xs uppercase tracking-wide text-muted-foreground">
                 {showEmail && (
-                  <th scope="col" className="py-2 pr-3">
+                  <th scope="col" className="px-3 py-3">
                     E-mail
                   </th>
                 )}
-                <th scope="col" className="py-2 pr-3">
+                <th scope="col" className="px-3 py-3">
                   Papel
                 </th>
-                <th scope="col" className="py-2 pr-3">
+                <th scope="col" className="px-3 py-3">
                   Situação
                 </th>
-                <th scope="col" className="py-2 pr-3">
+                <th scope="col" className="px-3 py-3">
                   Desde
                 </th>
-                <th scope="col" className="py-2">
+                <th scope="col" className="px-3 py-3">
                   Ações
                 </th>
               </tr>
@@ -150,14 +157,27 @@ export function MembersTable({
                 const label = memberLabel(member);
                 const manageable = canTouch(actorRole, member.role);
                 return (
-                  <tr key={member.id} className="border-b border-border align-middle">
-                    {showEmail && <td className="py-2 pr-3">{member.email ?? '—'}</td>}
-                    <td className="py-2 pr-3">{roleLabel(member.role)}</td>
-                    <td className="py-2 pr-3">{membershipStatusLabel(member.status)}</td>
-                    <td className="py-2 pr-3">
+                  <tr
+                    key={member.id}
+                    className="border-b border-border align-middle last:border-b-0 hover:bg-muted/30"
+                  >
+                    {showEmail && (
+                      <td className="px-3 py-3 font-medium text-foreground">
+                        {member.email ?? '—'}
+                      </td>
+                    )}
+                    <td className="px-3 py-3">
+                      <StatusBadge tone="info">{roleLabel(member.role)}</StatusBadge>
+                    </td>
+                    <td className="px-3 py-3">
+                      <StatusBadge tone={member.status === 'ACTIVE' ? 'success' : 'warning'}>
+                        {membershipStatusLabel(member.status)}
+                      </StatusBadge>
+                    </td>
+                    <td className="px-3 py-3 text-muted-foreground">
                       {dateFormatter.format(new Date(member.created_at))}
                     </td>
-                    <td className="py-2">
+                    <td className="px-3 py-3">
                       {manageable ? (
                         <div className="flex flex-wrap items-center gap-2">
                           <select
@@ -169,7 +189,7 @@ export function MembersTable({
                                 [member.id]: event.target.value as Role,
                               }))
                             }
-                            className="rounded-md border border-input bg-background px-2 py-1"
+                            className="app-field min-h-9 w-auto py-1 text-sm"
                           >
                             {options.map((role) => (
                               <option key={role} value={role}>
@@ -177,19 +197,21 @@ export function MembersTable({
                               </option>
                             ))}
                           </select>
-                          <button
+                          <Button
                             type="button"
+                            variant="outline"
+                            size="sm"
                             onClick={() => void handleChangeRole(member)}
                             aria-label={`Alterar papel de ${label}`}
-                            className="rounded-md border border-border px-2 py-1"
                           >
                             Alterar papel
-                          </button>
+                          </Button>
                           <ConfirmButton
                             message={`Remover ${label} da clínica?`}
                             onConfirm={() => void handleRemove(member)}
                             ariaLabel={`Remover ${label}`}
-                            className="rounded-md border border-destructive px-2 py-1 text-destructive"
+                            variant="destructive"
+                            size="sm"
                           >
                             Remover
                           </ConfirmButton>
@@ -205,6 +227,6 @@ export function MembersTable({
           </table>
         </div>
       )}
-    </div>
+    </section>
   );
 }

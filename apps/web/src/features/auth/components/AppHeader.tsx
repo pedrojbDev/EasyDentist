@@ -1,10 +1,12 @@
 'use client';
 
-import Link from 'next/link';
+import { LogOut, ShieldOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import { Button } from '@/components/ui/button';
 import { ConfirmButton } from '@/components/ui/confirm-button';
+import { Feedback } from '@/components/ui/feedback';
 import { ApiError } from '@/lib/api/problem';
 
 import { logout, logoutAll, type User } from '../api';
@@ -29,37 +31,37 @@ export function AppHeader({ user }: { user: User }) {
   }
 
   return (
-    <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-6 py-3">
-      <div className="flex items-center gap-4">
-        <span className="font-semibold">EasyDentist</span>
-        <Link href="/clinics" className="text-sm underline-offset-4 hover:underline">
-          Clínicas
-        </Link>
-        <Link href="/sessions" className="text-sm underline-offset-4 hover:underline">
-          Sessões
-        </Link>
-        <span className="text-sm text-muted-foreground">{user.email}</span>
+    <header className="flex min-h-16 flex-wrap items-center justify-between gap-3 border-b border-border bg-surface/90 px-5 py-3 backdrop-blur sm:px-7 lg:px-10">
+      <div className="min-w-0">
+        <p className="text-xs font-medium text-muted-foreground">Conta conectada</p>
+        <p className="truncate text-sm font-semibold text-foreground">{user.email}</p>
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center justify-end gap-2">
         {error !== null && (
-          <span role="alert" className="text-sm text-destructive">
+          <Feedback tone="error" className="basis-full sm:basis-auto">
             {error}
-          </span>
+          </Feedback>
         )}
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="sm"
           disabled={pending}
           onClick={() => void run(logout)}
-          className="rounded-md border border-border px-3 py-1.5 text-sm disabled:opacity-60"
         >
+          <LogOut aria-hidden="true" />
           Sair
-        </button>
+        </Button>
         <ConfirmButton
           message="Encerrar a sessão em todos os dispositivos?"
           onConfirm={() => void run(logoutAll)}
-          className="rounded-md border border-border px-3 py-1.5 text-sm"
+          ariaLabel="Sair de todos os dispositivos"
+          variant="outline"
+          size="sm"
         >
-          Sair de todos os dispositivos
+          <ShieldOff aria-hidden="true" />
+          <span className="hidden sm:inline">Sair de todos os dispositivos</span>
+          <span className="sm:hidden">Sair de todos</span>
         </ConfirmButton>
       </div>
     </header>

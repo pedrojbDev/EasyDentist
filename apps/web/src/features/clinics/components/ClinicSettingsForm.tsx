@@ -2,7 +2,9 @@
 
 import { useRef, useState } from 'react';
 
-import { ApiError, GENERIC_ERROR_MESSAGE } from '@/lib/api/problem';
+import { Button } from '@/components/ui/button';
+import { Feedback } from '@/components/ui/feedback';
+import { ApiError } from '@/lib/api/problem';
 import { useFocusFirstInvalid } from '@/lib/use-focus-first-invalid';
 
 import { updateSettings, type ClinicSettings } from '../api';
@@ -63,22 +65,22 @@ export function ClinicSettingsForm({
 
   if (!canManage) {
     return (
-      <dl className="grid gap-2 text-sm sm:grid-cols-2">
-        <div>
-          <dt className="text-muted-foreground">Nome comercial</dt>
-          <dd>{initialSettings.display_name}</dd>
+      <dl className="app-panel grid gap-5 text-sm sm:grid-cols-2">
+        <div className="rounded-lg bg-muted/55 p-4">
+          <dt className="font-medium text-muted-foreground">Nome comercial</dt>
+          <dd className="mt-1 font-semibold text-foreground">{initialSettings.display_name}</dd>
         </div>
-        <div>
-          <dt className="text-muted-foreground">Fuso horário</dt>
-          <dd>{initialSettings.timezone}</dd>
+        <div className="rounded-lg bg-muted/55 p-4">
+          <dt className="font-medium text-muted-foreground">Fuso horário</dt>
+          <dd className="mt-1 font-semibold text-foreground">{initialSettings.timezone}</dd>
         </div>
-        <div>
-          <dt className="text-muted-foreground">Idioma</dt>
-          <dd>{initialSettings.locale}</dd>
+        <div className="rounded-lg bg-muted/55 p-4">
+          <dt className="font-medium text-muted-foreground">Idioma</dt>
+          <dd className="mt-1 font-semibold text-foreground">{initialSettings.locale}</dd>
         </div>
-        <div>
-          <dt className="text-muted-foreground">Moeda</dt>
-          <dd>{initialSettings.currency}</dd>
+        <div className="rounded-lg bg-muted/55 p-4">
+          <dt className="font-medium text-muted-foreground">Moeda</dt>
+          <dd className="mt-1 font-semibold text-foreground">{initialSettings.currency}</dd>
         </div>
       </dl>
     );
@@ -126,9 +128,20 @@ export function ClinicSettingsForm({
   }
 
   return (
-    <form ref={formRef} onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
+    <form
+      ref={formRef}
+      onSubmit={handleSubmit}
+      noValidate
+      className="app-panel flex flex-col gap-5"
+    >
+      <div>
+        <h2 className="font-semibold text-foreground">Operação da clínica</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Ajuste como nomes, datas e valores são exibidos para a equipe.
+        </p>
+      </div>
       <div className="flex flex-col gap-1">
-        <label htmlFor="settings-display-name" className="text-sm font-medium">
+        <label htmlFor="settings-display-name" className="app-label">
           Nome comercial
         </label>
         <input
@@ -140,7 +153,7 @@ export function ClinicSettingsForm({
           aria-describedby={
             fieldErrors.displayName !== undefined ? 'settings-display-name-error' : undefined
           }
-          className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+          className="app-field"
         />
         {fieldErrors.displayName !== undefined && (
           <p id="settings-display-name-error" className="text-sm text-destructive">
@@ -150,7 +163,7 @@ export function ClinicSettingsForm({
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="settings-timezone" className="text-sm font-medium">
+        <label htmlFor="settings-timezone" className="app-label">
           Fuso horário
         </label>
         <input
@@ -163,7 +176,7 @@ export function ClinicSettingsForm({
           aria-describedby={
             fieldErrors.timezone !== undefined ? 'settings-timezone-error' : undefined
           }
-          className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+          className="app-field"
         />
         <datalist id="settings-timezone-options">
           {(Intl.supportedValuesOf('timeZone') as string[]).map((zone) => (
@@ -178,7 +191,7 @@ export function ClinicSettingsForm({
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="settings-locale" className="text-sm font-medium">
+        <label htmlFor="settings-locale" className="app-label">
           Idioma
         </label>
         <input
@@ -188,7 +201,7 @@ export function ClinicSettingsForm({
           onChange={(event) => setLocale(event.target.value)}
           aria-invalid={fieldErrors.locale !== undefined}
           aria-describedby={fieldErrors.locale !== undefined ? 'settings-locale-error' : undefined}
-          className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+          className="app-field"
         />
         {fieldErrors.locale !== undefined && (
           <p id="settings-locale-error" className="text-sm text-destructive">
@@ -198,7 +211,7 @@ export function ClinicSettingsForm({
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="settings-currency" className="text-sm font-medium">
+        <label htmlFor="settings-currency" className="app-label">
           Moeda
         </label>
         <input
@@ -211,7 +224,7 @@ export function ClinicSettingsForm({
           aria-describedby={
             fieldErrors.currency !== undefined ? 'settings-currency-error' : undefined
           }
-          className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+          className="app-field uppercase"
         />
         {fieldErrors.currency !== undefined && (
           <p id="settings-currency-error" className="text-sm text-destructive">
@@ -220,25 +233,13 @@ export function ClinicSettingsForm({
         )}
       </div>
 
-      {formError !== null && (
-        <p role="alert" className="text-sm text-destructive">
-          {formError}
-        </p>
-      )}
+      {formError !== null && <Feedback tone="error">{formError}</Feedback>}
 
-      {saved && (
-        <p role="status" className="text-sm">
-          Configurações atualizadas.
-        </p>
-      )}
+      {saved && <Feedback tone="success">Configurações atualizadas.</Feedback>}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="w-fit rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
-      >
+      <Button type="submit" disabled={pending} className="w-fit">
         {pending ? 'Salvando...' : 'Salvar configurações'}
-      </button>
+      </Button>
     </form>
   );
 }

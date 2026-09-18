@@ -1,5 +1,7 @@
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
+import { AuthShell } from '@/components/layout/auth-shell';
 import { LoginForm } from '@/features/auth/components/LoginForm';
 import { getCurrentUser } from '@/features/auth/server';
 import { ApiError } from '@/lib/api/problem';
@@ -12,15 +14,18 @@ export default async function LoginPage() {
   } catch (error) {
     if (error instanceof ApiError && error.status === 401) {
       return (
-        <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-6 p-6">
-          <div>
-            <h1 className="text-2xl font-semibold">Entrar</h1>
-            <p className="text-sm text-muted-foreground">
-              Acesse o EasyDentist com seu e-mail e senha.
-            </p>
-          </div>
+        <AuthShell
+          eyebrow="Acesso seguro"
+          title="Entre na sua conta"
+          description="Use o e-mail cadastrado para continuar."
+          footer={
+            <Link href="/forgot-password" className="app-link">
+              Esqueci minha senha
+            </Link>
+          }
+        >
           <LoginForm />
-        </main>
+        </AuthShell>
       );
     }
     throw error;

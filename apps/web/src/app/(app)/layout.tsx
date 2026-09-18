@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 
-import { AppHeader } from '@/features/auth/components/AppHeader';
+import { AppShell } from '@/components/layout/app-shell';
 import { getCurrentUser } from '@/features/auth/server';
 import { ApiError } from '@/lib/api/problem';
 
@@ -18,10 +18,5 @@ export default async function AuthenticatedLayout({ children }: { children: Reac
     throw error;
   }
 
-  return (
-    <div className="min-h-screen">
-      <AppHeader user={user} />
-      <main className="mx-auto max-w-4xl p-6">{children}</main>
-    </div>
-  );
+  return <AppShell user={user}>{children}</AppShell>;
 }

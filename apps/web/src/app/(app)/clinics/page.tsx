@@ -7,14 +7,14 @@ export default async function ClinicsPage() {
   const clinics = await listClinicsOnServer();
 
   return (
-    <section className="flex flex-col gap-4">
-      <div>
-        <h1 className="text-xl font-semibold">Suas clínicas</h1>
-        <p className="text-sm text-muted-foreground">
-          Selecione a clínica com que deseja trabalhar.
-        </p>
-      </div>
+    <section className="flex flex-col gap-7">
+      <PageHeader
+        eyebrow="Área de trabalho"
+        title="Suas clínicas"
+        description="Escolha a clínica em que deseja trabalhar agora."
+      />
       <ClinicList clinics={clinics} />
     </section>
   );
 }
+import { PageHeader } from '@/components/ui/page-header';

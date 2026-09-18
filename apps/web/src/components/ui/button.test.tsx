@@ -9,5 +9,6 @@ describe('Button', () => {
 
     expect(markup).toContain('<button');
     expect(markup).toContain('Salvar');
+    expect(markup).toContain('focus-visible:ring');
   });
 });

@@ -3,6 +3,9 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 
+import { Button } from '@/components/ui/button';
+import { Feedback } from '@/components/ui/feedback';
+
 import { verifyEmail } from '../api';
 import { useFragmentToken } from '../use-fragment-token';
 
@@ -10,7 +13,8 @@ const INVALID_LINK_MESSAGE = 'Link inválido ou expirado. Solicite uma nova veri
 const GENERIC_FAILURE =
   'Não foi possível confirmar o e-mail. O link pode ter expirado ou já ter sido usado.';
 
-export function verifyErrorMessage(_error: unknown): string {
+export function verifyErrorMessage(error: unknown): string {
+  void error;
   return GENERIC_FAILURE;
 }
 
@@ -46,10 +50,8 @@ export function VerifyEmailPanel() {
   if (token === null) {
     return (
       <div className="flex flex-col gap-3">
-        <p role="alert" className="text-sm text-destructive">
-          {INVALID_LINK_MESSAGE}
-        </p>
-        <Link href="/login" className="text-sm underline">
+        <Feedback tone="error">{INVALID_LINK_MESSAGE}</Feedback>
+        <Link href="/login" className="app-link text-sm">
           Ir para o login
         </Link>
       </div>
@@ -57,36 +59,24 @@ export function VerifyEmailPanel() {
   }
 
   if (status === 'pending') {
-    return (
-      <p role="status" className="text-sm text-muted-foreground">
-        Confirmando seu e-mail...
-      </p>
-    );
+    return <Feedback tone="info">Confirmando seu e-mail...</Feedback>;
   }
 
   if (status === 'error') {
     return (
       <div className="flex flex-col gap-3">
-        <p role="alert" className="text-sm text-destructive">
-          {verifyErrorMessage(null)}
-        </p>
-        <button
-          type="button"
-          onClick={() => void retry()}
-          className="w-fit rounded-md border border-border px-4 py-2 text-sm"
-        >
+        <Feedback tone="error">{verifyErrorMessage(null)}</Feedback>
+        <Button type="button" variant="outline" onClick={() => void retry()} className="w-fit">
           Tentar novamente
-        </button>
+        </Button>
       </div>
     );
   }
 
   return (
     <div className="flex flex-col gap-3">
-      <p role="status" className="text-sm">
-        E-mail confirmado com sucesso.
-      </p>
-      <Link href="/clinics" className="text-sm underline">
+      <Feedback tone="success">E-mail confirmado com sucesso.</Feedback>
+      <Link href="/clinics" className="app-link text-sm">
         Ir para as clínicas
       </Link>
     </div>
