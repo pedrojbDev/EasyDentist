@@ -5,7 +5,7 @@ import { useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Feedback } from '@/components/ui/feedback';
-import { ApiError, GENERIC_ERROR_MESSAGE } from '@/lib/api/problem';
+import { ApiError } from '@/lib/api/problem';
 import { useFocusFirstInvalid } from '@/lib/use-focus-first-invalid';
 
 import { resetPassword } from '../api';

@@ -13,7 +13,8 @@ const INVALID_LINK_MESSAGE = 'Link inválido ou expirado. Solicite uma nova veri
 const GENERIC_FAILURE =
   'Não foi possível confirmar o e-mail. O link pode ter expirado ou já ter sido usado.';
 
-export function verifyErrorMessage(_error: unknown): string {
+export function verifyErrorMessage(error: unknown): string {
+  void error;
   return GENERIC_FAILURE;
 }
 
