@@ -47,4 +47,14 @@ describe('ConfirmButton', () => {
 
     expect(onConfirm).not.toHaveBeenCalled();
   });
+
+  it('renders destructive actions with the destructive button treatment', () => {
+    render(
+      <ConfirmButton message="Tem certeza?" onConfirm={() => undefined} variant="destructive">
+        Remover
+      </ConfirmButton>,
+    );
+
+    expect(screen.getByRole('button', { name: 'Remover' }).className).toContain('bg-destructive');
+  });
 });
