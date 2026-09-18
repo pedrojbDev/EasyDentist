@@ -6,3 +6,4 @@ pnpm-lock.yaml
 artifacts/
 graphify-out/
 plan.md
+apps/web/src/lib/api/generated/

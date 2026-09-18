@@ -5,13 +5,13 @@ import './styles.css';
 
 export const metadata: Metadata = {
   title: 'EasyDentist',
-  description: 'Fundação técnica do EasyDentist',
+  description: 'Gestão de clínicas odontológicas',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="pt-BR">
-      <body>{children}</body>
+      <body className="bg-background text-foreground antialiased">{children}</body>
     </html>
   );
 }

@@ -120,6 +120,22 @@ senha) e o e-mail dos membros é restrito a OWNER/ADMIN
 `membership.role_changed`, `membership.removed`, `invitation.accepted`) não
 contém token, senha, cookie ou IP bruto.
 
+## Frontend (M1.5, ADR 0008)
+
+O frontend fala apenas com `/api/v1` na mesma origem (rewrite do Next); a
+sessão continua em cookie `HttpOnly` e o CSRF é obtido de `GET /auth/csrf` e
+enviado no header `X-CSRF-Token` imediatamente antes de cada mutação. Nenhum
+token é persistido em JavaScript: tokens de verificação, reset e convite são
+lidos do fragmento de URL para a memória do componente, o fragmento é limpo com
+`history.replaceState` e o token é descartado após o sucesso (mantido apenas
+para nova tentativa). Server Components usam um cliente próprio que encaminha
+**somente** o header `Cookie` da requisição, com `cache: 'no-store'` e sem
+CSRF; nenhum outro header do usuário é repassado. A guarda de sessão é
+server-side (`GET /auth/me` + redirect) e a UI esconde ações conforme o papel,
+mas o backend permanece a autoridade (403/404 tratados). A validação de campo é
+feita no cliente; erros 422 da API são genéricos, e a anti-enumeração do
+backend (login e recuperação) é preservada nas mensagens.
+
 ## Roles PostgreSQL e schema (M1.2)
 
 A role runtime `easydentist_app` não é dona do schema `app`, não executa DDL e

@@ -108,3 +108,21 @@ criar extensões; por isso a criação pertence ao bootstrap administrativo.
   testes SQL dedicados em `test_membership_function_guards.py` cobrem ausência
   de contexto, ator estrangeiro, clínica estrangeira e o ataque com UUID de
   OWNER. A migration `0008` foi emendada pré-merge para incorporar as guardas.
+
+## Ajustes de execução do M1.5
+
+- **Ordem do gate do frontend: `build` antes de `typecheck`.** Com
+  `typedRoutes` ligado, os tipos de rota (`RouteImpl`) só existem depois que o
+  `next build` gera `.next/types`; o CI e os comandos de referência passaram a
+  rodar nessa ordem.
+- **Validação de fuso no cliente é consultiva.** O formulário de settings valida
+  a timezone contra `Intl.supportedValuesOf('timeZone')` (com `datalist` de
+  sugestões); a autoridade continua sendo `zoneinfo` no backend, e um fuso
+  válido no banco que não esteja na lista do `Intl` seria bloqueado apenas na
+  interface — decisão registrada para revisão futura.
+- **Export do OpenAPI por módulo.** O script roda como
+  `python -m scripts.export_openapi` (mesmo padrão do CLI de provisionamento),
+  porque a execução direta por caminho não coloca `apps/api` no `sys.path`.
+- **`useFocusFirstInvalid` compartilhado.** O foco no primeiro erro é feito por
+  um hook comum acionado quando os erros de campo mudam, evitando roubo de foco
+  durante a digitação.
