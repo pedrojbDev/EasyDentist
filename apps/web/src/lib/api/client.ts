@@ -4,7 +4,8 @@ import { redirectToLogin } from './redirect';
 type JsonInit = RequestInit & { json?: unknown; skipAuthRedirect?: boolean };
 
 function buildInit(init: JsonInit): RequestInit {
-  const { json, headers, skipAuthRedirect: _skipAuthRedirect, ...rest } = init;
+  const { json, headers, skipAuthRedirect, ...rest } = init;
+  void skipAuthRedirect;
   if (json === undefined) {
     return { ...rest, headers };
   }

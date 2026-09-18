@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { ConfirmButton } from '@/components/ui/confirm-button';
+import { Feedback } from '@/components/ui/feedback';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { logoutAll } from '@/features/auth/api';
 import { ApiError } from '@/lib/api/problem';
 
@@ -70,12 +72,13 @@ export function SessionsTable({ sessions }: { sessions: Session[] }) {
 
   if (rows.length === 0) {
     return (
-      <div className="flex flex-col gap-3">
+      <div className="app-panel flex flex-col gap-4">
         <p className="text-sm text-muted-foreground">Nenhuma sessão ativa.</p>
         <ConfirmButton
           message="Encerrar a sessão em todos os dispositivos?"
           onConfirm={() => void handleLogoutAll()}
-          className="w-fit rounded-md border border-border px-3 py-1.5 text-sm"
+          variant="destructive"
+          className="w-fit"
         >
           Sair de todos os dispositivos
         </ConfirmButton>
@@ -84,35 +87,33 @@ export function SessionsTable({ sessions }: { sessions: Session[] }) {
   }
 
   return (
-    <div className="flex flex-col gap-3">
-      {error !== null && (
-        <p role="alert" className="text-sm text-destructive">
-          {error}
+    <section className="app-panel flex flex-col gap-4">
+      <div>
+        <h2 className="font-semibold text-foreground">Dispositivos conectados</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          As datas refletem o horário configurado no seu dispositivo.
         </p>
-      )}
-      {message !== null && (
-        <p role="status" className="text-sm">
-          {message}
-        </p>
-      )}
+      </div>
+      {error !== null && <Feedback tone="error">{error}</Feedback>}
+      {message !== null && <Feedback tone="success">{message}</Feedback>}
 
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse text-sm">
+      <div className="overflow-x-auto rounded-lg border border-border">
+        <table className="w-full min-w-[42rem] border-collapse text-sm">
           <thead>
-            <tr className="border-b border-border text-left">
-              <th scope="col" className="py-2 pr-3">
+            <tr className="border-b border-border bg-muted/55 text-left text-xs uppercase tracking-wide text-muted-foreground">
+              <th scope="col" className="px-3 py-3">
                 Criada em
               </th>
-              <th scope="col" className="py-2 pr-3">
+              <th scope="col" className="px-3 py-3">
                 Último acesso
               </th>
-              <th scope="col" className="py-2 pr-3">
+              <th scope="col" className="px-3 py-3">
                 Expira em
               </th>
-              <th scope="col" className="py-2 pr-3">
+              <th scope="col" className="px-3 py-3">
                 Situação
               </th>
-              <th scope="col" className="py-2">
+              <th scope="col" className="px-3 py-3">
                 Ação
               </th>
             </tr>
@@ -121,22 +122,25 @@ export function SessionsTable({ sessions }: { sessions: Session[] }) {
             {rows.map((session) => {
               const createdLabel = dateFormatter.format(new Date(session.created_at));
               return (
-                <tr key={session.id} className="border-b border-border align-middle">
-                  <td className="py-2 pr-3">{createdLabel}</td>
-                  <td className="py-2 pr-3">
+                <tr
+                  key={session.id}
+                  className="border-b border-border align-middle last:border-b-0 hover:bg-muted/30"
+                >
+                  <td className="px-3 py-3 font-medium text-foreground">{createdLabel}</td>
+                  <td className="px-3 py-3 text-muted-foreground">
                     {dateFormatter.format(new Date(session.last_seen_at))}
                   </td>
-                  <td className="py-2 pr-3">
+                  <td className="px-3 py-3 text-muted-foreground">
                     {dateFormatter.format(new Date(session.expires_at))}
                   </td>
-                  <td className="py-2 pr-3">
+                  <td className="px-3 py-3">
                     {session.current ? (
-                      <span className="rounded-full bg-muted px-2 py-0.5 text-xs">Esta sessão</span>
+                      <StatusBadge tone="success">Esta sessão</StatusBadge>
                     ) : (
-                      'Outro dispositivo'
+                      <StatusBadge>Outro dispositivo</StatusBadge>
                     )}
                   </td>
-                  <td className="py-2">
+                  <td className="px-3 py-3">
                     <ConfirmButton
                       message={
                         session.current
@@ -149,7 +153,8 @@ export function SessionsTable({ sessions }: { sessions: Session[] }) {
                           ? 'Encerrar esta sessão'
                           : `Revogar sessão criada em ${createdLabel}`
                       }
-                      className="rounded-md border border-border px-2 py-1"
+                      variant={session.current ? 'destructive' : 'outline'}
+                      size="sm"
                     >
                       Revogar
                     </ConfirmButton>
@@ -164,10 +169,11 @@ export function SessionsTable({ sessions }: { sessions: Session[] }) {
       <ConfirmButton
         message="Encerrar a sessão em todos os dispositivos?"
         onConfirm={() => void handleLogoutAll()}
-        className="w-fit rounded-md border border-border px-3 py-1.5 text-sm"
+        variant="destructive"
+        className="w-fit"
       >
         Sair de todos os dispositivos
       </ConfirmButton>
-    </div>
+    </section>
   );
 }

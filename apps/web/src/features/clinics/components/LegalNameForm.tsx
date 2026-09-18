@@ -2,7 +2,9 @@
 
 import { useMemo, useRef, useState } from 'react';
 
-import { ApiError, GENERIC_ERROR_MESSAGE } from '@/lib/api/problem';
+import { Button } from '@/components/ui/button';
+import { Feedback } from '@/components/ui/feedback';
+import { ApiError } from '@/lib/api/problem';
 import { useFocusFirstInvalid } from '@/lib/use-focus-first-invalid';
 
 import { updateClinic } from '../api';
@@ -42,7 +44,15 @@ export function LegalNameForm({
   useFocusFirstInvalid(fieldErrors, formRef);
 
   if (role !== 'OWNER') {
-    return null;
+    return (
+      <section className="app-panel">
+        <p className="text-sm font-medium text-muted-foreground">Razão social</p>
+        <p className="mt-2 font-semibold text-foreground">{initialLegalName}</p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Somente o proprietário pode alterar a identidade legal da clínica.
+        </p>
+      </section>
+    );
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -73,13 +83,15 @@ export function LegalNameForm({
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      noValidate
-      className="flex flex-col gap-3 rounded-lg border border-border p-4"
-    >
+    <form onSubmit={handleSubmit} noValidate className="app-panel flex flex-col gap-4">
+      <div>
+        <h2 className="font-semibold text-foreground">Identidade legal</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Nome registrado oficialmente para a clínica.
+        </p>
+      </div>
       <div className="flex flex-col gap-1">
-        <label htmlFor="legal-name" className="text-sm font-medium">
+        <label htmlFor="legal-name" className="app-label">
           Razão social
         </label>
         <input
@@ -90,7 +102,7 @@ export function LegalNameForm({
           onChange={(event) => setLegalName(event.target.value)}
           aria-invalid={fieldError !== null}
           aria-describedby={fieldError !== null ? 'legal-name-error' : undefined}
-          className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+          className="app-field"
         />
         {fieldError !== null && (
           <p id="legal-name-error" className="text-sm text-destructive">
@@ -99,25 +111,13 @@ export function LegalNameForm({
         )}
       </div>
 
-      {formError !== null && (
-        <p role="alert" className="text-sm text-destructive">
-          {formError}
-        </p>
-      )}
+      {formError !== null && <Feedback tone="error">{formError}</Feedback>}
 
-      {saved && (
-        <p role="status" className="text-sm">
-          Razão social atualizada.
-        </p>
-      )}
+      {saved && <Feedback tone="success">Razão social atualizada.</Feedback>}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="w-fit rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
-      >
+      <Button type="submit" disabled={pending} className="w-fit">
         {pending ? 'Salvando...' : 'Salvar razão social'}
-      </button>
+      </Button>
     </form>
   );
 }

@@ -3,7 +3,9 @@
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 
-import { ApiError, GENERIC_ERROR_MESSAGE } from '@/lib/api/problem';
+import { Button } from '@/components/ui/button';
+import { Feedback } from '@/components/ui/feedback';
+import { ApiError } from '@/lib/api/problem';
 import { useFocusFirstInvalid } from '@/lib/use-focus-first-invalid';
 
 import { resetPassword } from '../api';
@@ -30,10 +32,8 @@ export function resetErrorMessage(error: unknown): string {
 export function InvalidLinkPanel() {
   return (
     <div className="flex flex-col gap-3">
-      <p role="alert" className="text-sm text-destructive">
-        {INVALID_LINK_MESSAGE}
-      </p>
-      <Link href="/forgot-password" className="text-sm underline">
+      <Feedback tone="error">{INVALID_LINK_MESSAGE}</Feedback>
+      <Link href="/forgot-password" className="app-link text-sm">
         Solicitar nova recuperação
       </Link>
     </div>
@@ -86,10 +86,8 @@ export function ResetPasswordForm() {
   if (done) {
     return (
       <div className="flex flex-col gap-3">
-        <p role="status" className="text-sm">
-          Senha alterada com sucesso.
-        </p>
-        <Link href="/login" className="text-sm underline">
+        <Feedback tone="success">Senha alterada com sucesso.</Feedback>
+        <Link href="/login" className="app-link text-sm">
           Entrar
         </Link>
       </div>
@@ -107,7 +105,7 @@ export function ResetPasswordForm() {
       className="flex flex-col gap-4"
     >
       <div className="flex flex-col gap-1">
-        <label htmlFor="reset-password" className="text-sm font-medium">
+        <label htmlFor="reset-password" className="app-label">
           Nova senha
         </label>
         <input
@@ -119,7 +117,7 @@ export function ResetPasswordForm() {
           onChange={(event) => setPassword(event.target.value)}
           aria-invalid={fieldErrors.password !== undefined}
           aria-describedby={fieldErrors.password !== undefined ? 'reset-password-error' : undefined}
-          className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+          className="app-field"
         />
         {fieldErrors.password !== undefined && (
           <p id="reset-password-error" className="text-sm text-destructive">
@@ -129,7 +127,7 @@ export function ResetPasswordForm() {
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="reset-password-confirmation" className="text-sm font-medium">
+        <label htmlFor="reset-password-confirmation" className="app-label">
           Confirme a nova senha
         </label>
         <input
@@ -143,7 +141,7 @@ export function ResetPasswordForm() {
           aria-describedby={
             fieldErrors.confirmation !== undefined ? 'reset-confirmation-error' : undefined
           }
-          className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+          className="app-field"
         />
         {fieldErrors.confirmation !== undefined && (
           <p id="reset-confirmation-error" className="text-sm text-destructive">
@@ -152,29 +150,16 @@ export function ResetPasswordForm() {
         )}
       </div>
 
-      {formError !== null && (
-        <p role="alert" className="text-sm text-destructive">
-          {formError}
-        </p>
-      )}
+      {formError !== null && <Feedback tone="error">{formError}</Feedback>}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
-      >
+      <Button type="submit" size="lg" disabled={pending} className="w-full">
         {pending ? 'Redefinindo...' : 'Redefinir senha'}
-      </button>
+      </Button>
 
       {formError !== null && (
-        <button
-          type="button"
-          disabled={pending}
-          onClick={() => void submit()}
-          className="rounded-md border border-border px-4 py-2 text-sm disabled:opacity-60"
-        >
+        <Button type="button" variant="outline" disabled={pending} onClick={() => void submit()}>
           Tentar novamente
-        </button>
+        </Button>
       )}
     </form>
   );

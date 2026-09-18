@@ -1,6 +1,7 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { PageHeader } from '@/components/ui/page-header';
+import { ClinicNav } from '@/features/clinics/components/ClinicNav';
 import { ClinicSettingsForm } from '@/features/clinics/components/ClinicSettingsForm';
 import { getClinicOnServer, getClinicSettingsOnServer } from '@/features/clinics/server';
 import { ApiError } from '@/lib/api/problem';
@@ -29,15 +30,14 @@ export default async function ClinicSettingsPage({
   }
 
   return (
-    <section className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-xl font-semibold">Configurações</h1>
-        <p className="text-sm text-muted-foreground">{clinic.legal_name}</p>
-      </div>
+    <section className="flex flex-col gap-7">
+      <PageHeader
+        eyebrow={clinic.legal_name}
+        title="Ajustes da clínica"
+        description="Informações usadas na operação e apresentação da clínica."
+      />
+      <ClinicNav clinicId={clinic.id} active="settings" />
       <ClinicSettingsForm clinicId={clinic.id} role={clinic.role} initialSettings={settings} />
-      <Link href={`/clinics/${clinic.id}`} className="w-fit text-sm underline">
-        Voltar para a clínica
-      </Link>
     </section>
   );
 }
