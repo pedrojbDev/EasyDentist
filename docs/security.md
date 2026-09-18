@@ -131,7 +131,10 @@ lidos do fragmento de URL para a memória do componente, o fragmento é limpo co
 para nova tentativa). Server Components usam um cliente próprio que encaminha
 **somente** o header `Cookie` da requisição, com `cache: 'no-store'` e sem
 CSRF; nenhum outro header do usuário é repassado. A guarda de sessão é
-server-side (`GET /auth/me` + redirect) e a UI esconde ações conforme o papel,
+server-side (`GET /auth/me` + redirect) e o cliente browser **redireciona
+globalmente para o login ao receber 401** em qualquer requisição autenticada
+(a exceção é o próprio `POST /auth/login`, cujo 401 é uma credencial inválida e
+permanece tratado no formulário); a UI esconde ações conforme o papel,
 mas o backend permanece a autoridade (403/404 tratados). A validação de campo é
 feita no cliente; erros 422 da API são genéricos, e a anti-enumeração do
 backend (login e recuperação) é preservada nas mensagens.

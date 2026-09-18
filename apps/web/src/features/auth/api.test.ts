@@ -1,5 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+const { redirectToLoginMock } = vi.hoisted(() => ({ redirectToLoginMock: vi.fn() }));
+
+vi.mock('@/lib/api/redirect', () => ({ redirectToLogin: redirectToLoginMock }));
+
+import { ApiError } from '@/lib/api/problem';
+
 import {
   acceptInvitation,
   forgotPassword,
@@ -15,6 +21,7 @@ const fetchMock = vi.fn();
 afterEach(() => {
   vi.unstubAllGlobals();
   fetchMock.mockReset();
+  redirectToLoginMock.mockReset();
 });
 
 function okJson(body: unknown): Response {
@@ -42,6 +49,22 @@ describe('auth api', () => {
       JSON.stringify({ email: 'owner@example.com', password: 'senha-secreta-123' }),
     );
     expect(loginInit.headers).toMatchObject({ 'X-CSRF-Token': 'csrf-1' });
+  });
+
+  it('does not trigger the global redirect on invalid credentials', async () => {
+    fetchMock
+      .mockResolvedValueOnce(okJson({ csrf_token: 'csrf-1' }))
+      .mockResolvedValueOnce(
+        Response.json(
+          { type: 'about:blank', title: 'Não autenticado', status: 401 },
+          { status: 401, headers: { 'Content-Type': 'application/problem+json' } },
+        ),
+      );
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(login('owner@example.com', 'senha-errada-123')).rejects.toBeInstanceOf(ApiError);
+
+    expect(redirectToLoginMock).not.toHaveBeenCalled();
   });
 
   it('revokes only the current session on logout', async () => {
