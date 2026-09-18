@@ -329,3 +329,106 @@ banco descartável, o Compose completo sobe com saúde verde (db, storage, api e
 web, proxy same-origin e round-trip S3) e os 10 endpoints de Tenancy do §4
 estão implementados. RBAC e convites de equipe do Marco 1 estão concluídos;
 Playwright e hardening final entram no M1.6 e o frontend no M1.5.
+
+## Estado do M1.5.1
+
+A fundação do frontend operacional existe (ADR 0008): o contrato é gerado a
+partir do OpenAPI (`apps/api/scripts/export_openapi.py`, executável por
+`python -m scripts.export_openapi` e com `--check` para drift), versionado em
+`apps/web/src/lib/api/generated/openapi.json`, com tipos `schema.d.ts` gerados
+por `openapi-typescript` (`pnpm gen:api`); os jobs `api` e `web` do CI falham
+por drift. O acesso à API tem duas superfícies: `src/lib/api/client.ts`
+(navegador: URL relativa same-origin, cookies automáticos, `X-CSRF-Token`
+obtido de `GET /auth/csrf` antes de cada mutação, `ApiError` com
+`status/title/detail?/requestId?/retryAfter?`) e `src/lib/api/server-client.ts`
+(Server Components: `API_INTERNAL_BASE_URL`, encaminhamento explícito e
+restrito do header `Cookie`, `cache: 'no-store'`, sem CSRF em GET). O ambiente
+de testes de componente foi habilitado com jsdom e Testing Library (smoke de
+interação com o `Button`), somando 21 testes web verdes; as novas dependências
+de teste passaram pelo gate de licenças (exceções exatas para transitivas
+MIT-0/BlueOak-1.0.0/CC0-1.0 em `scripts/js-license-exceptions.json`) e pelo
+audit sem vulnerabilidades. As telas e fluxos do marco entram nos incrementos
+M1.5.2 a M1.5.6.
+
+## Estado do M1.5.2
+
+Login, guarda de sessão e seletor de clínica existem: `/login` (formulário com
+validação de campo no cliente, mensagem genérica para credenciais inválidas e
+tempo de espera no 429) redireciona para `/clinics` após o login; o grupo
+autenticado `(app)` valida a sessão no servidor (`GET /auth/me` pelo
+`server-client` + `redirect('/login')` em 401) e declara
+`dynamic = 'force-dynamic'`; o cabeçalho mostra o usuário e oferece **"Sair"**
+(`POST /auth/logout`, sessão atual) e **"Sair de todos os dispositivos"**
+(`POST /auth/logout-all`, com confirmação); `/` redireciona para `/clinics`, que
+lista as clínicas ativas com papel e situação em pt-BR e navega para
+`/clinics/{id}` (página de identidade provisória, aprofundada no M1.5.4).
+`/login` também redireciona quem já tem sessão. O gate do frontend passa a
+rodar `build` antes de `typecheck` porque o `typedRoutes` depende dos tipos de
+rota gerados pelo build (mesma ordem no CI). Os fluxos de recuperação,
+verificação e convite entram no M1.5.3.
+
+## Estado do M1.5.3
+
+Recuperação, verificação de e-mail e aceite de convite existem: `/forgot-password`
+(validação de e-mail no cliente e confirmação idêntica para qualquer endereço,
+preservando a anti-enumeração), `/reset-password`, `/verify-email` e
+`/accept-invitation` (compatíveis com os links `#token=` emitidos pela API). O
+hook `useFragmentToken` lê o token do fragmento **primeiro para o estado**,
+limpa o hash com `history.replaceState` e o mantém apenas em memória para nova
+tentativa após falha (botão "Tentar novamente" reenvia o mesmo token); fragmento
+sem token ou com outro conteúdo é ignorado, e o token nunca vai para query
+string. `/reset-password` valida 12–128 caracteres e confirmação, trata 400 como
+link inválido e oferece o login após o sucesso; `/verify-email` confirma
+automaticamente ao carregar e mantém o token para retry; `/accept-invitation`
+permite deixar a senha em branco (usuário existente apenas ativa o acesso) e,
+sem alegar a causa exata, orienta o primeiro acesso de forma genérica no 422
+(`password_required` não tem `code` estável na API — registrado no ADR 0008). O
+cabeçalho e os formulários continuam a compartilhar o cliente browser com CSRF
+por mutação. A gestão de clínica e settings entra no M1.5.4.
+
+## Estado do M1.5.4
+
+Clínica e settings são editáveis conforme a matriz: `/clinics/{id}` mostra
+identidade (razão social, slug, papel e situação) e exibe o formulário de
+`legal_name` **somente para OWNER** (validação 1–200 no cliente, confirmação de
+sucesso, 403 tratado); `/clinics/{id}/settings` mostra nome comercial, fuso
+horário, idioma e moeda em modo leitura para todos os papéis e formulário
+editável para OWNER/ADMIN, com validação local do fuso contra
+`Intl.supportedValuesOf('timeZone')` (sugestões via `datalist`) e da moeda
+`^[A-Z]{3}$`, mensagens de campo, 403/422/429 tratados e confirmação de
+sucesso. A API de feature ganhou `updateClinic`, `getSettings` e
+`updateSettings` (browser) e `getClinicSettingsOnServer` (server), todas
+tipadas pelo contrato gerado. Equipe, papéis e convites entram no M1.5.5.
+
+## Estado do M1.5.5
+
+A gestão de equipe existe: `/clinics/{id}/members` lista os vínculos em pt-BR
+(papel, situação e data de entrada; a coluna **E-mail só aparece quando a API a
+devolve**, o que depende de `memberships:read-contact` — a UI não tenta inferir
+o papel de contato), com ações espelhando a matriz: OWNER gerencia qualquer
+linha e pode atribuir os cinco papéis; ADMIN só toca em linhas que não sejam
+OWNER/ADMIN e seu seletor oferece apenas DENTIST/ASSISTANT/RECEPTIONIST; os
+demais papéis não veem ações. A troca de papel atualiza a linha com o retorno
+da API e a remoção pede confirmação, refletindo o vínculo removido; 403/404/409
+(inclusive o último OWNER) e 429 têm mensagens próprias. O formulário de convite
+(`/clinics/{id}/members`) valida o e-mail, filtra os papéis pelo papel do ator
+(OWNER: todos; ADMIN: sem OWNER/ADMIN), mostra a confirmação com a data de
+expiração (72 h) e trata 409 ("já participa"), 403, 422 e 429. As páginas usam
+o `server-client` para os dados iniciais e as mutações usam o cliente browser
+com CSRF. Sessões e o fechamento do marco entram no M1.5.6.
+
+## Estado do M1.5.6 (M1.5 concluído)
+
+O frontend operacional do Marco 1 está completo: `/sessions` lista as sessões
+do usuário com a atual marcada ("Esta sessão"), permite revogar outro
+dispositivo, encerrar a sessão atual (com confirmação e volta ao login) e
+"sair de todos os dispositivos"; sessões já revogadas em outro lugar somem da
+lista com aviso (404). O cabeçalho ganhou navegação para Clínicas e Sessões. O
+polimento fechou estados vazios (clínicas, vínculos e sessões), tabelas com
+rolagem horizontal em telas estreitas, cabeçalhos de tabela com `scope="col"` e
+um hook `useFocusFirstInvalid` compartilhado que move o foco para o primeiro
+campo inválido em todos os formulários. Com isso o M1.5 cobre login,
+recuperação, verificação, convite, seletor de clínica, clínica/settings,
+equipe/convites e sessões; os fluxos web completos em Playwright ficam no M1.6,
+junto do hardening (headers, logs estruturados, restauração de banco e
+threat model).

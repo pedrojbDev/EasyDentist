@@ -41,6 +41,41 @@
     "license": "BlueOak-1.0.0"
   },
   {
+    "package": "@csstools/color-helpers",
+    "version": "6.1.1",
+    "license": "MIT-0",
+    "reviewed_on": "2026-09-17",
+    "reason": "Transitiva de jsdom (cssstyle); MIT-0 é MIT sem atribuição, permissiva, restrita a esta versão de teste."
+  },
+  {
+    "package": "@csstools/css-syntax-patches-for-csstree",
+    "version": "1.1.14",
+    "license": "MIT-0",
+    "reviewed_on": "2026-09-17",
+    "reason": "Transitiva de jsdom (cssstyle); MIT-0 permissiva, restrita a esta versão de teste."
+  },
+  {
+    "package": "lru-cache",
+    "version": "11.5.2",
+    "license": "BlueOak-1.0.0",
+    "reviewed_on": "2026-09-17",
+    "reason": "Transitiva de jsdom/tough-cookie; BlueOak-1.0.0 é OSI-approved e permissiva, restrita a esta versão de teste."
+  },
+  {
+    "package": "mdn-data",
+    "version": "2.27.1",
+    "license": "CC0-1.0",
+    "reviewed_on": "2026-09-17",
+    "reason": "Transitiva de jsdom (css-tree); CC0-1.0 é dedicação ao domínio público, restrita a esta versão de teste."
+  },
+  {
+    "package": "type-fest",
+    "version": "4.41.0",
+    "license": "(MIT OR CC0-1.0)",
+    "reviewed_on": "2026-09-17",
+    "reason": "Transitiva de jsdom; dupla licença MIT/CC0, restrita a esta versão de teste."
+  },
+  {
     "package": "tslib",
     "version": "2.8.1",
     "license": "0BSD"

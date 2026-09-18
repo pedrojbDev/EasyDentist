@@ -18,11 +18,13 @@ jobs:
           node-version: 24.19.0
       - run: corepack enable
       - run: pnpm install --frozen-lockfile
+      - run: pnpm gen:api
+      - run: git diff --exit-code apps/web/src/lib/api/generated
       - run: pnpm lint
       - run: pnpm format:check
+      - run: pnpm build
       - run: pnpm typecheck
       - run: pnpm test
-      - run: pnpm build
       - run: pnpm run licenses
       - run: pnpm run audit
 
@@ -46,6 +48,8 @@ jobs:
       - run: docker compose -p easydentist-api-ci -f infra/docker-compose.yml up -d --wait db
       - working-directory: apps/api
         run: uv sync --locked --all-groups
+      - working-directory: apps/api
+        run: uv run python -m scripts.export_openapi --check
       - working-directory: apps/api
         run: uv run alembic upgrade head
       - working-directory: apps/api
