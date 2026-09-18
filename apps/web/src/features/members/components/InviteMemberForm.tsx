@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+import { Button } from '@/components/ui/button';
+import { Feedback } from '@/components/ui/feedback';
 import { roleLabel } from '@/features/clinics/components/ClinicList';
 import { ApiError } from '@/lib/api/problem';
 
@@ -75,10 +77,16 @@ export function InviteMemberForm({ clinicId, actorRole }: { clinicId: string; ac
     <form
       onSubmit={handleSubmit}
       noValidate
-      className="flex flex-col gap-3 rounded-lg border border-border p-4"
+      className="app-panel flex flex-col gap-4 xl:sticky xl:top-6"
     >
+      <div>
+        <h2 className="font-semibold text-foreground">Convidar pessoa</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Envie um convite e defina o papel inicial.
+        </p>
+      </div>
       <div className="flex flex-col gap-1">
-        <label htmlFor="invite-email" className="text-sm font-medium">
+        <label htmlFor="invite-email" className="app-label">
           E-mail do convidado
         </label>
         <input
@@ -89,7 +97,7 @@ export function InviteMemberForm({ clinicId, actorRole }: { clinicId: string; ac
           onChange={(event) => setEmail(event.target.value)}
           aria-invalid={fieldError !== null}
           aria-describedby={fieldError !== null ? 'invite-email-error' : undefined}
-          className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+          className="app-field"
         />
         {fieldError !== null && (
           <p id="invite-email-error" className="text-sm text-destructive">
@@ -99,7 +107,7 @@ export function InviteMemberForm({ clinicId, actorRole }: { clinicId: string; ac
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="invite-role" className="text-sm font-medium">
+        <label htmlFor="invite-role" className="app-label">
           Papel do convidado
         </label>
         <select
@@ -107,7 +115,7 @@ export function InviteMemberForm({ clinicId, actorRole }: { clinicId: string; ac
           name="invite-role"
           value={role}
           onChange={(event) => setRole(event.target.value as Role)}
-          className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+          className="app-field"
         >
           {options.map((option) => (
             <option key={option} value={option}>
@@ -117,26 +125,18 @@ export function InviteMemberForm({ clinicId, actorRole }: { clinicId: string; ac
         </select>
       </div>
 
-      {formError !== null && (
-        <p role="alert" className="text-sm text-destructive">
-          {formError}
-        </p>
-      )}
+      {formError !== null && <Feedback tone="error">{formError}</Feedback>}
 
       {sentTo !== null && (
-        <p role="status" className="text-sm">
+        <Feedback tone="success">
           Convite enviado para {sentTo.email}. O link expira em{' '}
           {expiryFormatter.format(new Date(sentTo.expiresAt))}.
-        </p>
+        </Feedback>
       )}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="w-fit rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
-      >
+      <Button type="submit" disabled={pending} className="w-full xl:w-fit">
         {pending ? 'Enviando...' : 'Enviar convite'}
-      </button>
+      </Button>
     </form>
   );
 }

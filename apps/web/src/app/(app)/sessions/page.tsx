@@ -7,14 +7,14 @@ export default async function SessionsPage() {
   const sessions = await listSessionsOnServer();
 
   return (
-    <section className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-xl font-semibold">Sessões</h1>
-        <p className="text-sm text-muted-foreground">
-          Dispositivos com acesso à sua conta. Encerre o que não reconhecer.
-        </p>
-      </div>
+    <section className="flex flex-col gap-7">
+      <PageHeader
+        eyebrow="Segurança da conta"
+        title="Sessões"
+        description="Revise os acessos à sua conta e encerre o que não reconhecer."
+      />
       <SessionsTable sessions={sessions} />
     </section>
   );
 }
+import { PageHeader } from '@/components/ui/page-header';

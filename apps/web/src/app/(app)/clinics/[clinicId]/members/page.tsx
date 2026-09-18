@@ -1,6 +1,7 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { PageHeader } from '@/components/ui/page-header';
+import { ClinicNav } from '@/features/clinics/components/ClinicNav';
 import { getClinicOnServer } from '@/features/clinics/server';
 import { InviteMemberForm } from '@/features/members/components/InviteMemberForm';
 import { MembersTable } from '@/features/members/components/MembersTable';
@@ -27,16 +28,17 @@ export default async function MembersPage({ params }: { params: Promise<{ clinic
   }
 
   return (
-    <section className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-xl font-semibold">Equipe</h1>
-        <p className="text-sm text-muted-foreground">{clinic.legal_name}</p>
+    <section className="flex flex-col gap-7">
+      <PageHeader
+        eyebrow={clinic.legal_name}
+        title="Equipe"
+        description="Gerencie os vínculos, papéis e convites desta clínica."
+      />
+      <ClinicNav clinicId={clinic.id} active="members" />
+      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_20rem]">
+        <MembersTable clinicId={clinic.id} actorRole={clinic.role} members={members} />
+        <InviteMemberForm clinicId={clinic.id} actorRole={clinic.role} />
       </div>
-      <InviteMemberForm clinicId={clinic.id} actorRole={clinic.role} />
-      <MembersTable clinicId={clinic.id} actorRole={clinic.role} members={members} />
-      <Link href={`/clinics/${clinic.id}`} className="w-fit text-sm underline">
-        Voltar para a clínica
-      </Link>
     </section>
   );
 }
