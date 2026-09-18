@@ -5,7 +5,12 @@ export type User = components['schemas']['UserResponse'];
 export type LoginResponse = components['schemas']['LoginResponse'];
 
 export async function login(email: string, password: string): Promise<LoginResponse> {
-  return apiMutation<LoginResponse>('POST', '/api/v1/auth/login', { email, password });
+  return apiMutation<LoginResponse>(
+    'POST',
+    '/api/v1/auth/login',
+    { email, password },
+    { skipAuthRedirect: true },
+  );
 }
 
 export async function logout(): Promise<void> {

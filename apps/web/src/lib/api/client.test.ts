@@ -1,5 +1,9 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+const { redirectToLoginMock } = vi.hoisted(() => ({ redirectToLoginMock: vi.fn() }));
+
+vi.mock('./redirect', () => ({ redirectToLogin: redirectToLoginMock }));
+
 import { ApiError } from './problem';
 
 import { apiFetch, apiFetchVoid, apiMutation, csrfHeaders } from './client';
@@ -13,6 +17,7 @@ function jsonResponse(body: unknown, status = 200): Response {
 afterEach(() => {
   vi.unstubAllGlobals();
   fetchMock.mockReset();
+  redirectToLoginMock.mockReset();
 });
 
 describe('apiFetch', () => {
@@ -65,6 +70,49 @@ describe('apiFetch', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     await expect(apiFetch('/api/v1/auth/me')).rejects.toBeInstanceOf(TypeError);
+  });
+
+  it('redirects to the login page when an authenticated request returns 401', async () => {
+    fetchMock.mockResolvedValueOnce(
+      Response.json(
+        { type: 'about:blank', title: 'Não autenticado', status: 401 },
+        { status: 401, headers: { 'Content-Type': 'application/problem+json' } },
+      ),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(apiFetch('/api/v1/clinics/c1/settings')).rejects.toBeInstanceOf(ApiError);
+    expect(redirectToLoginMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not redirect when the request skips the auth redirect', async () => {
+    fetchMock.mockResolvedValueOnce(
+      Response.json(
+        { type: 'about:blank', title: 'Não autenticado', status: 401 },
+        { status: 401, headers: { 'Content-Type': 'application/problem+json' } },
+      ),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(
+      apiFetch('/api/v1/auth/login', { method: 'POST', json: {}, skipAuthRedirect: true }),
+    ).rejects.toBeInstanceOf(ApiError);
+    expect(redirectToLoginMock).not.toHaveBeenCalled();
+  });
+
+  it('redirects to the login page when a mutation returns 401', async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse({ csrf_token: 'csrf-1' }))
+      .mockResolvedValueOnce(
+        Response.json(
+          { type: 'about:blank', title: 'Não autenticado', status: 401 },
+          { status: 401, headers: { 'Content-Type': 'application/problem+json' } },
+        ),
+      );
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(apiMutation('POST', '/api/v1/auth/logout')).rejects.toBeInstanceOf(ApiError);
+    expect(redirectToLoginMock).toHaveBeenCalledTimes(1);
   });
 });
 
