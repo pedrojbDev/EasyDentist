@@ -13,7 +13,7 @@ from app.auth.settings import AuthSettings
 from app.clinics.routers import router as clinics_router
 from app.core.database import DatabaseSettings, create_database_engine, create_session_factory
 from app.platform.health import router as platform_router
-from app.platform.middleware import RequestIdMiddleware
+from app.platform.middleware import RequestLoggingMiddleware
 from app.platform.problems import register_problem_handlers
 from app.platform.security_headers import SecurityHeadersMiddleware, is_production_environment
 
@@ -34,7 +34,7 @@ def create_app() -> FastAPI:
             await engine.dispose()
 
     app = FastAPI(title="EasyDentist API", version="0.1.0", lifespan=lifespan)
-    app.add_middleware(RequestIdMiddleware)
+    app.add_middleware(RequestLoggingMiddleware)
     app.add_middleware(SecurityHeadersMiddleware, production=is_production_environment())
     register_problem_handlers(app)
     app.include_router(platform_router)

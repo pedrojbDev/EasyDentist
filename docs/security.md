@@ -176,10 +176,14 @@ conexões, fontes e formulários restritos à mesma origem, imagens `data:`
 permitidas e rewrite `/api/v1` isento para preservar os headers da API); HSTS
 somente em produção. Todas as rotas HTML são renderizadas dinamicamente para
 que o nonce alcance os scripts gerados pelo Next, inclusive a página 404
-customizada, e o `X-Powered-By` foi removido. Logs de API e web são JSONL com allowlist — sem corpo,
-cookie, token, senha, header de autorização, e-mail, IP bruto ou query string —
-correlacionados por request ID, com access log textual do Uvicorn desativado e
-metadata de auditoria sanitizada por allowlist de evento. O gate
+customizada, e o `X-Powered-By` foi removido. Logs de API e web são JSONL com
+allowlist — sem corpo, cookie, token, senha, header de autorização, e-mail, IP
+bruto ou query string — correlacionados por request ID (a web gera
+`x-request-id`, o SSR o encaminha e a API o reutiliza quando é um UUID válido),
+com access log textual do Uvicorn desativado (`--no-access-log`), exceções
+reduzidas a `error_type` (sem mensagem ou traceback) e metadata de auditoria
+sanitizada por allowlist de evento (campos desconhecidos são descartados). Os
+detalhes de leitura estão em `docs/operations.md`. O gate
 `scripts/verify-secrets.sh` varre arquivos versionados por padrões explícitos e
 produção rejeita o segredo padrão de desenvolvimento. O runbook operacional e a
 prova de restauração estão em `docs/operations.md` e
