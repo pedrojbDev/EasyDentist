@@ -45,6 +45,23 @@ describe('DocumentUploadForm', () => {
     expect(screen.getByText(/Formatos aceitos: PDF, JPEG e PNG/)).toBeTruthy();
   });
 
+  it('keeps the native input accessible behind the styled pt-BR label', () => {
+    render(
+      <DocumentUploadForm
+        clinicId="c1"
+        patientId="p1"
+        categories={['CLINICAL']}
+        onUploaded={vi.fn()}
+      />,
+    );
+
+    const input = screen.getByLabelText('Arquivo') as HTMLInputElement;
+    expect(input.type).toBe('file');
+    expect(input.classList.contains('sr-only')).toBe(true);
+    expect(screen.getByText('Selecionar arquivo')).toBeTruthy();
+    expect(screen.getByText('Nenhum arquivo selecionado.')).toBeTruthy();
+  });
+
   it('blocks files over ten megabytes with client-side feedback', async () => {
     render(
       <DocumentUploadForm
@@ -58,8 +75,10 @@ describe('DocumentUploadForm', () => {
     await userEvent.upload(screen.getByLabelText('Arquivo'), pickFile(11 * 1024 * 1024));
 
     expect((await screen.findByRole('alert')).textContent).toContain(
-      'O arquivo tem 11 MB e excede o limite de 10 MB.',
+      'O arquivo excede o limite de 10 MB.',
     );
+    expect(screen.getByText('laudo.pdf · 11 MB')).toBeTruthy();
+    expect(screen.getByText('Selecionar arquivo')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Enviar documento' })).toHaveProperty(
       'disabled',
       true,

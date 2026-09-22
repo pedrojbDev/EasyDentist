@@ -8,12 +8,10 @@ describe('fileSizeError', () => {
     expect(fileSizeError({ size: MAX_DOCUMENT_BYTES })).toBeNull();
   });
 
-  it('reports the formatted size when the file exceeds the limit', () => {
+  it('reports the limit without echoing a rounded size that contradicts it', () => {
     expect(fileSizeError({ size: MAX_DOCUMENT_BYTES + 1 })).toBe(
-      'O arquivo tem 10 MB e excede o limite de 10 MB.',
+      'O arquivo excede o limite de 10 MB.',
     );
-    expect(fileSizeError({ size: 12 * 1024 * 1024 })).toBe(
-      'O arquivo tem 12 MB e excede o limite de 10 MB.',
-    );
+    expect(fileSizeError({ size: 12 * 1024 * 1024 })).toBe('O arquivo excede o limite de 10 MB.');
   });
 });

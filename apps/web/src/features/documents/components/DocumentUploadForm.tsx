@@ -1,6 +1,6 @@
 'use client';
 
-import { Upload } from 'lucide-react';
+import { Paperclip, Upload } from 'lucide-react';
 import { useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -120,29 +120,44 @@ export function DocumentUploadForm({
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="document-file" className="app-label">
+        <span id="document-file-label" className="app-label">
           Arquivo
-        </label>
-        <input
-          ref={inputRef}
-          id="document-file"
-          name="document-file"
-          type="file"
-          accept={ACCEPTED_DOCUMENT_TYPES}
-          onChange={(event) => {
-            setFile(event.target.files?.[0] ?? null);
-            setError(null);
-            setMessage(null);
-          }}
-          className="app-field"
-        />
-        {file !== null && (
+        </span>
+        <div className="flex flex-wrap items-center gap-3">
+          <input
+            ref={inputRef}
+            id="document-file"
+            name="document-file"
+            type="file"
+            accept={ACCEPTED_DOCUMENT_TYPES}
+            aria-labelledby="document-file-label"
+            aria-describedby="document-file-hint"
+            onChange={(event) => {
+              setFile(event.target.files?.[0] ?? null);
+              setError(null);
+              setMessage(null);
+            }}
+            className="peer sr-only"
+          />
+          <Button asChild variant="outline" size="sm">
+            <label
+              htmlFor="document-file"
+              className="cursor-pointer peer-focus-visible:border-ring peer-focus-visible:ring-3 peer-focus-visible:ring-ring/30"
+            >
+              <Paperclip aria-hidden="true" />
+              Selecionar arquivo
+            </label>
+          </Button>
           <p className="text-sm text-muted-foreground">
-            {file.name} · {formatFileSize(file.size)}
+            {file === null
+              ? 'Nenhum arquivo selecionado.'
+              : `${file.name} · ${formatFileSize(file.size)}`}
           </p>
-        )}
+        </div>
         {sizeError !== null && <Feedback tone="error">{sizeError}</Feedback>}
-        <p className="text-xs text-muted-foreground">{DOCUMENT_FORMAT_HINT}</p>
+        <p id="document-file-hint" className="text-xs text-muted-foreground">
+          {DOCUMENT_FORMAT_HINT}
+        </p>
       </div>
 
       <Button type="submit" size="sm" disabled={!canSubmit} className="w-fit">

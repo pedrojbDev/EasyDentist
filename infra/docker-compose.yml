@@ -79,6 +79,11 @@ services:
       S3_ENDPOINT_URL: http://storage:8333
       S3_ACCESS_KEY: ${S3_ACCESS_KEY:-easydentist}
       S3_SECRET_KEY: ${S3_SECRET_KEY:-easydentist-local-only}
+      S3_BUCKET: ${S3_BUCKET:-easydentist}
+      S3_REGION: ${S3_REGION:-us-east-1}
+      # E2E runs point the API at e2e/{run_id}/ so the teardown can remove
+      # exactly what the run created; empty means "bucket root" in production.
+      S3_KEY_PREFIX: ${S3_KEY_PREFIX:-}
     ports:
       - '127.0.0.1:8000:8000'
     depends_on:
@@ -137,8 +142,17 @@ services:
       MIGRATION_DATABASE_URL: ${MIGRATION_DATABASE_URL:-postgresql+asyncpg://${MIGRATION_DB_USER:-easydentist_migrator}:${MIGRATION_DB_PASSWORD:-easydentist-migrator-local-only}@db:5432/${POSTGRES_DB:-easydentist}}
       APP_ENV: development
       AUTH_SECRET: ${AUTH_SECRET:-easydentist-development-secret-not-for-production}
+      # --cleanup removes the run objects from the same private bucket the API
+      # writes to, using the internal endpoint.
+      S3_ENDPOINT_URL: http://storage:8333
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-easydentist}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-easydentist-local-only}
+      S3_BUCKET: ${S3_BUCKET:-easydentist}
+      S3_REGION: ${S3_REGION:-us-east-1}
     depends_on:
       db:
+        condition: service_healthy
+      storage:
         condition: service_healthy
     command: [python, -m, scripts.seed_e2e]
     restart: no

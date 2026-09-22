@@ -6,18 +6,18 @@ e as decisões do hardening em `docs/adr/0009-hardening-and-operations.md`.
 
 ## Estado das afirmações
 
-| Afirmação                                                                                                              | Estado                                                                                                                                                                        |
-| ---------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Hash de credenciais (Argon2id), sessões opacas, CSRF, rate limiting, tokens de ação, provisioning                      | Implementado no M1.3 e provado em `tests/integration/test_auth_security_matrix.py` e `test_auth_redaction.py`                                                                 |
-| RLS fail-closed, contexto transacional, roles sem `BYPASSRLS`, isolamento por tenant                                   | Implementado no M1.2/M1.4 e provado em `test_tenant_isolation.py`, `test_raw_sql_isolation.py`, `test_rls_fail_closed.py`, `test_pool_tenant_leak.py` e `test_rbac_matrix.py` |
-| Frontend same-origin com guarda de sessão e token só em memória                                                        | Implementado no M1.5 (ADR 0008) e provado em `use-fragment-token.test.tsx`                                                                                                    |
-| Headers de segurança da API e da web com CSP nonce bloqueante                                                          | **Provado no M1.6.3** (`test_security_headers.py`, `security-headers.test.ts` e fluxos Playwright)                                                                            |
-| Logs JSONL com allowlist e redaction sem dados sensíveis                                                               | **Provado no M1.6.4** (`test_structured_logging.py`, `test_logging_redaction.py`, `server-logging.test.ts`)                                                                   |
-| Backup `pg_dump -Fc` restaurável em banco limpo com schema, grants, policies e RLS                                     | **Provado no M1.6.5** (`scripts/verify-backup-restore.sh`)                                                                                                                    |
-| Ausência de secrets versionados e de dependências vulneráveis                                                          | **Provado no M1.6.6** (`scripts/verify-secrets.sh`, `pnpm audit`, `pip-audit`, licenças)                                                                                      |
-| Critério final cross-tenant (duas clínicas, API/SSR/rota/SQL sob role runtime)                                         | **Provado no M1.6.2/M1.6.6** (`isolation.spec.ts`, `test_m16_isolation_gate.py`)                                                                                              |
-| Contrato de segurança do M2 (pacientes, anamnese, documentos, storage privado)                                         | **Contratado no M2.1** (ADR 0010); implementação e prova nos M2.2 a M2.6                                                                                                      |
-| Storage gerenciado, SMTP real, retenção de backups, criptografia em repouso, gestão externa de secrets e monitoramento | **Fora do escopo de produção** — pré-requisitos operacionais listados em `docs/operations.md`                                                                                 |
+| Afirmação                                                                                                                                                          | Estado                                                                                                                                                                        |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Hash de credenciais (Argon2id), sessões opacas, CSRF, rate limiting, tokens de ação, provisioning                                                                  | Implementado no M1.3 e provado em `tests/integration/test_auth_security_matrix.py` e `test_auth_redaction.py`                                                                 |
+| RLS fail-closed, contexto transacional, roles sem `BYPASSRLS`, isolamento por tenant                                                                               | Implementado no M1.2/M1.4 e provado em `test_tenant_isolation.py`, `test_raw_sql_isolation.py`, `test_rls_fail_closed.py`, `test_pool_tenant_leak.py` e `test_rbac_matrix.py` |
+| Frontend same-origin com guarda de sessão e token só em memória                                                                                                    | Implementado no M1.5 (ADR 0008) e provado em `use-fragment-token.test.tsx`                                                                                                    |
+| Headers de segurança da API e da web com CSP nonce bloqueante                                                                                                      | **Provado no M1.6.3** (`test_security_headers.py`, `security-headers.test.ts` e fluxos Playwright)                                                                            |
+| Logs JSONL com allowlist e redaction sem dados sensíveis                                                                                                           | **Provado no M1.6.4** (`test_structured_logging.py`, `test_logging_redaction.py`, `server-logging.test.ts`)                                                                   |
+| Backup `pg_dump -Fc` restaurável em banco limpo com schema, grants, policies e RLS                                                                                 | **Provado no M1.6.5** (`scripts/verify-backup-restore.sh`)                                                                                                                    |
+| Ausência de secrets versionados e de dependências vulneráveis                                                                                                      | **Provado no M1.6.6** (`scripts/verify-secrets.sh`, `pnpm audit`, `pip-audit`, licenças)                                                                                      |
+| Critério final cross-tenant (duas clínicas, API/SSR/rota/SQL sob role runtime)                                                                                     | **Provado no M1.6.2/M1.6.6** (`isolation.spec.ts`, `test_m16_isolation_gate.py`)                                                                                              |
+| Contrato de segurança do M2 (pacientes, anamnese, documentos, storage privado)                                                                                     | **Provado no M2.6** (ADR 0010; RBAC, isolamento, redaction, E2E e limpeza de `e2e/{run_id}/`)                                                                                 |
+| Storage gerenciado, SMTP real, retenção/criptografia de backups, antimalware de uploads, ciência/assinatura do paciente, gestão externa de secrets e monitoramento | **Fora do escopo de produção** — pré-requisitos operacionais listados em `docs/operations.md`                                                                                 |
 
 ## Autenticação (M1.3)
 
@@ -203,9 +203,9 @@ Compose (`pnpm e2e`), incluindo login, recuperação por Mailpit, verificação,
 convite, seletor de clínica, settings, equipe, sessões e o critério cross-tenant
 com duas clínicas (`workers: 1` e dados sintéticos removidos no teardown).
 
-## Pacientes, anamnese e documentos (M2.1, ADR 0010)
+## Pacientes, anamnese e documentos (M2.2 a M2.6, ADR 0010)
 
-**Contratado no M2.1; implementado e provado nos M2.2 a M2.6.** O contrato fixa:
+**Implementado e provado nos M2.2 a M2.6.** O contrato fixa:
 
 - **Isolamento.** `professional_profiles` é global e pertence ao usuário: RLS
   por proprietário (`user_id = app.current_user_id`), sem `clinic_id`, com
@@ -238,6 +238,24 @@ com duas clínicas (`workers: 1` e dados sintéticos removidos no teardown).
 - **Natureza da conclusão.** Concluir a anamnese não é assinatura ICP-Brasil,
   não usa certificado e não substitui a ciência ou assinatura do paciente; a UI
   não pode rotular a operação como "assinatura".
+
+A prova consolidada do marco está em
+`tests/integration/test_m2_rbac_matrix.py` (todos os papéis × todos os
+endpoints novos, positivo/negativo e `default deny`, com recusas que não deixam
+linha no banco), `tests/integration/test_m2_isolation_gate.py` (cross-tenant
+com IDs válidos da outra clínica na API, nos repositories, em SQL cru sob a role
+runtime e nas chaves de documentos — a autorização do download acontece antes de
+qualquer I/O —, além da redaction de CPF, respostas, nome de arquivo, conteúdo e
+chave S3 em logs, Problem Details e metadata de auditoria) e nos specs
+Playwright `patients.spec.ts`, `anamnesis.spec.ts` e `documents.spec.ts`
+(round-trip de documento com mesmo tamanho e SHA-256, negação anônima e por
+categoria). O storage privado é isolado por run no harness E2E via
+`S3_KEY_PREFIX=e2e/{run_id}/`; o teardown remove apenas esse prefixo, confirma
+que nenhum objeto permaneceu e então apaga as linhas do run (desabilitando os
+triggers de imutabilidade somente para a manutenção). Permanecem como
+pré-requisitos de produção, fora do M2: storage gerenciado com criptografia em
+repouso e backup, verificação antimalware dos uploads e o processo de ciência ou
+assinatura do paciente.
 
 ## Operação local
 
