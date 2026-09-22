@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Feedback } from '@/components/ui/feedback';
-import { roleLabel } from '@/features/clinics/components/ClinicList';
+import { roleLabel } from '@/features/clinics/labels';
 import { ApiError } from '@/lib/api/problem';
 
 import { inviteMember, type Role } from '../api';
