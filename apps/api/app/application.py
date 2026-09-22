@@ -13,6 +13,7 @@ from app.auth.routers import router as auth_router
 from app.auth.settings import AuthSettings
 from app.clinics.routers import router as clinics_router
 from app.core.database import DatabaseSettings, create_database_engine, create_session_factory
+from app.patients.routers import router as patients_router
 from app.platform.health import router as platform_router
 from app.platform.middleware import RequestLoggingMiddleware
 from app.platform.problems import register_problem_handlers
@@ -59,4 +60,5 @@ def create_app() -> FastAPI:
     app.include_router(auth_router)
     app.include_router(invitations_router)
     app.include_router(clinics_router)
+    app.include_router(patients_router)
     return app

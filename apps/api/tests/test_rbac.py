@@ -17,6 +17,10 @@ READ_PERMISSIONS = frozenset(
     {Permission.CLINIC_READ, Permission.SETTINGS_READ, Permission.MEMBERSHIPS_READ}
 )
 
+PATIENT_READ = frozenset({Permission.PATIENTS_READ})
+PATIENT_REGISTRATION = frozenset({Permission.PATIENTS_CREATE, Permission.PATIENTS_UPDATE})
+CLINICAL_READ = frozenset({Permission.PATIENT_ALERTS_READ})
+
 EXPECTED: dict[Role, frozenset[Permission]] = {
     Role.OWNER: frozenset(Permission),
     Role.ADMIN: READ_PERMISSIONS
@@ -26,10 +30,16 @@ EXPECTED: dict[Role, frozenset[Permission]] = {
         Permission.MEMBERSHIPS_MANAGE_ROLE,
         Permission.MEMBERSHIPS_REMOVE,
         Permission.INVITATIONS_CREATE,
-    },
-    Role.DENTIST: READ_PERMISSIONS,
-    Role.ASSISTANT: READ_PERMISSIONS,
-    Role.RECEPTIONIST: READ_PERMISSIONS,
+    }
+    | PATIENT_READ
+    | PATIENT_REGISTRATION
+    | {Permission.PATIENTS_ARCHIVE},
+    Role.DENTIST: READ_PERMISSIONS
+    | PATIENT_READ
+    | CLINICAL_READ
+    | {Permission.PATIENT_ALERTS_MANAGE},
+    Role.ASSISTANT: READ_PERMISSIONS | PATIENT_READ | CLINICAL_READ,
+    Role.RECEPTIONIST: READ_PERMISSIONS | PATIENT_READ | PATIENT_REGISTRATION,
 }
 
 
@@ -65,6 +75,20 @@ def test_undeclared_permission_is_denied_for_every_role() -> None:
     undeclared = cast(Permission, "clinic:delete")
     for role in Role:
         assert role_allows(role, undeclared) is False
+
+
+def test_clinical_permissions_stay_away_from_administrative_roles() -> None:
+    clinical = {
+        Permission.PATIENT_ALERTS_READ,
+        Permission.PATIENT_ALERTS_MANAGE,
+    }
+    for role in (Role.ADMIN, Role.RECEPTIONIST):
+        assert ROLE_PERMISSIONS[role].isdisjoint(clinical)
+
+
+def test_patients_archive_is_owner_or_admin_only() -> None:
+    for role in (Role.DENTIST, Role.ASSISTANT, Role.RECEPTIONIST):
+        assert Permission.PATIENTS_ARCHIVE not in ROLE_PERMISSIONS[role]
 
 
 def test_unknown_role_is_denied() -> None:

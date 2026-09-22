@@ -1,10 +1,11 @@
-import { Building2, Settings, Users } from 'lucide-react';
+import { Building2, Settings, UserRound, Users } from 'lucide-react';
 import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
 
 const items = [
   { key: 'overview', label: 'Visão geral', suffix: '', icon: Building2 },
+  { key: 'patients', label: 'Pacientes', suffix: '/patients', icon: UserRound },
   { key: 'settings', label: 'Ajustes', suffix: '/settings', icon: Settings },
   { key: 'members', label: 'Equipe', suffix: '/members', icon: Users },
 ] as const;

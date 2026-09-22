@@ -46,6 +46,7 @@ class Patient(Base):
             unique=True,
             postgresql_where=text("cpf IS NOT NULL"),
         ),
+        Index("ix_patients_clinic_id_status_full_name", "clinic_id", "status", "full_name"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -95,6 +96,12 @@ class PatientAlert(Base):
             "(status = 'ACTIVE' AND resolved_at IS NULL) "
             "OR (status = 'RESOLVED' AND resolved_at IS NOT NULL)",
             name="resolved_at",
+        ),
+        Index(
+            "ix_patient_alerts_clinic_id_patient_id_created_at",
+            "clinic_id",
+            "patient_id",
+            "created_at",
         ),
     )
 

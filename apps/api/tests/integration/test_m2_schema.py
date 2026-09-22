@@ -83,6 +83,20 @@ async def test_partial_unique_indexes_are_defined(admin_connection: asyncpg.Conn
 
 
 @pytest.mark.anyio
+async def test_patient_supporting_indexes_are_defined(admin_connection: asyncpg.Connection) -> None:
+    names = [
+        "ix_patients_clinic_id_status_full_name",
+        "ix_patient_alerts_clinic_id_patient_id_created_at",
+    ]
+    records = await admin_connection.fetch(
+        "SELECT indexname FROM pg_indexes WHERE schemaname = 'app' AND indexname = ANY($1::text[])",
+        names,
+    )
+
+    assert {record["indexname"] for record in records} == set(names)
+
+
+@pytest.mark.anyio
 async def test_app_role_grants_are_minimal(admin_connection: asyncpg.Connection) -> None:
     for table in M2_TABLES:
         for privilege in ("SELECT", "INSERT", "UPDATE"):
@@ -119,6 +133,7 @@ def test_m2_migration_chain_links_to_0008_and_declares_downgrades() -> None:
             "0009_m2_patient_foundation.py",
             "0010_m2_anamnesis.py",
             "0011_m2_documents.py",
+            "0012_m2_patient_indexes.py",
         )
     ]
 
@@ -126,11 +141,13 @@ def test_m2_migration_chain_links_to_0008_and_declares_downgrades() -> None:
         "0009_m2_patient_foundation",
         "0010_m2_anamnesis",
         "0011_m2_documents",
+        "0012_m2_patient_indexes",
     ]
     assert [module.down_revision for module in modules] == [
         "0008_membership_management",
         "0009_m2_patient_foundation",
         "0010_m2_anamnesis",
+        "0011_m2_documents",
     ]
     for module in modules:
         assert callable(module.downgrade)
