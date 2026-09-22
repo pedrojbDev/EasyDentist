@@ -6,6 +6,26 @@ from datetime import UTC, date, datetime, timedelta
 
 import asyncpg
 
+from app.anamnesis.templates.cfo_2026_v1 import SECTIONS
+
+
+def build_complete_anamnesis_payload(*, text_prefix: str = "Resposta") -> dict[str, object]:
+    """Build a catalog-complete payload accepted by finalization."""
+
+    payload: dict[str, object] = {}
+    for section in SECTIONS:
+        answers: dict[str, object] = {}
+        for question in section.questions:
+            short = question.id.split(".", 1)[1]
+            if question.answer_type == "TEXT":
+                answers[short] = {"text": f"{text_prefix} {question.id}"}
+            elif question.answer_type == "YES_NO_UNKNOWN":
+                answers[short] = {"value": "NO"}
+            else:
+                answers[short] = {"value": question.options[0].id}
+        payload[section.id] = answers
+    return payload
+
 
 async def insert_user(connection: asyncpg.Connection, email: str) -> uuid.UUID:
     return await connection.fetchval(
@@ -186,6 +206,26 @@ async def insert_anamnesis(
         author_cro_state,
         finalized_at,
     )
+
+
+async def delete_anamneses_for_clinics(
+    connection: asyncpg.Connection, clinic_ids: list[uuid.UUID]
+) -> None:
+    """Remove test anamneses, including FINAL rows, for fixture teardown.
+
+    Final versions are immutable by design, so cleanup disables the trigger for
+    the migration role just for this maintenance statement and restores it.
+    """
+
+    await connection.execute("ALTER TABLE app.anamneses DISABLE TRIGGER anamneses_final_immutable")
+    try:
+        await connection.execute(
+            "DELETE FROM app.anamneses WHERE clinic_id = ANY($1::uuid[])", clinic_ids
+        )
+    finally:
+        await connection.execute(
+            "ALTER TABLE app.anamneses ENABLE TRIGGER anamneses_final_immutable"
+        )
 
 
 async def insert_patient_document(

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 
 import { Feedback } from '@/components/ui/feedback';
 import { PageHeader } from '@/components/ui/page-header';
+import { anamnesisCapabilities } from '@/features/anamnesis/permissions';
 import { ClinicNav } from '@/features/clinics/components/ClinicNav';
 import { getClinicOnServer } from '@/features/clinics/server';
 import { PatientForm } from '@/features/patients/components/PatientForm';
@@ -42,7 +43,12 @@ export default async function EditPatientPage({
         description="Atualize os dados cadastrais. Alterações ficam registradas na auditoria da clínica."
       />
       <ClinicNav clinicId={clinic.id} active="patients" />
-      <PatientSectionNav clinicId={clinic.id} patientId={patient.id} active="record" />
+      <PatientSectionNav
+        clinicId={clinic.id}
+        patientId={patient.id}
+        active="record"
+        canReadAnamnesis={anamnesisCapabilities(clinic.role).canRead}
+      />
       {capabilities.canUpdate ? (
         <PatientForm clinicId={clinic.id} mode="edit" patient={patient} />
       ) : (

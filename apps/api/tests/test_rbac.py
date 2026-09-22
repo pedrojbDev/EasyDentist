@@ -19,7 +19,14 @@ READ_PERMISSIONS = frozenset(
 
 PATIENT_READ = frozenset({Permission.PATIENTS_READ})
 PATIENT_REGISTRATION = frozenset({Permission.PATIENTS_CREATE, Permission.PATIENTS_UPDATE})
-CLINICAL_READ = frozenset({Permission.PATIENT_ALERTS_READ})
+CLINICAL_READ = frozenset({Permission.PATIENT_ALERTS_READ, Permission.ANAMNESIS_READ})
+ANAMNESIS_WRITE = frozenset(
+    {
+        Permission.ANAMNESIS_CREATE,
+        Permission.ANAMNESIS_UPDATE,
+        Permission.ANAMNESIS_FINALIZE,
+    }
+)
 
 EXPECTED: dict[Role, frozenset[Permission]] = {
     Role.OWNER: frozenset(Permission),
@@ -37,6 +44,7 @@ EXPECTED: dict[Role, frozenset[Permission]] = {
     Role.DENTIST: READ_PERMISSIONS
     | PATIENT_READ
     | CLINICAL_READ
+    | ANAMNESIS_WRITE
     | {Permission.PATIENT_ALERTS_MANAGE},
     Role.ASSISTANT: READ_PERMISSIONS | PATIENT_READ | CLINICAL_READ,
     Role.RECEPTIONIST: READ_PERMISSIONS | PATIENT_READ | PATIENT_REGISTRATION,
@@ -81,9 +89,20 @@ def test_clinical_permissions_stay_away_from_administrative_roles() -> None:
     clinical = {
         Permission.PATIENT_ALERTS_READ,
         Permission.PATIENT_ALERTS_MANAGE,
+        Permission.ANAMNESIS_READ,
+        Permission.ANAMNESIS_CREATE,
+        Permission.ANAMNESIS_UPDATE,
+        Permission.ANAMNESIS_FINALIZE,
     }
     for role in (Role.ADMIN, Role.RECEPTIONIST):
         assert ROLE_PERMISSIONS[role].isdisjoint(clinical)
+
+
+def test_assistant_reads_but_never_writes_clinical_records() -> None:
+    assistant = ROLE_PERMISSIONS[Role.ASSISTANT]
+    assert Permission.ANAMNESIS_READ in assistant
+    assert assistant.isdisjoint(ANAMNESIS_WRITE)
+    assert assistant.isdisjoint({Permission.PATIENT_ALERTS_MANAGE})
 
 
 def test_patients_archive_is_owner_or_admin_only() -> None:

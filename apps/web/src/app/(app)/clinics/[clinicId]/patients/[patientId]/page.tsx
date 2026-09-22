@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
+import { anamnesisCapabilities } from '@/features/anamnesis/permissions';
 import { ClinicNav } from '@/features/clinics/components/ClinicNav';
 import { getClinicOnServer } from '@/features/clinics/server';
 import { formatCpf } from '@/features/patients/cpf';
@@ -78,7 +79,12 @@ export default async function PatientDetailPage({
         }
       />
       <ClinicNav clinicId={clinic.id} active="patients" />
-      <PatientSectionNav clinicId={clinic.id} patientId={patient.id} active="record" />
+      <PatientSectionNav
+        clinicId={clinic.id}
+        patientId={patient.id}
+        active="record"
+        canReadAnamnesis={anamnesisCapabilities(clinic.role).canRead}
+      />
 
       <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(19rem,0.6fr)]">
         <PatientDetails patient={patient} />

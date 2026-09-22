@@ -19,29 +19,38 @@ const items: {
     icon: IdCard,
     href: (clinicId, patientId) => `/clinics/${clinicId}/patients/${patientId}`,
   },
-  { key: 'anamnesis', label: 'Anamnese', icon: ClipboardList },
+  {
+    key: 'anamnesis',
+    label: 'Anamnese',
+    icon: ClipboardList,
+    href: (clinicId, patientId) => `/clinics/${clinicId}/patients/${patientId}/anamnesis`,
+  },
   { key: 'documents', label: 'Documentos', icon: FileText },
 ];
 
 /**
- * Local navigation of the patient record. Anamnese and documentos are the
- * extension slots that M2.4/M2.5 turn into real links.
+ * Local navigation of the patient record. Anamnese is a real section; documents
+ * is the M2.5 extension slot and administrative roles never see clinical tabs.
  */
 export function PatientSectionNav({
   clinicId,
   patientId,
   active,
+  canReadAnamnesis,
 }: {
   clinicId: string;
   patientId: string;
   active: SectionKey;
+  canReadAnamnesis: boolean;
 }) {
+  const visible = items.filter((item) => item.key !== 'anamnesis' || canReadAnamnesis);
+
   return (
     <nav
       aria-label="Seções do paciente"
       className="flex gap-1 overflow-x-auto border-b border-border"
     >
-      {items.map((item) => {
+      {visible.map((item) => {
         const Icon = item.icon;
         const selected = item.key === active;
         const className = cn(

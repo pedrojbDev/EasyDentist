@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from starlette.types import ASGIApp
 
 from app import models as _models  # noqa: F401
+from app.anamnesis.routers import router as anamnesis_router
 from app.auth.emails import SmtpEmailSender
 from app.auth.routers import invitations_router
 from app.auth.routers import router as auth_router
@@ -18,6 +19,7 @@ from app.platform.health import router as platform_router
 from app.platform.middleware import RequestLoggingMiddleware
 from app.platform.problems import register_problem_handlers
 from app.platform.security_headers import SecurityHeadersMiddleware, is_production_environment
+from app.users.routers import router as users_router
 
 
 class HardenedFastAPI(FastAPI):
@@ -61,4 +63,6 @@ def create_app() -> FastAPI:
     app.include_router(invitations_router)
     app.include_router(clinics_router)
     app.include_router(patients_router)
+    app.include_router(users_router)
+    app.include_router(anamnesis_router)
     return app

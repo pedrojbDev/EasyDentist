@@ -14,6 +14,9 @@ CLINIC_EVENT_METADATA_ALLOWLIST: dict[str, frozenset[str]] = {
     "patient.restored": frozenset({"status"}),
     "patient_alert.created": frozenset({"patient_id", "kind"}),
     "patient_alert.updated": frozenset({"patient_id", "status"}),
+    "anamnesis.created": frozenset({"patient_id", "status"}),
+    "anamnesis.updated": frozenset({"patient_id", "status"}),
+    "anamnesis.finalized": frozenset({"patient_id", "status", "version_number"}),
 }
 
 

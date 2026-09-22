@@ -82,6 +82,24 @@ class PatientRepository:
         )
         return patient
 
+    async def lock(self, context: TenantContext, patient_id: UUID) -> Patient | None:
+        """Lock the patient row as the serialization point for finalization.
+
+        Callers must already be inside a tenant transaction; the row lock is
+        held until commit and serializes concurrent finalizations per patient.
+        """
+
+        ensure_context_matches(self._session, context)
+        patient = await self._session.scalar(
+            select(Patient)
+            .where(
+                Patient.id == patient_id,
+                Patient.clinic_id == context.clinic_id,
+            )
+            .with_for_update()
+        )
+        return patient
+
     async def find_by_cpf(self, context: TenantContext, cpf: str) -> Patient | None:
         ensure_context_matches(self._session, context)
         patient = await self._session.scalar(
