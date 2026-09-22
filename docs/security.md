@@ -184,10 +184,14 @@ com access log textual do Uvicorn desativado (`--no-access-log`), exceções
 reduzidas a `error_type` (sem mensagem ou traceback) e metadata de auditoria
 sanitizada por allowlist de evento (campos desconhecidos são descartados). Os
 detalhes de leitura estão em `docs/operations.md`. O gate
-`scripts/verify-secrets.sh` varre arquivos versionados por padrões explícitos e
-produção rejeita o segredo padrão de desenvolvimento. O runbook operacional e a
-prova de restauração estão em `docs/operations.md` e
-`scripts/verify-backup-restore.sh`.
+`scripts/verify-secrets.sh` (também `pnpm run secrets`) varre apenas arquivos
+versionados com padrões explícitos — chaves privadas, access keys, tokens
+conhecidos, URLs com credenciais e segredos atribuídos —, exige que somente
+`infra/.env.example` seja um arquivo de exemplo versionado e confirma que
+`.env`, dumps e artefatos de teste estão ignorados; a saída aponta apenas
+`arquivo:linha`, nunca o valor encontrado. Produção rejeita explicitamente o
+segredo padrão de desenvolvimento. O runbook operacional e a prova de
+restauração estão em `docs/operations.md` e `scripts/verify-backup-restore.sh`.
 
 Os fluxos web completos passam a ser exercitados por Playwright contra o
 Compose (`pnpm e2e`), incluindo login, recuperação por Mailpit, verificação,

@@ -5,7 +5,7 @@ from datetime import timedelta
 
 import pytest
 
-from app.auth.settings import AuthSettings
+from app.auth.settings import DEVELOPMENT_SECRET, AuthSettings
 
 
 def test_development_defaults() -> None:
@@ -30,6 +30,11 @@ def test_development_defaults() -> None:
 def test_production_requires_auth_secret() -> None:
     with pytest.raises(RuntimeError, match="AUTH_SECRET is required in production"):
         AuthSettings.from_environment({"APP_ENV": "production"})
+
+
+def test_production_rejects_development_default_secret() -> None:
+    with pytest.raises(RuntimeError, match="development default"):
+        AuthSettings.from_environment({"APP_ENV": "production", "AUTH_SECRET": DEVELOPMENT_SECRET})
 
 
 def test_rejects_short_auth_secret() -> None:
