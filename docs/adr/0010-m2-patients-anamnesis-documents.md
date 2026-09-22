@@ -98,7 +98,11 @@ version_number)`;
   produzem exatamente uma versão final;
 - criar revisão aceita `base_version_id` de uma versão **FINAL do mesmo
   paciente** e copia o payload como novo `DRAFT`; assim que concluída, passa a
-  ser a versão vigente;
+  ser a versão vigente. A invariante é imposta pelo banco, não só pelo service:
+  `UNIQUE (clinic_id, patient_id, id)` sustenta a FK composta
+  `(clinic_id, patient_id, base_version_id) -> (clinic_id, patient_id, id)` e um
+  trigger `BEFORE INSERT OR UPDATE OF base_version_id` rejeita base não `FINAL`
+  com `anamnesis_base_not_final` (linhas com `base_version_id` nulo passam);
 - `PATCH` só aceita `DRAFT`; nenhuma rota altera ou apaga versão final.
 
 ### Documentos privados (D6)

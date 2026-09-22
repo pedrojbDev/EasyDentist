@@ -134,6 +134,7 @@ def test_m2_migration_chain_links_to_0008_and_declares_downgrades() -> None:
             "0010_m2_anamnesis.py",
             "0011_m2_documents.py",
             "0012_m2_patient_indexes.py",
+            "0013_m2_anamnesis_base_integrity.py",
         )
     ]
 
@@ -142,12 +143,14 @@ def test_m2_migration_chain_links_to_0008_and_declares_downgrades() -> None:
         "0010_m2_anamnesis",
         "0011_m2_documents",
         "0012_m2_patient_indexes",
+        "0013_m2_anamnesis_base_integrity",
     ]
     assert [module.down_revision for module in modules] == [
         "0008_membership_management",
         "0009_m2_patient_foundation",
         "0010_m2_anamnesis",
         "0011_m2_documents",
+        "0012_m2_patient_indexes",
     ]
     for module in modules:
         assert callable(module.downgrade)
@@ -415,6 +418,111 @@ async def test_anamnesis_base_version_rejects_another_tenant(
             )
     finally:
         await transaction.rollback()
+
+
+@pytest.mark.anyio
+async def test_anamnesis_base_version_rejects_another_patient_of_the_same_clinic(
+    migrator_connection: asyncpg.Connection, seeded_tenants: SeededTenants
+) -> None:
+    transaction = await _start_transaction(migrator_connection)
+    try:
+        patient_a = await insert_patient(migrator_connection, clinic_id=seeded_tenants.clinic_a)
+        patient_b = await insert_patient(migrator_connection, clinic_id=seeded_tenants.clinic_a)
+        base_b = await insert_anamnesis(
+            migrator_connection,
+            clinic_id=seeded_tenants.clinic_a,
+            patient_id=patient_b,
+            author_user_id=seeded_tenants.user_a,
+            status="FINAL",
+            version_number=1,
+            finalized_at=datetime.now(UTC),
+            **FINAL_SNAPSHOT,
+        )
+
+        with pytest.raises(asyncpg.ForeignKeyViolationError):
+            await insert_anamnesis(
+                migrator_connection,
+                clinic_id=seeded_tenants.clinic_a,
+                patient_id=patient_a,
+                author_user_id=seeded_tenants.user_a,
+                base_version_id=base_b,
+            )
+    finally:
+        await transaction.rollback()
+
+
+@pytest.mark.anyio
+async def test_anamnesis_base_version_must_be_final(
+    migrator_connection: asyncpg.Connection, seeded_tenants: SeededTenants
+) -> None:
+    transaction = await _start_transaction(migrator_connection)
+    try:
+        patient_a = await insert_patient(migrator_connection, clinic_id=seeded_tenants.clinic_a)
+        draft_base = await insert_anamnesis(
+            migrator_connection,
+            clinic_id=seeded_tenants.clinic_a,
+            patient_id=patient_a,
+            author_user_id=seeded_tenants.user_a,
+        )
+
+        with pytest.raises(asyncpg.RaiseError, match="anamnesis_base_not_final"):
+            await insert_anamnesis(
+                migrator_connection,
+                clinic_id=seeded_tenants.clinic_a,
+                patient_id=patient_a,
+                author_user_id=seeded_tenants.user_a,
+                base_version_id=draft_base,
+            )
+    finally:
+        await transaction.rollback()
+
+
+@pytest.mark.anyio
+async def test_anamnesis_base_integrity_constraints_are_defined(
+    admin_connection: asyncpg.Connection,
+) -> None:
+    constraints = await admin_connection.fetch(
+        "SELECT conname, pg_get_constraintdef(oid) AS definition FROM pg_constraint "
+        "WHERE conrelid = 'app.anamneses'::regclass "
+        "AND conname = ANY($1::text[])",
+        [
+            "fk_anamneses_clinic_id_anamneses",
+            "uq_anamneses_clinic_id_patient_id",
+        ],
+    )
+    definitions = {record["conname"]: record["definition"] for record in constraints}
+
+    assert set(definitions) == {
+        "fk_anamneses_clinic_id_anamneses",
+        "uq_anamneses_clinic_id_patient_id",
+    }
+    assert (
+        definitions["fk_anamneses_clinic_id_anamneses"]
+        == "FOREIGN KEY (clinic_id, patient_id, base_version_id) "
+        "REFERENCES app.anamneses(clinic_id, patient_id, id)"
+    )
+    assert definitions["uq_anamneses_clinic_id_patient_id"] == "UNIQUE (clinic_id, patient_id, id)"
+    trigger = await admin_connection.fetchval(
+        "SELECT tgname FROM pg_trigger WHERE tgrelid = 'app.anamneses'::regclass "
+        "AND tgname = 'anamneses_require_final_base'"
+    )
+    assert trigger == "anamneses_require_final_base"
+
+
+@pytest.mark.anyio
+async def test_anamnesis_base_trigger_function_is_restricted(
+    admin_connection: asyncpg.Connection,
+) -> None:
+    search_path, acl = await admin_connection.fetchrow(
+        "SELECT proconfig, proacl FROM pg_proc WHERE proname = 'require_final_anamnesis_base'"
+    )
+
+    assert "search_path=app, pg_temp" in search_path
+    assert all(not entry.startswith("=") for entry in acl)
+    assert await admin_connection.fetchval(
+        "SELECT has_function_privilege($1, 'app.require_final_anamnesis_base()', 'EXECUTE')",
+        APP_ROLE,
+    )
 
 
 @pytest.mark.anyio
