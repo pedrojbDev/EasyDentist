@@ -56,7 +56,7 @@ Pytest e Playwright.
   tenant-aware e RLS por tenant com `FORCE ROW LEVEL SECURITY`. Tabelas globais
   pertencentes ao usuário (ex.: `professional_profiles`) usam RLS por
   proprietário (`user_id = app.current_user_id`) também com `FORCE ROW LEVEL
-  SECURITY`; `user_transaction` e `tenant_transaction` funcionam porque ambos
+SECURITY`; `user_transaction` e `tenant_transaction` funcionam porque ambos
   instalam `app.current_user_id`.
 - A clínica ativa vem sempre da rota; `clinic_id` nunca é aceito no corpo quando
   puder ser derivado da URL.

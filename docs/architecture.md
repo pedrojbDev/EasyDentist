@@ -470,3 +470,26 @@ cookies e 404 cross-tenant. O CI ganhou o job `hardening` (secrets, Compose,
 migrations, health, Playwright e backup/restore). O gate global do M1.6 passa
 por completo; produção continua condicionada aos pré-requisitos operacionais de
 `docs/operations.md`.
+
+## Estado do M2.1
+
+O contrato do Marco 2 está materializado na ADR 0010: pacientes, alertas,
+anamnese versionada e documentos privados, com modelos, estados, invariantes,
+rotas, matriz RBAC, fluxo de upload e compensação do S3. Os módulos
+`patients`, `anamnesis` e `documents` e o port de storage em
+`app/platform/storage.py` serão criados nos incrementos M2.2 a M2.5, sem
+repository, service ou `Base*` genérico compartilhado entre eles (ADR 0003).
+
+O catálogo clínico `cfo_2026_v1` existe em
+`app/anamnesis/templates/cfo_2026_v1.py` como estrutura imutável (seções,
+perguntas, opções e tipos de resposta `YES_NO_UNKNOWN`, `SINGLE_CHOICE` e
+`TEXT`), com IDs estáveis e ordem determinística. A redação é própria em pt-BR,
+baseada no Anexo 1 do Manual do Prontuário do CFO de 2026 apenas como
+referência. O M2.4 importará os IDs do catálogo nos schemas Pydantic; qualquer
+mudança de conteúdo exige um novo identificador de template.
+
+Nenhuma tabela, migration, rota, tela ou dependência nova foi criada no M2.1;
+o M2.2 começa pelo schema com RLS de tenant e de proprietário do usuário
+(`professional_profiles`) provada sem contexto e nas duas direções. A conclusão
+de anamnese registra autoria e snapshot profissional, mas não é assinatura
+ICP-Brasil nem substitui a ciência ou assinatura do paciente.
