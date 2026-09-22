@@ -1,7 +1,7 @@
 'use client';
 
 import { Archive, Download, FileText, RotateCcw } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Feedback } from '@/components/ui/feedback';
@@ -11,6 +11,7 @@ import {
   archiveDocument,
   documentErrorMessage,
   downloadDocumentUrl,
+  listDocuments,
   restoreDocument,
   type DocumentCategory,
   type DocumentStatus,
@@ -45,6 +46,8 @@ export function DocumentsPanel({
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pendingId, setPendingId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const requestId = useRef(0);
 
   const readable = readableCategories(capabilities);
   const manageable = manageableCategories(capabilities);
@@ -58,6 +61,29 @@ export function DocumentsPanel({
       ),
     [rows, capabilities, status, category],
   );
+
+  async function handleStatusChange(next: DocumentStatus) {
+    setStatus(next);
+    setMessage(null);
+    setError(null);
+    setLoading(true);
+    const current = requestId.current + 1;
+    requestId.current = current;
+    try {
+      const page = await listDocuments(clinicId, patientId, { status: next, limit: 100 });
+      if (requestId.current === current) {
+        setRows(page.items);
+      }
+    } catch (cause) {
+      if (requestId.current === current) {
+        setError(documentErrorMessage(cause));
+      }
+    } finally {
+      if (requestId.current === current) {
+        setLoading(false);
+      }
+    }
+  }
 
   async function handleToggle(document: PatientDocument) {
     setMessage(null);
@@ -128,7 +154,8 @@ export function DocumentsPanel({
             id="document-filter-status"
             name="document-filter-status"
             value={status}
-            onChange={(event) => setStatus(event.target.value as DocumentStatus)}
+            onChange={(event) => void handleStatusChange(event.target.value as DocumentStatus)}
+            disabled={loading}
             className="app-field"
           >
             <option value="ACTIVE">Ativos</option>
@@ -137,7 +164,11 @@ export function DocumentsPanel({
         </div>
       </div>
 
-      {visible.length === 0 ? (
+      {loading ? (
+        <p role="status" className="rounded-lg bg-muted/55 p-4 text-sm text-muted-foreground">
+          Carregando documentos…
+        </p>
+      ) : visible.length === 0 ? (
         <p className="rounded-lg bg-muted/55 p-4 text-sm text-muted-foreground">
           {rows.length === 0
             ? 'Nenhum documento registrado ainda.'
