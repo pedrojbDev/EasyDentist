@@ -23,10 +23,9 @@ slug_a="restore-a-${suffix}"
 slug_b="restore-b-${suffix}"
 sentinel_a="SENTINELA-RESTORE-A-${suffix}"
 sentinel_b="SENTINELA-RESTORE-B-${suffix}"
-# Every table with FORCE ROW LEVEL SECURITY: the six tenant-aware M1 tables
-# plus the four clinic-scoped M2 tables and the owner-scoped professional
-# profile. A backup must restore all of them forced.
-forced_rls_tables="clinics clinic_settings clinic_feature_flags memberships membership_invitations clinic_audit_events patients patient_alerts anamneses patient_documents professional_profiles"
+# Every table with FORCE ROW LEVEL SECURITY, including the clinic-scoped M3
+# resources, shared event records, appointments, and append-only history.
+forced_rls_tables="clinics clinic_settings clinic_feature_flags memberships membership_invitations clinic_audit_events patients patient_alerts anamneses patient_documents professional_profiles agenda_professionals agenda_rooms professional_availabilities schedule_events appointments appointment_history schedule_blocks"
 
 tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/easydentist-backup-verify.XXXXXX")
 dump_file="$tmp_dir/easydentist.dump"
@@ -112,6 +111,36 @@ VALUES ('$clinic_a_id', '$sentinel_a'), ('$clinic_b_id', '$sentinel_b');
 INSERT INTO app.memberships (id, clinic_id, user_id, role, status)
 VALUES ('$membership_a_id', '$clinic_a_id', '$user_a_id', 'OWNER', 'ACTIVE'),
        ('$membership_b_id', '$clinic_b_id', '$user_b_id', 'OWNER', 'ACTIVE');
+INSERT INTO app.agenda_professionals (clinic_id, membership_id, name)
+VALUES ('$clinic_a_id', '$membership_a_id', 'Profissional sentinela');
+INSERT INTO app.agenda_rooms (clinic_id, name)
+VALUES ('$clinic_a_id', 'Sala sentinela');
+INSERT INTO app.patients (clinic_id, full_name, birth_date, phone)
+VALUES ('$clinic_a_id', '$sentinel_a', CURRENT_DATE - 1, '+5571900000000');
+INSERT INTO app.professional_availabilities (clinic_id, professional_id, weekday, starts_at, ends_at)
+SELECT '$clinic_a_id', p.id, 0, '08:00', '18:00'
+FROM app.agenda_professionals p WHERE p.clinic_id = '$clinic_a_id';
+INSERT INTO app.schedule_events
+  (clinic_id, event_type, professional_id, patient_id, room_id, starts_at, ends_at)
+SELECT '$clinic_a_id', 'APPOINTMENT', p.id, pt.id, r.id,
+       now() + interval '2 days', now() + interval '2 days 30 minutes'
+FROM app.agenda_professionals p
+CROSS JOIN app.patients pt
+CROSS JOIN app.agenda_rooms r
+WHERE p.clinic_id = '$clinic_a_id' AND pt.clinic_id = '$clinic_a_id' AND r.clinic_id = '$clinic_a_id'
+RETURNING id \gset appointment_event_
+INSERT INTO app.appointments (clinic_id, schedule_event_id)
+VALUES ('$clinic_a_id', :'appointment_event_id')
+RETURNING id \gset appointment_
+INSERT INTO app.appointment_history
+  (clinic_id, appointment_id, appointment_version, event_type, actor_user_id, new_values)
+VALUES ('$clinic_a_id', :'appointment_id', 1, 'CREATED', '$user_a_id', '{"status":"SCHEDULED"}');
+INSERT INTO app.schedule_events (clinic_id, event_type, room_id, starts_at, ends_at)
+SELECT '$clinic_a_id', 'BLOCK', r.id, now() + interval '3 days 12 hours', now() + interval '3 days 13 hours'
+FROM app.agenda_rooms r WHERE r.clinic_id = '$clinic_a_id'
+RETURNING id \gset block_event_
+INSERT INTO app.schedule_blocks (clinic_id, schedule_event_id, label)
+VALUES ('$clinic_a_id', :'block_event_id', 'Bloqueio sentinela');
 SQL
 
 echo 'generating a custom-format backup with pg_dump -Fc'
@@ -145,6 +174,8 @@ expect_equal "$(restore_psql -c "SELECT has_table_privilege('$app_user', 'app.me
 expect_equal "$(restore_psql -c "SELECT has_table_privilege('$app_user', 'app.users', 'DELETE')")" 'f' 'runtime cannot delete users'
 expect_equal "$(restore_psql -c "SELECT has_table_privilege('$app_user', 'app.auth_audit_events', 'INSERT')")" 't' 'runtime appends audit'
 expect_equal "$(restore_psql -c "SELECT has_table_privilege('$app_user', 'app.auth_audit_events', 'UPDATE')")" 'f' 'audit is append-only'
+expect_equal "$(restore_psql -c "SELECT has_table_privilege('$app_user', 'app.schedule_blocks', 'DELETE')")" 'f' 'runtime cannot delete schedule blocks'
+expect_equal "$(restore_psql -c "SELECT has_table_privilege('$app_user', 'app.professional_availabilities', 'DELETE')")" 'f' 'runtime cannot physically delete weekly availability'
 expect_equal "$(restore_psql -c 'SELECT count(*) FROM pg_policies WHERE schemaname = '\''app'\''')" \
   "$(dump_psql -c 'SELECT count(*) FROM pg_policies WHERE schemaname = '\''app'\''')" 'policy count'
 expect_equal "$(restore_psql -c "
@@ -160,11 +191,21 @@ counts_a=$(app_psql <<SQL
 BEGIN;
 SELECT set_config('app.current_user_id', '$user_a_id', true);
 SELECT set_config('app.current_clinic_id', '$clinic_a_id', true);
-SELECT (SELECT count(*) FROM app.clinics) || '|' || (SELECT count(*) FROM app.memberships) || '|' || (SELECT count(*) FROM app.clinic_settings);
+SELECT (SELECT count(*) FROM app.clinics) || '|' ||
+       (SELECT count(*) FROM app.memberships) || '|' ||
+       (SELECT count(*) FROM app.clinic_settings) || '|' ||
+       (SELECT count(*) FROM app.agenda_professionals) || '|' ||
+       (SELECT count(*) FROM app.agenda_rooms) || '|' ||
+       (SELECT count(*) FROM app.professional_availabilities) || '|' ||
+       (SELECT count(*) FROM app.schedule_events) || '|' ||
+       (SELECT count(*) FROM app.appointments) || '|' ||
+       (SELECT count(*) FROM app.appointment_history) || '|' ||
+       (SELECT count(*) FROM app.schedule_blocks);
 COMMIT;
 SQL
 )
-expect_equal "$(printf '%s\n' "$counts_a" | counts_row)" '1|1|1' 'clinic A context sees only clinic A'
+expect_equal "$(printf '%s\n' "$counts_a" | counts_row)" '1|1|1|1|1|1|2|1|1|1' \
+  'clinic A agenda and tenant rows restore under the matching context'
 sentinel_b_from_a=$(app_psql <<SQL
 BEGIN;
 SELECT set_config('app.current_user_id', '$user_a_id', true);
@@ -181,10 +222,12 @@ BEGIN;
 SELECT set_config('app.current_user_id', '$user_b_id', true);
 SELECT set_config('app.current_clinic_id', '$clinic_b_id', true);
 SELECT (SELECT count(*) FROM app.clinics) || '|' || (SELECT count(*) FROM app.memberships) || '|' || (SELECT count(*) FROM app.clinic_settings);
+SELECT count(*) FROM app.agenda_professionals;
 COMMIT;
 SQL
 )
-expect_equal "$(printf '%s\n' "$counts_b" | counts_row)" '1|1|1' 'clinic B context sees only clinic B'
+expect_equal "$(printf '%s\n' "$counts_b" | grep -E '^[0-9]+\|[0-9]+\|[0-9]+$' | tail -n 1)" '1|1|1' 'clinic B core context sees only clinic B'
+expect_equal "$(printf '%s\n' "$counts_b" | numeric_row)" '0' 'clinic B cannot see clinic A agenda rows'
 
 mismatched=$(app_psql <<SQL
 BEGIN;

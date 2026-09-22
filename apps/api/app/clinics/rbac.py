@@ -37,6 +37,10 @@ class Permission(StrEnum):
     DOCUMENTS_ADMINISTRATIVE_MANAGE = "documents-administrative:manage"
     DOCUMENTS_CLINICAL_READ = "documents-clinical:read"
     DOCUMENTS_CLINICAL_MANAGE = "documents-clinical:manage"
+    AGENDA_CATALOG_READ = "agenda:catalog-read"
+    AGENDA_RESOURCES_MANAGE = "agenda:resources-manage"
+    AGENDA_READ = "agenda:read"
+    AGENDA_APPOINTMENTS_MANAGE = "agenda:appointments-manage"
 
 
 _READ_PERMISSIONS = frozenset(
@@ -79,15 +83,23 @@ _DOCUMENT_CLINICAL = frozenset(
     }
 )
 _DOCUMENT_CLINICAL_READ = frozenset({Permission.DOCUMENTS_CLINICAL_READ})
+_AGENDA_READ = frozenset({Permission.AGENDA_CATALOG_READ, Permission.AGENDA_READ})
+_AGENDA_RESOURCE_MANAGEMENT = frozenset({Permission.AGENDA_RESOURCES_MANAGE})
+_AGENDA_APPOINTMENT_MANAGEMENT = frozenset({Permission.AGENDA_APPOINTMENTS_MANAGE})
 
 ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
     Role.OWNER: frozenset(Permission),
-    Role.ADMIN: _READ_PERMISSIONS
-    | _MANAGEMENT_PERMISSIONS
-    | _PATIENT_READ
-    | _PATIENT_REGISTRATION
-    | _PATIENT_ARCHIVE
-    | _DOCUMENT_ADMIN,
+    Role.ADMIN: (
+        _READ_PERMISSIONS
+        | _MANAGEMENT_PERMISSIONS
+        | _PATIENT_READ
+        | _PATIENT_REGISTRATION
+        | _PATIENT_ARCHIVE
+        | _DOCUMENT_ADMIN
+        | _AGENDA_READ
+        | _AGENDA_RESOURCE_MANAGEMENT
+        | _AGENDA_APPOINTMENT_MANAGEMENT
+    ),
     Role.DENTIST: (
         _READ_PERMISSIONS
         | _PATIENT_READ
@@ -96,6 +108,8 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
         | _ANAMNESIS_WRITE
         | _DOCUMENT_ADMIN_READ
         | _DOCUMENT_CLINICAL
+        | _AGENDA_READ
+        | _AGENDA_APPOINTMENT_MANAGEMENT
     ),
     Role.ASSISTANT: (
         _READ_PERMISSIONS
@@ -104,9 +118,15 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
         | _ANAMNESIS_READ
         | _DOCUMENT_ADMIN_READ
         | _DOCUMENT_CLINICAL_READ
+        | _AGENDA_READ
     ),
     Role.RECEPTIONIST: (
-        _READ_PERMISSIONS | _PATIENT_READ | _PATIENT_REGISTRATION | _DOCUMENT_ADMIN
+        _READ_PERMISSIONS
+        | _PATIENT_READ
+        | _PATIENT_REGISTRATION
+        | _DOCUMENT_ADMIN
+        | _AGENDA_READ
+        | _AGENDA_APPOINTMENT_MANAGEMENT
     ),
 }
 

@@ -56,8 +56,20 @@ docker compose -f infra/docker-compose.yml --profile tools run --rm migrate
 docker compose -f infra/docker-compose.yml --profile tools run --rm migrate alembic check
 ```
 
-A cadeia completa em banco descartável é validada por
-`./scripts/verify-migrations.sh` (0001→0012, downgrade e upgrade novamente).
+As migrations 0014/0015 requerem `btree_gist`. O bootstrap local cria a extensão;
+em um banco existente, provisione-a com uma credencial administrativa antes do
+upgrade (a role runtime não recebe `CREATE` em extensão):
+
+```sh
+psql "$ADMIN_DATABASE_URL" -v ON_ERROR_STOP=1 \
+  -c 'CREATE EXTENSION IF NOT EXISTS btree_gist;'
+```
+
+Depois aplique a cadeia pelo fluxo acima. `./scripts/verify-migrations.sh`
+valida a cadeia completa em banco descartável, incluindo downgrade e upgrade
+novamente, sem usar ou remover o banco persistente de desenvolvimento. O
+`./scripts/verify-backup-restore.sh` também confirma restauração de dados M3,
+RLS, grants e estado das migrations em projetos Compose efêmeros.
 
 ## Health checks
 
@@ -179,8 +191,8 @@ docker compose -p easydentist-restore -f infra/docker-compose.yml --profile tool
 
 - `SELECT version_num FROM app.alembic_version` igual ao ambiente de origem.
 - Contagem de clinicas, memberships e clinic_settings igual à origem.
-- `pg_policies` com a mesma contagem; `relforcerowsecurity` verdadeiro nas seis
-  tabelas tenant-aware.
+- `pg_policies` com a mesma contagem; `relforcerowsecurity` verdadeiro nas
+  tabelas tenant-aware de M1, M2 e M3.
 - `rolbypassrls` falso para `easydentist_app` e `easydentist_migrator`.
 - Teste funcional como `easydentist_app`: cada contexto de usuário/clínica vê
   somente a própria clínica; contexto ausente ou membership divergente falha

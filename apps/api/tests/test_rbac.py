@@ -31,6 +31,9 @@ DOCUMENT_ADMIN_READ = frozenset({Permission.DOCUMENTS_ADMINISTRATIVE_READ})
 DOCUMENT_ADMIN_MANAGE = frozenset({Permission.DOCUMENTS_ADMINISTRATIVE_MANAGE})
 DOCUMENT_CLINICAL_READ = frozenset({Permission.DOCUMENTS_CLINICAL_READ})
 DOCUMENT_CLINICAL_MANAGE = frozenset({Permission.DOCUMENTS_CLINICAL_MANAGE})
+AGENDA_READ = frozenset({Permission.AGENDA_CATALOG_READ, Permission.AGENDA_READ})
+AGENDA_APPOINTMENT_MANAGE = frozenset({Permission.AGENDA_APPOINTMENTS_MANAGE})
+AGENDA_RESOURCE_MANAGE = frozenset({Permission.AGENDA_RESOURCES_MANAGE})
 
 EXPECTED: dict[Role, frozenset[Permission]] = {
     Role.OWNER: frozenset(Permission),
@@ -46,7 +49,10 @@ EXPECTED: dict[Role, frozenset[Permission]] = {
     | PATIENT_REGISTRATION
     | {Permission.PATIENTS_ARCHIVE}
     | DOCUMENT_ADMIN_READ
-    | DOCUMENT_ADMIN_MANAGE,
+    | DOCUMENT_ADMIN_MANAGE
+    | AGENDA_READ
+    | AGENDA_APPOINTMENT_MANAGE
+    | AGENDA_RESOURCE_MANAGE,
     Role.DENTIST: READ_PERMISSIONS
     | PATIENT_READ
     | CLINICAL_READ
@@ -54,17 +60,22 @@ EXPECTED: dict[Role, frozenset[Permission]] = {
     | {Permission.PATIENT_ALERTS_MANAGE}
     | DOCUMENT_ADMIN_READ
     | DOCUMENT_CLINICAL_READ
-    | DOCUMENT_CLINICAL_MANAGE,
+    | DOCUMENT_CLINICAL_MANAGE
+    | AGENDA_READ
+    | AGENDA_APPOINTMENT_MANAGE,
     Role.ASSISTANT: READ_PERMISSIONS
     | PATIENT_READ
     | CLINICAL_READ
     | DOCUMENT_ADMIN_READ
-    | DOCUMENT_CLINICAL_READ,
+    | DOCUMENT_CLINICAL_READ
+    | AGENDA_READ,
     Role.RECEPTIONIST: READ_PERMISSIONS
     | PATIENT_READ
     | PATIENT_REGISTRATION
     | DOCUMENT_ADMIN_READ
-    | DOCUMENT_ADMIN_MANAGE,
+    | DOCUMENT_ADMIN_MANAGE
+    | AGENDA_READ
+    | AGENDA_APPOINTMENT_MANAGE,
 }
 
 
@@ -94,6 +105,18 @@ def test_management_permissions_are_owner_or_admin_only() -> None:
     }
     for role in (Role.DENTIST, Role.ASSISTANT, Role.RECEPTIONIST):
         assert ROLE_PERMISSIONS[role].isdisjoint(management)
+
+
+def test_agenda_permissions_follow_resource_and_appointment_role_boundaries() -> None:
+    assert AGENDA_READ <= ROLE_PERMISSIONS[Role.ASSISTANT]
+    assert AGENDA_APPOINTMENT_MANAGE <= ROLE_PERMISSIONS[Role.DENTIST]
+    assert AGENDA_APPOINTMENT_MANAGE <= ROLE_PERMISSIONS[Role.RECEPTIONIST]
+    assert AGENDA_RESOURCE_MANAGE <= ROLE_PERMISSIONS[Role.ADMIN]
+    assert ROLE_PERMISSIONS[Role.ASSISTANT].isdisjoint(
+        AGENDA_APPOINTMENT_MANAGE | AGENDA_RESOURCE_MANAGE
+    )
+    assert ROLE_PERMISSIONS[Role.DENTIST].isdisjoint(AGENDA_RESOURCE_MANAGE)
+    assert ROLE_PERMISSIONS[Role.RECEPTIONIST].isdisjoint(AGENDA_RESOURCE_MANAGE)
 
 
 def test_undeclared_permission_is_denied_for_every_role() -> None:

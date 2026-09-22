@@ -230,13 +230,14 @@ async def delete_anamneses_for_clinics(
 async def delete_m2_rows_for_clinics(
     connection: asyncpg.Connection, clinic_ids: list[uuid.UUID]
 ) -> None:
-    """Remove every M2 row of the clinics in FK-safe order.
+    """Remove every M2/M3 row of the clinics in FK-safe order.
 
     Teardown must run this before deleting the clinics (and before the users
     that authored the rows), otherwise the children block the parent delete and
     synthetic clinics/patients survive the suite run.
     """
 
+    await delete_agenda_rows_for_clinics(connection, clinic_ids)
     await connection.execute(
         "DELETE FROM app.patient_documents WHERE clinic_id = ANY($1::uuid[])", clinic_ids
     )
@@ -247,6 +248,47 @@ async def delete_m2_rows_for_clinics(
     await connection.execute(
         "DELETE FROM app.patients WHERE clinic_id = ANY($1::uuid[])", clinic_ids
     )
+
+
+async def delete_agenda_rows_for_clinics(
+    connection: asyncpg.Connection, clinic_ids: list[uuid.UUID]
+) -> None:
+    """Maintenance-only teardown for append-only/soft-deleted agenda rows."""
+
+    disabled = (
+        ("app.appointment_history", "appointment_history_immutable"),
+        ("app.schedule_blocks", "schedule_blocks_no_delete"),
+        ("app.agenda_professionals", "agenda_professionals_no_delete"),
+        ("app.agenda_rooms", "agenda_rooms_no_delete"),
+    )
+    for table, trigger in disabled:
+        await connection.execute(f"ALTER TABLE {table} DISABLE TRIGGER {trigger}")
+    try:
+        await connection.execute(
+            "DELETE FROM app.appointment_history WHERE clinic_id = ANY($1::uuid[])", clinic_ids
+        )
+        await connection.execute(
+            "DELETE FROM app.schedule_blocks WHERE clinic_id = ANY($1::uuid[])", clinic_ids
+        )
+        await connection.execute(
+            "DELETE FROM app.appointments WHERE clinic_id = ANY($1::uuid[])", clinic_ids
+        )
+        await connection.execute(
+            "DELETE FROM app.schedule_events WHERE clinic_id = ANY($1::uuid[])", clinic_ids
+        )
+        await connection.execute(
+            "DELETE FROM app.professional_availabilities WHERE clinic_id = ANY($1::uuid[])",
+            clinic_ids,
+        )
+        await connection.execute(
+            "DELETE FROM app.agenda_professionals WHERE clinic_id = ANY($1::uuid[])", clinic_ids
+        )
+        await connection.execute(
+            "DELETE FROM app.agenda_rooms WHERE clinic_id = ANY($1::uuid[])", clinic_ids
+        )
+    finally:
+        for table, trigger in reversed(disabled):
+            await connection.execute(f"ALTER TABLE {table} ENABLE TRIGGER {trigger}")
 
 
 async def delete_professional_profiles_for_users(
