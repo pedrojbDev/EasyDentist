@@ -114,6 +114,17 @@ services:
     command: [alembic, upgrade, head]
     restart: no
 
+  pg-client:
+    profiles: [tools]
+    image: postgres:17.6-alpine
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD:-easydentist-local-only}
+    entrypoint: [psql]
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: no
+
   e2e-seed:
     profiles: [tools]
     image: ${API_IMAGE:-easydentist-api:local}

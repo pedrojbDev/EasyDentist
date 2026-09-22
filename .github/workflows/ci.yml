@@ -90,5 +90,6 @@ jobs:
       - run: ./scripts/verify-compose-health.sh
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm e2e
+      - run: ./scripts/verify-backup-restore.sh
       - if: always()
         run: docker compose -f infra/docker-compose.yml down --volumes --remove-orphans
