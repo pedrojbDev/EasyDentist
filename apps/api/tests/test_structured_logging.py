@@ -10,6 +10,7 @@ import httpx
 import pytest
 from fastapi import FastAPI
 
+from app.application import create_app
 from app.auth.audit import sanitize_event_metadata
 from app.platform.logging import JsonLogFormatter, get_logger
 from app.platform.middleware import RequestLoggingMiddleware, resolve_request_id
@@ -165,3 +166,30 @@ async def test_middleware_logs_error_type_for_unhandled_errors(
     assert events[0]["status_code"] == 500
     assert events[0]["error_type"] == "RuntimeError"
     assert "request payload must not be logged" not in json.dumps(events)
+
+
+@pytest.mark.anyio
+async def test_real_app_logs_unhandled_errors_without_leaking(
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    monkeypatch.setenv("APP_ENV", "development")
+    caplog.set_level(logging.INFO, logger=get_logger().name)
+    app = create_app()
+
+    @app.get("/api/v1/boom-test")
+    async def boom() -> None:
+        raise RuntimeError("payload=must-not-leak")
+
+    request_id = str(uuid.uuid4())
+    transport = httpx.ASGITransport(app=app, raise_app_exceptions=False)
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.get("/api/v1/boom-test", headers={"X-Request-Id": request_id})
+
+    assert response.status_code == 500
+    events = http_events(caplog)
+    event = next(entry for entry in events if entry.get("request_id") == request_id)
+    assert event["status_code"] == 500
+    assert event["error_type"] == "RuntimeError"
+    assert event["route"] == "/api/v1/boom-test"
+    assert "must-not-leak" not in json.dumps(events)

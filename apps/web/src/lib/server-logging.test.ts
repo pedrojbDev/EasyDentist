@@ -1,10 +1,19 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { logServerEvent } from './server-logging';
+import { logServerEvent, normalizeRoute } from './server-logging';
 
 afterEach(() => {
   vi.restoreAllMocks();
   vi.unstubAllEnvs();
+});
+
+describe('normalizeRoute', () => {
+  it('replaces UUID path segments with a template placeholder', () => {
+    expect(normalizeRoute('/clinics/0f7c1a2b-3d4e-5f60-7a8b-9c0d1e2f3a4b/settings')).toBe(
+      '/clinics/{id}/settings',
+    );
+    expect(normalizeRoute('/sessions')).toBe('/sessions');
+  });
 });
 
 describe('logServerEvent', () => {
@@ -14,7 +23,7 @@ describe('logServerEvent', () => {
 
     logServerEvent('INFO', {
       event: 'http.request',
-      requestId: 'req-1',
+      request_id: 'req-1',
       method: 'GET',
       route: '/clinics',
     });
@@ -26,7 +35,7 @@ describe('logServerEvent', () => {
       environment: 'production',
       level: 'INFO',
       event: 'http.request',
-      requestId: 'req-1',
+      request_id: 'req-1',
       method: 'GET',
       route: '/clinics',
     });
@@ -37,7 +46,7 @@ describe('logServerEvent', () => {
     const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
 
-    logServerEvent('ERROR', { event: 'http.request', errorType: 'TypeError' });
+    logServerEvent('ERROR', { event: 'http.request', error_type: 'TypeError' });
 
     expect(error).toHaveBeenCalledTimes(1);
     expect(log).not.toHaveBeenCalled();
@@ -46,11 +55,11 @@ describe('logServerEvent', () => {
   it('never accepts free-form fields outside the allowlist', () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
 
-    logServerEvent('INFO', { event: 'http.request', requestId: 'req-2' });
+    logServerEvent('INFO', { event: 'http.request', request_id: 'req-2' });
 
     const payload = JSON.parse(String(log.mock.calls[0]?.[0])) as Record<string, unknown>;
     expect(Object.keys(payload).sort()).toEqual(
-      ['environment', 'event', 'level', 'requestId', 'service', 'timestamp'].sort(),
+      ['environment', 'event', 'level', 'request_id', 'service', 'timestamp'].sort(),
     );
   });
 });

@@ -152,6 +152,30 @@ async def test_real_app_carries_headers_on_health_auth_and_errors(
 
 
 @pytest.mark.anyio
+async def test_unhandled_exception_carries_headers_and_request_id(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("APP_ENV", "development")
+    app = create_app()
+
+    @app.get("/api/v1/boom-test")
+    async def boom() -> None:
+        raise RuntimeError("payload=must-not-leak")
+
+    transport = httpx.ASGITransport(app=app, raise_app_exceptions=False)
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.get("/api/v1/boom-test")
+
+    assert response.status_code == 500
+    assert response.headers["content-type"].startswith("application/problem+json")
+    assert_security_headers(response)
+    request_id = response.headers["x-request-id"]
+    assert request_id
+    assert response.json()["request_id"] == request_id
+    assert "must-not-leak" not in response.text
+
+
+@pytest.mark.anyio
 async def test_real_app_emits_hsts_only_in_production(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
