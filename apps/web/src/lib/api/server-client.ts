@@ -1,4 +1,4 @@
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 
 import { apiErrorFrom, readJsonBody } from './problem';
 
@@ -12,8 +12,17 @@ export async function serverFetch<T>(path: string): Promise<T> {
     .getAll()
     .map(({ name, value }) => `${name}=${value}`)
     .join('; ');
+  const headerStore = await headers();
+  const requestId = headerStore.get('x-request-id');
+  const forwardedHeaders: Record<string, string> = {};
+  if (cookieHeader.length > 0) {
+    forwardedHeaders.Cookie = cookieHeader;
+  }
+  if (requestId !== null && requestId.length > 0) {
+    forwardedHeaders['X-Request-Id'] = requestId;
+  }
   const response = await fetch(`${internalBaseUrl()}${path}`, {
-    headers: cookieHeader.length > 0 ? { Cookie: cookieHeader } : {},
+    headers: forwardedHeaders,
     cache: 'no-store',
   });
   const body = await readJsonBody(response);

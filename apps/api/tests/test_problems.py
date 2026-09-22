@@ -13,7 +13,7 @@ from app.core.errors import (
     NotFoundError,
     PermissionDeniedError,
 )
-from app.platform.middleware import RequestIdMiddleware
+from app.platform.middleware import RequestLoggingMiddleware
 from app.platform.problems import (
     PROBLEM_CONTENT_TYPE,
     domain_error_handler,
@@ -65,7 +65,7 @@ async def test_domain_error_handler_maps_not_found_and_conflict() -> None:
 
 def build_test_app() -> FastAPI:
     app = FastAPI()
-    app.add_middleware(RequestIdMiddleware)
+    app.add_middleware(RequestLoggingMiddleware)
     register_problem_handlers(app)
 
     @app.get("/missing")

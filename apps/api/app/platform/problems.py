@@ -86,7 +86,12 @@ async def domain_error_handler(request: Request, exc: Exception) -> JSONResponse
     return problem_response(status=status, request_id=request_id_from(request))
 
 
+async def server_error_handler(request: Request, exc: Exception) -> JSONResponse:
+    return problem_response(status=500, request_id=request_id_from(request))
+
+
 def register_problem_handlers(app: FastAPI) -> None:
     app.add_exception_handler(StarletteHTTPException, http_exception_handler)
     app.add_exception_handler(RequestValidationError, validation_exception_handler)
     app.add_exception_handler(DomainError, domain_error_handler)
+    app.add_exception_handler(Exception, server_error_handler)

@@ -126,3 +126,61 @@ criar extensões; por isso a criação pertence ao bootstrap administrativo.
 - **`useFocusFirstInvalid` compartilhado.** O foco no primeiro erro é feito por
   um hook comum acionado quando os erros de campo mudam, evitando roubo de foco
   durante a digitação.
+
+## Ajustes de execução do M1.6
+
+- **`roleLabel`/`statusLabel` saíram do componente client.** A página server
+  `/clinics/[clinicId]` chamava funções exportadas por `ClinicList.tsx`
+  (`'use client'`), o que produz erro de renderização no build de produção
+  ("Attempted to call roleLabel() from the server"). As funções puras foram
+  movidas para `features/clinics/labels.ts` e os consumidores passaram a
+  importá-las de lá.
+- **Helper do Mailpit usa a mensagem parseada.** O corpo bruto é
+  `quoted-printable` (o `=` vira `=3D` e o token pode ser quebrado por soft
+  break); a extração do fragmento passou a ler `Text`/`HTML` de
+  `GET /api/v1/message/{id}`.
+- **Rotas HTML dinâmicas para o nonce da CSP.** Para que o nonce alcance os
+  scripts gerados pelo Next em todas as páginas (inclusive a 404), o layout raiz
+  declara `dynamic = 'force-dynamic'` e a página 404 padrão — que usa estilos
+  inline bloqueados pela CSP — foi substituída por `app/not-found.tsx` sem
+  estilos inline.
+- **`ALLOWED_ORIGINS` local cobre `127.0.0.1:3000`.** O padrão do harness é
+  `E2E_BASE_URL=http://127.0.0.1:3000`; sem o segundo valor o CSRF rejeitaria o
+  login por origem.
+- **Seed E2E limpa os buckets de rate limit.** As chaves são HMAC e não
+  permitem atribuição por execução; como o ambiente é local e sintético, o seed
+  e o teardown zeram `auth_rate_limit_buckets` para manter execuções repetidas
+  determinísticas.
+- **Sessões acumuladas no E2E.** Cada teste autentica de novo; o cenário de
+  sessões revoga todas as sessões remotas (contagem inicial) antes de provar o
+  logout da sessão atual, em vez de assumir uma única sessão.
+- **Imagem da API inclui `scripts/`.** O serviço `e2e-seed` roda
+  `python -m scripts.seed_e2e` dentro da imagem; o `Dockerfile` passou a copiar
+  `scripts/`.
+- **Serviço `pg-client` no Compose.** Backup e restauração usam o cliente
+  PostgreSQL 17 da imagem `postgres:17.6-alpine` via `--entrypoint pg_dump`/
+  `pg_restore`, sem depender do shell do container de banco.
+- **Restauração em banco recriado no container descartável.** O dump é de banco
+  (não de cluster): o destino recria o database dentro do container de restore
+  para evitar conflito com o schema `app` criado pelo bootstrap, mantendo as
+  roles do cluster. ACLs de banco do bootstrap não fazem parte do `pg_dump` e
+  não são verificadas nesse gate.
+- **CSP bloqueante exige renderização dinâmica.** Todas as rotas HTML passaram a
+  ser dinâmicas (`ƒ`) no build; `/manifest.webmanifest` permanece estático por
+  não conter scripts.
+
+## Correções após revisão da PR #6
+
+- **Respostas 500 fora dos middlewares.** No Starlette,
+  `ServerErrorMiddleware` é a camada mais externa; a resposta 500 de uma
+  exceção não tratada é enviada direto ao servidor e não passa pelos
+  middlewares registrados com `add_middleware`, ficando sem headers de
+  segurança e sem `x-request-id`. A aplicação passou a usar `HardenedFastAPI`,
+  que envolve a pilha completa (incluindo o `ServerErrorMiddleware`) com o
+  logging e os headers, e um handler de `Exception` devolve Problem Details 500
+  genérico (sem mensagem da exceção), preservando headers, request ID, evento
+  de acesso com `error_type` e o contrato RFC 9457.
+- **Contrato do log web.** Os campos passaram a `snake_case` e a rota é
+  normalizada (UUIDs viram `{id}`); a documentação passou a explicitar que a
+  web registra o início da requisição, sem `status_code`, `duration_ms` ou
+  `error_type` — observáveis apenas na API e correlacionados pelo `request_id`.

@@ -4,6 +4,7 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from starlette.types import ASGIApp
 
 from app import models as _models  # noqa: F401
 from app.auth.emails import SmtpEmailSender
@@ -13,8 +14,28 @@ from app.auth.settings import AuthSettings
 from app.clinics.routers import router as clinics_router
 from app.core.database import DatabaseSettings, create_database_engine, create_session_factory
 from app.platform.health import router as platform_router
-from app.platform.middleware import RequestIdMiddleware
+from app.platform.middleware import RequestLoggingMiddleware
 from app.platform.problems import register_problem_handlers
+from app.platform.security_headers import SecurityHeadersMiddleware, is_production_environment
+
+
+class HardenedFastAPI(FastAPI):
+    """Wraps the whole Starlette stack, including ServerErrorMiddleware.
+
+    Regular middlewares registered with `add_middleware` run inside
+    ServerErrorMiddleware, so a 500 produced from an unhandled exception would
+    bypass them. Building the hardening middlewares outside the stack keeps the
+    security headers, the request ID and the structured access event on every
+    response, 500 included.
+    """
+
+    def build_middleware_stack(self) -> ASGIApp:
+        return RequestLoggingMiddleware(
+            SecurityHeadersMiddleware(
+                super().build_middleware_stack(),
+                production=is_production_environment(),
+            )
+        )
 
 
 def create_app() -> FastAPI:
@@ -32,8 +53,7 @@ def create_app() -> FastAPI:
         finally:
             await engine.dispose()
 
-    app = FastAPI(title="EasyDentist API", version="0.1.0", lifespan=lifespan)
-    app.add_middleware(RequestIdMiddleware)
+    app = HardenedFastAPI(title="EasyDentist API", version="0.1.0", lifespan=lifespan)
     register_problem_handlers(app)
     app.include_router(platform_router)
     app.include_router(auth_router)
