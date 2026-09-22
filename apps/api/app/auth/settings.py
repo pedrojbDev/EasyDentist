@@ -63,6 +63,8 @@ class AuthSettings:
             if production:
                 raise RuntimeError("AUTH_SECRET is required in production")
             raw_secret = DEVELOPMENT_SECRET
+        elif production and raw_secret == DEVELOPMENT_SECRET:
+            raise RuntimeError("AUTH_SECRET must not use the development default in production")
         auth_secret = raw_secret.encode()
         if len(auth_secret) < MINIMUM_SECRET_BYTES:
             raise RuntimeError(f"AUTH_SECRET must be at least {MINIMUM_SECRET_BYTES} bytes")

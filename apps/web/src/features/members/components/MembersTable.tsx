@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ConfirmButton } from '@/components/ui/confirm-button';
 import { Feedback } from '@/components/ui/feedback';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { roleLabel } from '@/features/clinics/components/ClinicList';
+import { roleLabel } from '@/features/clinics/labels';
 import { ApiError } from '@/lib/api/problem';
 
 import { changeRole, removeMember, type Member, type Role } from '../api';

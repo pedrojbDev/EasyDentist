@@ -10,6 +10,8 @@ const geist = Geist({
   display: 'swap',
 });
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'EasyDentist',
   description: 'Gestão de clínicas odontológicas',
