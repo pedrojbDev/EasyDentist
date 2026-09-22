@@ -13,7 +13,10 @@ from app.core.errors import (
     DomainError,
     InvalidInputError,
     NotFoundError,
+    PayloadTooLargeError,
     PermissionDeniedError,
+    StorageUnavailableError,
+    UnsupportedMediaTypeError,
 )
 
 PROBLEM_CONTENT_TYPE = "application/problem+json"
@@ -25,9 +28,12 @@ TITLES: dict[int, str] = {
     404: "Recurso não encontrado",
     405: "Método não permitido",
     409: "Conflito",
+    413: "Arquivo muito grande",
+    415: "Formato não suportado",
     422: "Dados inválidos",
     429: "Muitas tentativas",
     500: "Erro interno",
+    503: "Serviço indisponível",
 }
 
 
@@ -81,6 +87,12 @@ async def domain_error_handler(request: Request, exc: Exception) -> JSONResponse
         status = 409
     elif isinstance(exc, InvalidInputError):
         status = 422
+    elif isinstance(exc, PayloadTooLargeError):
+        status = 413
+    elif isinstance(exc, UnsupportedMediaTypeError):
+        status = 415
+    elif isinstance(exc, StorageUnavailableError):
+        status = 503
     else:
         status = 500
     return problem_response(status=status, request_id=request_id_from(request))

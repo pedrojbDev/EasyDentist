@@ -17,6 +17,7 @@ EXPECTED_API_HEADERS = {
     "cross-origin-opener-policy": "same-origin",
     "cross-origin-resource-policy": "same-origin",
     "content-security-policy": "default-src 'none'; base-uri 'none'; frame-ancestors 'none'",
+    "cache-control": "private, no-store",
 }
 
 
@@ -182,6 +183,9 @@ async def test_real_app_emits_hsts_only_in_production(
     monkeypatch.setenv("DATABASE_URL", "postgresql+asyncpg://app:secret@db:5432/easydentist")
     monkeypatch.setenv("AUTH_SECRET", "test-auth-secret-with-enough-bytes-123")
     monkeypatch.setenv("APP_ENV", "production")
+    monkeypatch.setenv("S3_ENDPOINT_URL", "http://127.0.0.1:9000")
+    monkeypatch.setenv("S3_ACCESS_KEY", "test-access-key")
+    monkeypatch.setenv("S3_SECRET_KEY", "test-secret-key")
     app = create_app()
 
     async with app.router.lifespan_context(app):

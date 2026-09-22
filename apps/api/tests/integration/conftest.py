@@ -10,6 +10,8 @@ import asyncpg
 import httpx
 import pytest
 from helpers import (
+    delete_m2_rows_for_clinics,
+    delete_professional_profiles_for_users,
     insert_clinic,
     insert_clinic_settings,
     insert_invitation,
@@ -152,6 +154,10 @@ async def seeded_tenants(
         )
     finally:
         clinic_ids = [clinic_a, clinic_b]
+        # M2 children first: clinics cannot be deleted while patients,
+        # anamneses, alerts or documents still point at them.
+        await delete_m2_rows_for_clinics(migrator_connection, clinic_ids)
+        await delete_professional_profiles_for_users(migrator_connection, [user_a, user_b])
         await migrator_connection.execute(
             "DELETE FROM app.membership_invitations WHERE clinic_id = ANY($1::uuid[])",
             clinic_ids,
@@ -202,6 +208,13 @@ async def session_factory(app_async_url: str) -> AsyncIterator[async_sessionmake
 async def clean_auth_state(migrator_connection: asyncpg.Connection) -> AsyncIterator[None]:
     yield
     pattern = f"%{TEST_EMAIL_SUFFIX}"
+    # Profiles are owner-scoped and reference the user, so they must go before
+    # the users; a failed delete here used to leave synthetic users behind.
+    await migrator_connection.execute(
+        "DELETE FROM app.professional_profiles WHERE user_id IN "
+        "(SELECT id FROM app.users WHERE email LIKE $1)",
+        pattern,
+    )
     for statement in (
         "DELETE FROM app.auth_sessions WHERE user_id IN "
         "(SELECT id FROM app.users WHERE email LIKE $1)",
@@ -233,6 +246,14 @@ async def provisioned_clinics(
         yield clinic_ids
     finally:
         if clinic_ids:
+            member_rows = await migrator_connection.fetch(
+                "SELECT user_id FROM app.memberships WHERE clinic_id = ANY($1::uuid[])",
+                clinic_ids,
+            )
+            await delete_m2_rows_for_clinics(migrator_connection, clinic_ids)
+            await delete_professional_profiles_for_users(
+                migrator_connection, [row["user_id"] for row in member_rows]
+            )
             await migrator_connection.execute(
                 "DELETE FROM app.membership_invitations WHERE clinic_id = ANY($1::uuid[])",
                 clinic_ids,

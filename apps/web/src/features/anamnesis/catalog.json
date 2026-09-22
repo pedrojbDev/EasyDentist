@@ -1,0 +1,785 @@
+{
+  "sections": [
+    {
+      "id": "chief_complaint",
+      "questions": [
+        {
+          "answer_type": "TEXT",
+          "details_prompt": null,
+          "details_required": false,
+          "id": "chief_complaint.description",
+          "options": [],
+          "prompt": "Descreva a queixa principal relatada pelo paciente, com as palavras utilizadas por ele."
+        },
+        {
+          "answer_type": "TEXT",
+          "details_prompt": null,
+          "details_required": false,
+          "id": "chief_complaint.duration",
+          "options": [],
+          "prompt": "Há quanto tempo a queixa principal teve início?"
+        },
+        {
+          "answer_type": "TEXT",
+          "details_prompt": null,
+          "details_required": false,
+          "id": "chief_complaint.evolution",
+          "options": [],
+          "prompt": "Como a queixa evoluiu desde o início, considerando intensidade, frequência e fatores de melhora ou piora?"
+        }
+      ],
+      "title": "Queixa principal"
+    },
+    {
+      "id": "current_history",
+      "questions": [
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Descreva os tratamentos realizados e o resultado obtido.",
+          "details_required": false,
+          "id": "current_history.previous_treatment",
+          "options": [],
+          "prompt": "Já realizou algum tratamento para a queixa atual?"
+        },
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Informe os medicamentos, as doses e a frequência de uso.",
+          "details_required": false,
+          "id": "current_history.current_medication",
+          "options": [],
+          "prompt": "Está usando algum medicamento para a queixa atual?"
+        },
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Descreva os sintomas associados.",
+          "details_required": false,
+          "id": "current_history.associated_symptoms",
+          "options": [],
+          "prompt": "Apresenta outros sintomas associados, como febre, inchaço ou dificuldade para mastigar ou engolir?"
+        },
+        {
+          "answer_type": "TEXT",
+          "details_prompt": null,
+          "details_required": false,
+          "id": "current_history.notes",
+          "options": [],
+          "prompt": "Outras informações relevantes sobre a história atual."
+        }
+      ],
+      "title": "História atual"
+    },
+    {
+      "id": "medical_history",
+      "questions": [
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Liste as doenças ou condições diagnosticadas.",
+          "details_required": true,
+          "id": "medical_history.diagnoses",
+          "options": [],
+          "prompt": "Possui alguma doença ou condição médica diagnosticada?"
+        },
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Informe o motivo e a data aproximada.",
+          "details_required": false,
+          "id": "medical_history.hospitalization",
+          "options": [],
+          "prompt": "Foi internado ou submetido a procedimento hospitalar nos últimos doze meses?"
+        },
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Informe o especialista e o motivo do acompanhamento.",
+          "details_required": false,
+          "id": "medical_history.continuous_follow_up",
+          "options": [],
+          "prompt": "Está em acompanhamento médico contínuo?"
+        },
+        {
+          "answer_type": "TEXT",
+          "details_prompt": null,
+          "details_required": false,
+          "id": "medical_history.notes",
+          "options": [],
+          "prompt": "Outras informações relevantes sobre a história médica."
+        }
+      ],
+      "title": "História médica"
+    },
+    {
+      "id": "dental_history",
+      "questions": [
+        {
+          "answer_type": "SINGLE_CHOICE",
+          "details_prompt": null,
+          "details_required": false,
+          "id": "dental_history.last_visit",
+          "options": [
+            {
+              "id": "less_than_six_months",
+              "label": "Há menos de seis meses"
+            },
+            {
+              "id": "six_to_twelve_months",
+              "label": "Entre seis e doze meses"
+            },
+            {
+              "id": "one_to_five_years",
+              "label": "Entre um e cinco anos"
+            },
+            {
+              "id": "more_than_five_years",
+              "label": "Há mais de cinco anos"
+            },
+            {
+              "id": "never",
+              "label": "Nunca foi ao dentista"
+            }
+          ],
+          "prompt": "Quando foi a última consulta odontológica?"
+        },
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Descreva os tratamentos odontológicos realizados.",
+          "details_required": false,
+          "id": "dental_history.previous_treatment",
+          "options": [],
+          "prompt": "Já realizou tratamento odontológico?"
+        },
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Descreva a experiência que gera desconforto.",
+          "details_required": false,
+          "id": "dental_history.treatment_anxiety",
+          "options": [],
+          "prompt": "Sente medo ou ansiedade em consultas odontológicas?"
+        },
+        {
+          "answer_type": "TEXT",
+          "details_prompt": null,
+          "details_required": false,
+          "id": "dental_history.notes",
+          "options": [],
+          "prompt": "Outras informações relevantes sobre a história odontológica."
+        }
+      ],
+      "title": "História odontológica"
+    },
+    {
+      "id": "family_history",
+      "questions": [
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Informe as condições e o grau de parentesco.",
+          "details_required": true,
+          "id": "family_history.conditions",
+          "options": [],
+          "prompt": "Possui familiares com doenças de relevância clínica ou odontológica?"
+        },
+        {
+          "answer_type": "TEXT",
+          "details_prompt": null,
+          "details_required": false,
+          "id": "family_history.notes",
+          "options": [],
+          "prompt": "Outras informações relevantes sobre a história familiar."
+        }
+      ],
+      "title": "História familiar"
+    },
+    {
+      "id": "social_history",
+      "questions": [
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Descreva a exposição e a frequência.",
+          "details_required": false,
+          "id": "social_history.occupational_exposure",
+          "options": [],
+          "prompt": "Sua ocupação ou rotina envolve exposição a agentes que possam afetar a saúde bucal?"
+        },
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Descreva a dificuldade relatada.",
+          "details_required": false,
+          "id": "social_history.care_access",
+          "options": [],
+          "prompt": "Enfrenta dificuldade para acessar atendimento odontológico?"
+        },
+        {
+          "answer_type": "TEXT",
+          "details_prompt": null,
+          "details_required": false,
+          "id": "social_history.notes",
+          "options": [],
+          "prompt": "Outras informações relevantes sobre a história social."
+        }
+      ],
+      "title": "História social"
+    },
+    {
+      "id": "digestive_conditions",
+      "questions": [
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Informe a condição diagnosticada e o tratamento em curso.",
+          "details_required": true,
+          "id": "digestive_conditions.diagnosis",
+          "options": [],
+          "prompt": "Possui alguma condição digestiva diagnosticada, como refluxo, gastrite ou doença intestinal?"
+        }
+      ],
+      "title": "Condições digestivas"
+    },
+    {
+      "id": "hepatic_conditions",
+      "questions": [
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Informe a condição diagnosticada e o acompanhamento atual.",
+          "details_required": true,
+          "id": "hepatic_conditions.diagnosis",
+          "options": [],
+          "prompt": "Possui alguma condição hepática diagnosticada, como hepatite ou esteatose?"
+        }
+      ],
+      "title": "Condições hepáticas"
+    },
+    {
+      "id": "cardiovascular_conditions",
+      "questions": [
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Informe a condição diagnosticada e o tratamento em curso.",
+          "details_required": true,
+          "id": "cardiovascular_conditions.diagnosis",
+          "options": [],
+          "prompt": "Possui alguma condição cardiovascular diagnosticada, como hipertensão, arritmia, infarto prévio ou marca-passo?"
+        }
+      ],
+      "title": "Condições cardiovasculares"
+    },
+    {
+      "id": "respiratory_conditions",
+      "questions": [
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Informe a condição diagnosticada e o tratamento em curso.",
+          "details_required": true,
+          "id": "respiratory_conditions.diagnosis",
+          "options": [],
+          "prompt": "Possui alguma condição respiratória diagnosticada, como asma, bronquite ou apneia do sono?"
+        }
+      ],
+      "title": "Condições respiratórias"
+    },
+    {
+      "id": "renal_conditions",
+      "questions": [
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Informe a condição diagnosticada e o acompanhamento atual.",
+          "details_required": true,
+          "id": "renal_conditions.diagnosis",
+          "options": [],
+          "prompt": "Possui alguma condição renal diagnosticada, como insuficiência renal ou cálculo urinário?"
+        }
+      ],
+      "title": "Condições renais"
+    },
+    {
+      "id": "motor_conditions",
+      "questions": [
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Informe a condição diagnosticada e as limitações relatadas.",
+          "details_required": true,
+          "id": "motor_conditions.diagnosis",
+          "options": [],
+          "prompt": "Possui alguma condição motora ou de mobilidade diagnosticada?"
+        }
+      ],
+      "title": "Condições motoras"
+    },
+    {
+      "id": "infectious_conditions",
+      "questions": [
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Informe a doença, o período e o acompanhamento atual.",
+          "details_required": true,
+          "id": "infectious_conditions.diagnosis",
+          "options": [],
+          "prompt": "Possui ou já teve alguma doença infecciosa de relevância clínica, como hepatite, tuberculose ou HIV?"
+        }
+      ],
+      "title": "Condições infecciosas"
+    },
+    {
+      "id": "endocrine_metabolic_conditions",
+      "questions": [
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Informe a condição diagnosticada e o tratamento em curso.",
+          "details_required": true,
+          "id": "endocrine_metabolic_conditions.diagnosis",
+          "options": [],
+          "prompt": "Possui alguma condição endócrina ou metabólica diagnosticada, como diabetes, doença da tireoide ou dislipidemia?"
+        }
+      ],
+      "title": "Condições endócrinas e metabólicas"
+    },
+    {
+      "id": "allergies",
+      "questions": [
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Informe as substâncias e as reações apresentadas.",
+          "details_required": true,
+          "id": "allergies.known_allergy",
+          "options": [],
+          "prompt": "Possui alergia conhecida a medicamentos, materiais odontológicos, alimentos ou outras substâncias?"
+        },
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Descreva a reação e o atendimento recebido.",
+          "details_required": false,
+          "id": "allergies.emergency_care",
+          "options": [],
+          "prompt": "Já precisou de atendimento de urgência por causa de uma reação alérgica?"
+        }
+      ],
+      "title": "Alergias"
+    },
+    {
+      "id": "anesthesia",
+      "questions": [
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Informe o tipo de anestesia e o contexto.",
+          "details_required": false,
+          "id": "anesthesia.previous_exposure",
+          "options": [],
+          "prompt": "Já recebeu anestesia local ou geral?"
+        },
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Descreva a reação apresentada.",
+          "details_required": true,
+          "id": "anesthesia.adverse_reaction",
+          "options": [],
+          "prompt": "Já apresentou alguma reação adversa à anestesia?"
+        }
+      ],
+      "title": "Anestesia"
+    },
+    {
+      "id": "bleeding",
+      "questions": [
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Informe o diagnóstico e o acompanhamento atual.",
+          "details_required": true,
+          "id": "bleeding.diagnosed_disorder",
+          "options": [],
+          "prompt": "Possui diagnóstico de distúrbio de coagulação ou de sangramento?"
+        },
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Descreva as situações observadas.",
+          "details_required": false,
+          "id": "bleeding.prolonged_bleeding",
+          "options": [],
+          "prompt": "Costuma apresentar sangramento prolongado após ferimentos ou procedimentos?"
+        }
+      ],
+      "title": "Sangramento"
+    },
+    {
+      "id": "healing",
+      "questions": [
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Descreva a situação e o tempo de cicatrização.",
+          "details_required": true,
+          "id": "healing.difficulty",
+          "options": [],
+          "prompt": "Já teve dificuldade de cicatrização após ferimentos, cirurgias ou procedimentos odontológicos?"
+        }
+      ],
+      "title": "Cicatrização"
+    },
+    {
+      "id": "surgeries",
+      "questions": [
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Informe quais cirurgias foram realizadas e quando.",
+          "details_required": true,
+          "id": "surgeries.history",
+          "options": [],
+          "prompt": "Já foi submetido a alguma cirurgia?"
+        },
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Informe a cirurgia e a data aproximada.",
+          "details_required": false,
+          "id": "surgeries.recent",
+          "options": [],
+          "prompt": "Realizou alguma cirurgia nos últimos doze meses?"
+        }
+      ],
+      "title": "Cirurgias"
+    },
+    {
+      "id": "pregnancy",
+      "questions": [
+        {
+          "answer_type": "SINGLE_CHOICE",
+          "details_prompt": null,
+          "details_required": false,
+          "id": "pregnancy.status",
+          "options": [
+            {
+              "id": "not_applicable",
+              "label": "Não se aplica"
+            },
+            {
+              "id": "not_pregnant",
+              "label": "Não gestante"
+            },
+            {
+              "id": "pregnant",
+              "label": "Gestante"
+            },
+            {
+              "id": "breastfeeding",
+              "label": "Em amamentação"
+            },
+            {
+              "id": "unknown",
+              "label": "Não sabe informar"
+            }
+          ],
+          "prompt": "Qual situação se aplica atualmente?"
+        },
+        {
+          "answer_type": "TEXT",
+          "details_prompt": null,
+          "details_required": false,
+          "id": "pregnancy.trimester",
+          "options": [],
+          "prompt": "Se gestante, informe o trimestre gestacional e as orientações médicas recebidas."
+        }
+      ],
+      "title": "Gestação"
+    },
+    {
+      "id": "neoplasms",
+      "questions": [
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Informe o tipo, o local e o período do tratamento.",
+          "details_required": true,
+          "id": "neoplasms.history",
+          "options": [],
+          "prompt": "Possui ou já teve algum tipo de neoplasia?"
+        },
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Informe o tratamento em curso.",
+          "details_required": false,
+          "id": "neoplasms.active_treatment",
+          "options": [],
+          "prompt": "Está em tratamento oncológico atualmente, como quimioterapia, radioterapia ou imunoterapia?"
+        }
+      ],
+      "title": "Neoplasias"
+    },
+    {
+      "id": "psychological_conditions",
+      "questions": [
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Informe a condição diagnosticada e o acompanhamento atual.",
+          "details_required": true,
+          "id": "psychological_conditions.diagnosis",
+          "options": [],
+          "prompt": "Possui alguma condição psicológica ou psiquiátrica diagnosticada?"
+        }
+      ],
+      "title": "Condições psicológicas"
+    },
+    {
+      "id": "disabilities",
+      "questions": [
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Descreva a deficiência e as adaptações necessárias.",
+          "details_required": true,
+          "id": "disabilities.presence",
+          "options": [],
+          "prompt": "Possui alguma deficiência ou necessidade específica de acessibilidade?"
+        }
+      ],
+      "title": "Deficiências"
+    },
+    {
+      "id": "medications",
+      "questions": [
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Informe os medicamentos, as doses e a frequência de uso.",
+          "details_required": true,
+          "id": "medications.continuous_use",
+          "options": [],
+          "prompt": "Faz uso contínuo de algum medicamento?"
+        },
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Informe o medicamento e a dose.",
+          "details_required": true,
+          "id": "medications.anticoagulants",
+          "options": [],
+          "prompt": "Usa anticoagulante ou antiagregante plaquetário?"
+        }
+      ],
+      "title": "Medicamentos"
+    },
+    {
+      "id": "habits",
+      "questions": [
+        {
+          "answer_type": "SINGLE_CHOICE",
+          "details_prompt": null,
+          "details_required": false,
+          "id": "habits.smoking",
+          "options": [
+            {
+              "id": "never",
+              "label": "Nunca fumou"
+            },
+            {
+              "id": "former",
+              "label": "Ex-fumante"
+            },
+            {
+              "id": "current",
+              "label": "Fumante atual"
+            }
+          ],
+          "prompt": "Qual é a sua situação em relação ao tabagismo?"
+        },
+        {
+          "answer_type": "SINGLE_CHOICE",
+          "details_prompt": null,
+          "details_required": false,
+          "id": "habits.alcohol",
+          "options": [
+            {
+              "id": "never",
+              "label": "Nunca"
+            },
+            {
+              "id": "occasionally",
+              "label": "Ocasionalmente"
+            },
+            {
+              "id": "weekly",
+              "label": "Semanalmente"
+            },
+            {
+              "id": "daily",
+              "label": "Diariamente"
+            }
+          ],
+          "prompt": "Com que frequência consome bebidas alcoólicas?"
+        },
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Descreva as substâncias e a frequência de uso.",
+          "details_required": false,
+          "id": "habits.other_substances",
+          "options": [],
+          "prompt": "Usa outras substâncias, como produtos de tabaco sem fumaça ou drogas ilícitas?"
+        }
+      ],
+      "title": "Hábitos"
+    },
+    {
+      "id": "dental_inventory",
+      "questions": [
+        {
+          "answer_type": "SINGLE_CHOICE",
+          "details_prompt": null,
+          "details_required": false,
+          "id": "dental_inventory.hygiene",
+          "options": [
+            {
+              "id": "twice_or_more_daily",
+              "label": "Duas vezes ou mais por dia"
+            },
+            {
+              "id": "once_daily",
+              "label": "Uma vez por dia"
+            },
+            {
+              "id": "occasionally",
+              "label": "Algumas vezes por semana"
+            },
+            {
+              "id": "never",
+              "label": "Não escova"
+            }
+          ],
+          "prompt": "Com que frequência escova os dentes?"
+        },
+        {
+          "answer_type": "SINGLE_CHOICE",
+          "details_prompt": null,
+          "details_required": false,
+          "id": "dental_inventory.flossing",
+          "options": [
+            {
+              "id": "daily",
+              "label": "Diariamente"
+            },
+            {
+              "id": "sometimes",
+              "label": "Algumas vezes por semana"
+            },
+            {
+              "id": "never",
+              "label": "Nunca"
+            }
+          ],
+          "prompt": "Com que frequência usa fio dental?"
+        },
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Descreva a localização e as características da dor.",
+          "details_required": true,
+          "id": "dental_inventory.pain",
+          "options": [],
+          "prompt": "Sente dor nos dentes, nas gengivas ou na articulação temporomandibular atualmente?"
+        },
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Descreva quando o sangramento ocorre.",
+          "details_required": false,
+          "id": "dental_inventory.bleeding",
+          "options": [],
+          "prompt": "As gengivas sangram durante a escovação ou espontaneamente?"
+        },
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Informe quais dentes parecem móveis.",
+          "details_required": false,
+          "id": "dental_inventory.mobility",
+          "options": [],
+          "prompt": "Percebe dentes moles ou com mobilidade?"
+        },
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Descreva a frequência e o contexto.",
+          "details_required": false,
+          "id": "dental_inventory.halitosis",
+          "options": [],
+          "prompt": "Percebe mau hálito com frequência ou já recebeu esse relato?"
+        },
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Descreva a frequência e os fatores associados.",
+          "details_required": false,
+          "id": "dental_inventory.xerostomia",
+          "options": [],
+          "prompt": "Sente a boca seca com frequência?"
+        },
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Descreva o sintoma e quando ele ocorre.",
+          "details_required": true,
+          "id": "dental_inventory.atm",
+          "options": [],
+          "prompt": "Sente dor, estalido ou dificuldade para abrir ou fechar a boca?"
+        },
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Informe os dentes e os estímulos que desencadeiam a sensibilidade.",
+          "details_required": false,
+          "id": "dental_inventory.sensitivity",
+          "options": [],
+          "prompt": "Sente sensibilidade dentária ao frio, ao calor ou a alimentos doces?"
+        },
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Descreva a lesão, a localização e o tempo de evolução.",
+          "details_required": true,
+          "id": "dental_inventory.lesions",
+          "options": [],
+          "prompt": "Possui lesão, ferida ou alteração na boca que não cicatrizou?"
+        },
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Descreva a frequência e os sintomas associados.",
+          "details_required": false,
+          "id": "dental_inventory.bruxism",
+          "options": [],
+          "prompt": "Aperta ou range os dentes, inclusive durante o sono?"
+        },
+        {
+          "answer_type": "SINGLE_CHOICE",
+          "details_prompt": null,
+          "details_required": false,
+          "id": "dental_inventory.diet",
+          "options": [
+            {
+              "id": "rarely",
+              "label": "Raramente"
+            },
+            {
+              "id": "sometimes",
+              "label": "Algumas vezes por semana"
+            },
+            {
+              "id": "daily",
+              "label": "Diariamente"
+            },
+            {
+              "id": "several_times_daily",
+              "label": "Várias vezes ao dia"
+            }
+          ],
+          "prompt": "Com que frequência consome alimentos ou bebidas açucaradas entre as refeições?"
+        },
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Informe quais dentes foram tratados.",
+          "details_required": false,
+          "id": "dental_inventory.endodontics",
+          "options": [],
+          "prompt": "Já realizou tratamento de canal (endodontia)?"
+        },
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Descreva os elementos e a data aproximada.",
+          "details_required": false,
+          "id": "dental_inventory.prostheses",
+          "options": [],
+          "prompt": "Usa ou já usou próteses, coroas ou implantes?"
+        },
+        {
+          "answer_type": "YES_NO_UNKNOWN",
+          "details_prompt": "Descreva as cirurgias realizadas e a data aproximada.",
+          "details_required": false,
+          "id": "dental_inventory.previous_surgeries",
+          "options": [],
+          "prompt": "Já realizou cirurgias odontológicas, como extrações ou enxertos?"
+        }
+      ],
+      "title": "Inventário odontológico"
+    }
+  ],
+  "template_id": "cfo_2026_v1",
+  "template_label": "Anamnese e inventário odontológico — CFO 2026 (v1)"
+}

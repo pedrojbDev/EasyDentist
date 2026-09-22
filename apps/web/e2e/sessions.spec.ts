@@ -1,4 +1,4 @@
-import { expect, login, test } from './fixtures';
+import { expect, loginWithForm, test } from './fixtures';
 
 test.describe('sessões', () => {
   test('lista dispositivos, revoga sessão remota e encerra a sessão atual', async ({
@@ -7,10 +7,12 @@ test.describe('sessões', () => {
     baseURL,
     manifest,
   }) => {
-    await login(page, manifest.users.multi);
+    // Two real logins create two distinct sessions (the seeded storage state
+    // would reuse the same one in both contexts).
+    await loginWithForm(page, manifest.users.multi);
     const remoteContext = await browser.newContext({ baseURL });
     const remotePage = await remoteContext.newPage();
-    await login(remotePage, manifest.users.multi);
+    await loginWithForm(remotePage, manifest.users.multi);
 
     await page.goto('/sessions');
     await expect(page.getByText('Dispositivos conectados')).toBeVisible();
@@ -36,7 +38,7 @@ test.describe('sessões', () => {
   });
 
   test('logout global encerra todas as sessões', async ({ page, manifest }) => {
-    await login(page, manifest.users.multi);
+    await loginWithForm(page, manifest.users.multi);
     await page.goto('/sessions');
     page.once('dialog', (dialog) => void dialog.accept());
     await page

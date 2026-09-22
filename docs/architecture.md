@@ -470,3 +470,60 @@ cookies e 404 cross-tenant. O CI ganhou o job `hardening` (secrets, Compose,
 migrations, health, Playwright e backup/restore). O gate global do M1.6 passa
 por completo; produção continua condicionada aos pré-requisitos operacionais de
 `docs/operations.md`.
+
+## Estado do M2.1
+
+O contrato do Marco 2 está materializado na ADR 0010: pacientes, alertas,
+anamnese versionada e documentos privados, com modelos, estados, invariantes,
+rotas, matriz RBAC, fluxo de upload e compensação do S3. Os módulos
+`patients`, `anamnesis` e `documents` e o port de storage em
+`app/platform/storage.py` serão criados nos incrementos M2.2 a M2.5, sem
+repository, service ou `Base*` genérico compartilhado entre eles (ADR 0003).
+
+O catálogo clínico `cfo_2026_v1` existe em
+`app/anamnesis/templates/cfo_2026_v1.py` como estrutura imutável (seções,
+perguntas, opções e tipos de resposta `YES_NO_UNKNOWN`, `SINGLE_CHOICE` e
+`TEXT`), com IDs estáveis e ordem determinística. A redação é própria em pt-BR,
+baseada no Anexo 1 do Manual do Prontuário do CFO de 2026 apenas como
+referência. O M2.4 importará os IDs do catálogo nos schemas Pydantic; qualquer
+mudança de conteúdo exige um novo identificador de template.
+
+Nenhuma tabela, migration, rota, tela ou dependência nova foi criada no M2.1;
+o M2.2 começa pelo schema com RLS de tenant e de proprietário do usuário
+(`professional_profiles`) provada sem contexto e nas duas direções. A conclusão
+de anamnese registra autoria e snapshot profissional, mas não é assinatura
+ICP-Brasil nem substitui a ciência ou assinatura do paciente.
+
+## Estado do M2.6 (M2 concluído)
+
+Pacientes, anamnese versionada e documentos privados estão entregues de ponta a
+ponta nos módulos `app/patients`, `app/anamnesis` e `app/documents`, com o port
+`app/platform/storage.py` e o adapter S3 privado em `app/platform/s3_storage.py`
+(ADR 0010 e ADR 0003). As migrations `0009` a `0012` criam `patients`,
+`patient_alerts`, `anamneses` (trigger de imutabilidade de versões finais,
+rascunho único e numeração sequencial), `patient_documents` e
+`professional_profiles`, com FK composta tenant-aware, grants mínimos sem
+`DELETE`, RLS forçada por clínica nas tabelas do paciente e RLS de proprietário
+no perfil global do usuário. A API expõe exatamente as rotas do §1.3 do plano,
+com quatorze permissões explícitas de RBAC (`patients`, alertas, anamnese e
+documentos administrativos/clínicos) sob `default deny`; o catálogo
+`cfo_2026_v1` é a única fonte dos IDs clínicos do payload. O upload lê o corpo
+em blocos, valida vazio/limite/MIME por magic bytes, calcula tamanho e SHA-256
+no servidor, grava o objeto antes do metadado ativo e compensa o objeto quando a
+persistência falha; o download autoriza pelo metadado/RLS antes de tocar no
+storage. `S3_KEY_PREFIX` (vazio por padrão) permite isolar prefixos; o harness
+E2E usa `e2e/{run_id}/` e o teardown remove exclusivamente esse prefixo, verifica
+que ele ficou vazio e só então apaga as linhas do run (versões finais exigem
+desabilitar os triggers de usuário durante a manutenção).
+
+A prova do marco é automatizada: `tests/integration/test_m2_rbac_matrix.py`
+(papéis × endpoints), `tests/integration/test_m2_isolation_gate.py`
+(cross-tenant na API, repositories, SQL cru e chaves de storage, além da
+redaction em logs, Problem Details e auditoria), `tests/integration/test_m2_rls.py`
+e `test_m2_schema.py` (RLS, FK composta, trigger e grants) e os specs Playwright
+`patients.spec.ts`, `anamnesis.spec.ts` e `documents.spec.ts` (26 cenários no
+total, incluindo round-trip com mesmo tamanho e SHA-256 e negação anônima e por
+categoria). Permanecem fora do M2 e como pré-requisitos de produção: storage
+gerenciado com criptografia em repouso e backup, verificação antimalware dos
+uploads e o processo de ciência/assinatura do paciente, além da retenção e
+expurgo definidos por política (ver `docs/operations.md`).

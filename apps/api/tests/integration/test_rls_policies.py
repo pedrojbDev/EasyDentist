@@ -34,6 +34,36 @@ POLICY_MATRIX = {
         ("clinic_audit_events_tenant_insert", "INSERT", "easydentist_app"),
         ("clinic_audit_events_migrator_all", "ALL", "easydentist_migrator"),
     ],
+    "patients": [
+        ("patients_tenant_select", "SELECT", "easydentist_app"),
+        ("patients_tenant_insert", "INSERT", "easydentist_app"),
+        ("patients_tenant_update", "UPDATE", "easydentist_app"),
+        ("patients_migrator_all", "ALL", "easydentist_migrator"),
+    ],
+    "patient_alerts": [
+        ("patient_alerts_tenant_select", "SELECT", "easydentist_app"),
+        ("patient_alerts_tenant_insert", "INSERT", "easydentist_app"),
+        ("patient_alerts_tenant_update", "UPDATE", "easydentist_app"),
+        ("patient_alerts_migrator_all", "ALL", "easydentist_migrator"),
+    ],
+    "anamneses": [
+        ("anamneses_tenant_select", "SELECT", "easydentist_app"),
+        ("anamneses_tenant_insert", "INSERT", "easydentist_app"),
+        ("anamneses_tenant_update", "UPDATE", "easydentist_app"),
+        ("anamneses_migrator_all", "ALL", "easydentist_migrator"),
+    ],
+    "patient_documents": [
+        ("patient_documents_tenant_select", "SELECT", "easydentist_app"),
+        ("patient_documents_tenant_insert", "INSERT", "easydentist_app"),
+        ("patient_documents_tenant_update", "UPDATE", "easydentist_app"),
+        ("patient_documents_migrator_all", "ALL", "easydentist_migrator"),
+    ],
+    "professional_profiles": [
+        ("professional_profiles_owner_select", "SELECT", "easydentist_app"),
+        ("professional_profiles_owner_insert", "INSERT", "easydentist_app"),
+        ("professional_profiles_owner_update", "UPDATE", "easydentist_app"),
+        ("professional_profiles_migrator_all", "ALL", "easydentist_migrator"),
+    ],
 }
 
 
