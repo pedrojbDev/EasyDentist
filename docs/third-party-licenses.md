@@ -21,6 +21,16 @@ Os comandos fazem parte de `.github/workflows/ci.yml`. Qualquer exceção precis
 ser documentada neste arquivo com pacote, versão, licença, motivo, responsável e
 data de reavaliação.
 
+## Marco 2
+
+O M2.1 não introduz nenhuma dependência de terceiros: o catálogo
+`cfo_2026_v1` é redação própria e o contrato vive em documentação e código do
+projeto. Dependências previstas para os próximos incrementos — o cliente S3
+(`boto3`) e `python-multipart` no M2.5 — só entram acompanhadas de lockfile
+atualizado, verificação de licenças, `pip-audit` e registro neste arquivo no
+mesmo incremento. O Manual do Prontuário do CFO de 2026 é referência clínica
+externa, não um pacote ou dependência de software.
+
 ## Revisões manuais registradas
 
 | Pacote                       | Versão       | Licença         | Motivo                                                                                                                       | Responsável             | Revisão                                   |

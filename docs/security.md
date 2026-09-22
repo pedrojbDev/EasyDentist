@@ -16,6 +16,7 @@ e as decisões do hardening em `docs/adr/0009-hardening-and-operations.md`.
 | Backup `pg_dump -Fc` restaurável em banco limpo com schema, grants, policies e RLS                                     | **Provado no M1.6.5** (`scripts/verify-backup-restore.sh`)                                                                                                                    |
 | Ausência de secrets versionados e de dependências vulneráveis                                                          | **Provado no M1.6.6** (`scripts/verify-secrets.sh`, `pnpm audit`, `pip-audit`, licenças)                                                                                      |
 | Critério final cross-tenant (duas clínicas, API/SSR/rota/SQL sob role runtime)                                         | **Provado no M1.6.2/M1.6.6** (`isolation.spec.ts`, `test_m16_isolation_gate.py`)                                                                                              |
+| Contrato de segurança do M2 (pacientes, anamnese, documentos, storage privado)                                         | **Contratado no M2.1** (ADR 0010); implementação e prova nos M2.2 a M2.6                                                                                                      |
 | Storage gerenciado, SMTP real, retenção de backups, criptografia em repouso, gestão externa de secrets e monitoramento | **Fora do escopo de produção** — pré-requisitos operacionais listados em `docs/operations.md`                                                                                 |
 
 ## Autenticação (M1.3)
@@ -201,6 +202,42 @@ Os fluxos web completos passam a ser exercitados por Playwright contra o
 Compose (`pnpm e2e`), incluindo login, recuperação por Mailpit, verificação,
 convite, seletor de clínica, settings, equipe, sessões e o critério cross-tenant
 com duas clínicas (`workers: 1` e dados sintéticos removidos no teardown).
+
+## Pacientes, anamnese e documentos (M2.1, ADR 0010)
+
+**Contratado no M2.1; implementado e provado nos M2.2 a M2.6.** O contrato fixa:
+
+- **Isolamento.** `professional_profiles` é global e pertence ao usuário: RLS
+  por proprietário (`user_id = app.current_user_id`), sem `clinic_id`, com
+  `FORCE ROW LEVEL SECURITY` e sem `DELETE` para a role runtime. As tabelas
+  `patients`, `patient_alerts`, `anamneses` e `patient_documents` pertencem à
+  clínica, usam `clinic_id NOT NULL`, FK composta, RLS por tenant e
+  `FORCE ROW LEVEL SECURITY`; recurso de outro tenant responde 404 genérico.
+- **RBAC.** Quatorze permissões explícitas para pacientes, alertas, anamnese e
+  documentos administrativos/clínicos, mantendo `default deny`. ADMIN e
+  RECEPTIONIST nunca recebem conteúdo clínico (alertas, anamnese ou documentos
+  clínicos); ASSISTANT lê, mas não conclui nem altera; a conclusão exige
+  `anamnesis:finalize`, que só DENTIST e OWNER possuem, além de perfil
+  profissional do autor.
+- **Anamnese.** Um único rascunho por paciente (índice parcial); versões finais
+  são imutáveis por trigger e sem `DELETE`; a numeração é sequencial por
+  paciente e atribuída na conclusão, que é atômica e serializada por lock do
+  paciente, grava snapshot de autoria e resiste a conclusões concorrentes. A
+  revisão nasce de uma versão final do mesmo paciente.
+- **Documentos.** Metadados no PostgreSQL e objeto em storage S3 privado com
+  chave opaca sem PII; validação de vazio, limite de 10 MB, MIME por magic bytes
+  (PDF/JPEG/PNG) e SHA-256 calculados no servidor; upload antes da ativação do
+  metadado, com compensação do objeto se a persistência falhar e 503 sem
+  metadado ativo se o S3 falhar; download somente após autorização por
+  metadado/RLS, com `Content-Disposition: attachment`. Não há exclusão física de
+  documento nem de objeto.
+- **Dados sensíveis.** CPF, respostas de anamnese, nomes de arquivo, conteúdo e
+  chave de storage nunca entram em logs, Problem Details ou metadata de
+  auditoria; a auditoria registra apenas IDs, estado, ação e categoria. Não há
+  expurgo nem exclusão física de paciente, anamnese concluída ou documento.
+- **Natureza da conclusão.** Concluir a anamnese não é assinatura ICP-Brasil,
+  não usa certificado e não substitui a ciência ou assinatura do paciente; a UI
+  não pode rotular a operação como "assinatura".
 
 ## Operação local
 
