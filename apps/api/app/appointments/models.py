@@ -101,7 +101,7 @@ class ProfessionalAvailability(Base):
         CheckConstraint("weekday BETWEEN 0 AND 6", name="weekday"),
         CheckConstraint("starts_at < ends_at", name="time_range"),
         Index(
-            "ix_professional_availabilities_clinic_id_professional_id_weekday",
+            "ix_prof_avail_clinic_prof_weekday_start",
             "clinic_id",
             "professional_id",
             "weekday",
@@ -119,6 +119,7 @@ class ProfessionalAvailability(Base):
     ends_at: Mapped[time] = mapped_column()
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    is_active: Mapped[bool] = mapped_column(default=True, server_default=text("true"))
 
 
 class ScheduleEvent(Base):
@@ -189,6 +190,39 @@ class ScheduleEvent(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
+class ScheduleBlock(Base):
+    """Public block record backed by a shared schedule event for occupancy."""
+
+    __tablename__ = "schedule_blocks"
+    __table_args__ = (
+        UniqueConstraint("clinic_id", "id"),
+        UniqueConstraint("clinic_id", "schedule_event_id", name="uq_schedule_blocks_event"),
+        ForeignKeyConstraint(
+            ["clinic_id", "schedule_event_id"],
+            ["app.schedule_events.clinic_id", "app.schedule_events.id"],
+        ),
+        CheckConstraint("status IN ('ACTIVE', 'CANCELLED')", name="status"),
+        CheckConstraint(
+            "(status = 'ACTIVE' AND cancelled_at IS NULL) "
+            "OR (status = 'CANCELLED' AND cancelled_at IS NOT NULL)",
+            name="cancelled_at",
+        ),
+        Index("ix_schedule_blocks_clinic_id_status", "clinic_id", "status"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        Uuid(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid()
+    )
+    clinic_id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True))
+    schedule_event_id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True))
+    label: Mapped[str | None] = mapped_column(Text)
+    status: Mapped[str] = mapped_column(Text, server_default=text("'ACTIVE'"))
+    cancellation_reason: Mapped[str | None] = mapped_column(Text)
+    cancelled_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
 class Appointment(Base):
     __tablename__ = "appointments"
     __table_args__ = (
@@ -215,6 +249,7 @@ class Appointment(Base):
     status: Mapped[str] = mapped_column(Text, server_default=text("'SCHEDULED'"))
     version: Mapped[int] = mapped_column(Integer, server_default=text("1"))
     administrative_note: Mapped[str | None] = mapped_column(Text)
+    cancellation_reason: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 

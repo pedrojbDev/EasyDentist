@@ -528,14 +528,20 @@ gerenciado com criptografia em repouso e backup, verificação antimalware dos
 uploads e o processo de ciência/assinatura do paciente, além da retenção e
 expurgo definidos por política (ver `docs/operations.md`).
 
-## Estado do M3.1
+## Agenda clínica (M3)
 
-A fundação de agenda existe em `app/appointments` e migration `0014`: recursos
-de profissionais e salas por clínica, disponibilidade semanal fracionável,
-eventos internos compartilhados de consulta/bloqueio, consultas versionadas e
-histórico imutável. Esta fronteira é apenas persistência: APIs, RBAC e UI serão
-adicionados em incrementos posteriores. A exclusão GiST em faixas `[)` é a
-autoridade de ocupação concorrente; triggers coordenam ocupação de status e
-travam `clinic_settings` para mutações de agenda. ADR 0011 fixa o limite com o
-perfil profissional global do M2, o tratamento timezone e a privacidade de
-notas administrativas.
+`app/appointments` implementa recursos, disponibilidade semanal, bloqueios,
+consultas, fluxo de atendimento e histórico. Migrations `0014` e `0015`
+instalam RLS, FKs compostas, as faixas de exclusão `[)`, histórico imutável e
+sincronização de ocupação. `/api/v1/clinics/{clinic_id}` expõe cadastros,
+expediente, horários livres, bloqueios, consultas, status e histórico. A agenda
+web oferece visualização diária/semanal responsiva, filtros, criação por
+horário, remarcação por formulário e histórico na ficha do paciente.
+
+As mutações usam a timezone IANA da clínica para resolver entradas locais,
+rejeitam horários ambíguos/inexistentes e travam `clinic_settings` antes de
+validar. Exclusion constraints são a última autoridade para evitar dupla
+reserva; versões otimistas evitam sobrescrita de edição. Dentistas só alteram
+consultas, expediente e bloqueios do próprio profissional vinculado; demais
+papéis seguem a matriz da ADR 0007 e da ADR 0011. Notas administrativas ficam
+fora de snapshots de histórico e metadata de auditoria.

@@ -226,6 +226,110 @@ export interface paths {
         patch: operations["update_clinic_api_v1_clinics__clinic_id__patch"];
         trace?: never;
     };
+    "/api/v1/clinics/{clinic_id}/appointments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Appointments */
+        get: operations["list_appointments_api_v1_clinics__clinic_id__appointments_get"];
+        put?: never;
+        /** Create Appointment */
+        post: operations["create_appointment_api_v1_clinics__clinic_id__appointments_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/appointments/{appointment_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Appointment */
+        get: operations["get_appointment_api_v1_clinics__clinic_id__appointments__appointment_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Appointment */
+        patch: operations["update_appointment_api_v1_clinics__clinic_id__appointments__appointment_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/appointments/{appointment_id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Appointment History */
+        get: operations["appointment_history_api_v1_clinics__clinic_id__appointments__appointment_id__history_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/appointments/{appointment_id}/reschedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reschedule Appointment */
+        post: operations["reschedule_appointment_api_v1_clinics__clinic_id__appointments__appointment_id__reschedule_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/appointments/{appointment_id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Change Appointment Status */
+        post: operations["change_appointment_status_api_v1_clinics__clinic_id__appointments__appointment_id__status_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/availability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Find Availability */
+        get: operations["find_availability_api_v1_clinics__clinic_id__availability_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/clinics/{clinic_id}/invitations": {
         parameters: {
             query?: never;
@@ -402,6 +506,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/clinics/{clinic_id}/patients/{patient_id}/appointments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Patient Appointments */
+        get: operations["patient_appointments_api_v1_clinics__clinic_id__patients__patient_id__appointments_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/clinics/{clinic_id}/patients/{patient_id}/archive": {
         parameters: {
             query?: never;
@@ -522,6 +643,216 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/clinics/{clinic_id}/professionals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Professionals */
+        get: operations["list_professionals_api_v1_clinics__clinic_id__professionals_get"];
+        put?: never;
+        /** Create Professional */
+        post: operations["create_professional_api_v1_clinics__clinic_id__professionals_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/professionals/{professional_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Professional */
+        get: operations["get_professional_api_v1_clinics__clinic_id__professionals__professional_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Professional */
+        patch: operations["update_professional_api_v1_clinics__clinic_id__professionals__professional_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/professionals/{professional_id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Archive Professional */
+        post: operations["archive_professional_api_v1_clinics__clinic_id__professionals__professional_id__archive_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/professionals/{professional_id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Restore Professional */
+        post: operations["restore_professional_api_v1_clinics__clinic_id__professionals__professional_id__restore_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/professionals/{professional_id}/working-hours": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Working Hours */
+        get: operations["get_working_hours_api_v1_clinics__clinic_id__professionals__professional_id__working_hours_get"];
+        /** Replace Working Hours */
+        put: operations["replace_working_hours_api_v1_clinics__clinic_id__professionals__professional_id__working_hours_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/rooms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Rooms */
+        get: operations["list_rooms_api_v1_clinics__clinic_id__rooms_get"];
+        put?: never;
+        /** Create Room */
+        post: operations["create_room_api_v1_clinics__clinic_id__rooms_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/rooms/{room_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Room */
+        get: operations["get_room_api_v1_clinics__clinic_id__rooms__room_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Room */
+        patch: operations["update_room_api_v1_clinics__clinic_id__rooms__room_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/rooms/{room_id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Archive Room */
+        post: operations["archive_room_api_v1_clinics__clinic_id__rooms__room_id__archive_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/rooms/{room_id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Restore Room */
+        post: operations["restore_room_api_v1_clinics__clinic_id__rooms__room_id__restore_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/schedule-blocks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Schedule Blocks */
+        get: operations["list_schedule_blocks_api_v1_clinics__clinic_id__schedule_blocks_get"];
+        put?: never;
+        /** Create Schedule Block */
+        post: operations["create_schedule_block_api_v1_clinics__clinic_id__schedule_blocks_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/schedule-blocks/{block_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Schedule Block */
+        patch: operations["update_schedule_block_api_v1_clinics__clinic_id__schedule_blocks__block_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/schedule-blocks/{block_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel Schedule Block */
+        post: operations["cancel_schedule_block_api_v1_clinics__clinic_id__schedule_blocks__block_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/clinics/{clinic_id}/settings": {
         parameters: {
             query?: never;
@@ -596,6 +927,127 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AgendaProfessionalCreateRequest */
+        AgendaProfessionalCreateRequest: {
+            /** Cro Number */
+            cro_number?: string | null;
+            /** Cro State */
+            cro_state?: string | null;
+            /** Membership Id */
+            membership_id?: string | null;
+            /** Name */
+            name: string;
+        };
+        /** AgendaProfessionalListResponse */
+        AgendaProfessionalListResponse: {
+            /** Items */
+            items: components["schemas"]["AgendaProfessionalResponse"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Total */
+            total: number;
+        };
+        /** AgendaProfessionalResponse */
+        AgendaProfessionalResponse: {
+            /** Archived At */
+            archived_at: string | null;
+            /**
+             * Clinic Id
+             * Format: uuid
+             */
+            clinic_id: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Cro Number */
+            cro_number: string | null;
+            /** Cro State */
+            cro_state: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Membership Id */
+            membership_id: string | null;
+            /** Name */
+            name: string;
+            status: components["schemas"]["AgendaResourceStatus"];
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** AgendaProfessionalUpdateRequest */
+        AgendaProfessionalUpdateRequest: {
+            /** Cro Number */
+            cro_number?: string | null;
+            /** Cro State */
+            cro_state?: string | null;
+            /** Membership Id */
+            membership_id?: string | null;
+            /** Name */
+            name?: string | null;
+        };
+        /**
+         * AgendaResourceStatus
+         * @enum {string}
+         */
+        AgendaResourceStatus: "ACTIVE" | "ARCHIVED";
+        /** AgendaRoomCreateRequest */
+        AgendaRoomCreateRequest: {
+            /** Name */
+            name: string;
+        };
+        /** AgendaRoomListResponse */
+        AgendaRoomListResponse: {
+            /** Items */
+            items: components["schemas"]["AgendaRoomResponse"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Total */
+            total: number;
+        };
+        /** AgendaRoomResponse */
+        AgendaRoomResponse: {
+            /** Archived At */
+            archived_at: string | null;
+            /**
+             * Clinic Id
+             * Format: uuid
+             */
+            clinic_id: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            status: components["schemas"]["AgendaResourceStatus"];
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** AgendaRoomUpdateRequest */
+        AgendaRoomUpdateRequest: {
+            /** Name */
+            name?: string | null;
+        };
         /** AllergiesPayload */
         AllergiesPayload: {
             emergency_care?: components["schemas"]["YesNoUnknownAnswer"] | null;
@@ -716,6 +1168,210 @@ export interface components {
         AnesthesiaPayload: {
             adverse_reaction?: components["schemas"]["YesNoUnknownAnswer"] | null;
             previous_exposure?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** AppointmentCreateRequest */
+        AppointmentCreateRequest: {
+            /** Administrative Note */
+            administrative_note?: string | null;
+            /**
+             * Duration Minutes
+             * @default 30
+             */
+            duration_minutes: number;
+            /**
+             * Local Start
+             * Format: date-time
+             */
+            local_start: string;
+            /**
+             * Patient Id
+             * Format: uuid
+             */
+            patient_id: string;
+            /**
+             * Professional Id
+             * Format: uuid
+             */
+            professional_id: string;
+            /** Room Id */
+            room_id?: string | null;
+        };
+        /** AppointmentHistoryListResponse */
+        AppointmentHistoryListResponse: {
+            /** Items */
+            items: components["schemas"]["AppointmentHistoryResponse"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Total */
+            total: number;
+        };
+        /** AppointmentHistoryResponse */
+        AppointmentHistoryResponse: {
+            /**
+             * Actor User Id
+             * Format: uuid
+             */
+            actor_user_id: string;
+            /**
+             * Appointment Id
+             * Format: uuid
+             */
+            appointment_id: string;
+            /** Appointment Version */
+            appointment_version: number;
+            /** Event Type */
+            event_type: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** New Values */
+            new_values: {
+                [key: string]: unknown;
+            };
+            /**
+             * Occurred At
+             * Format: date-time
+             */
+            occurred_at: string;
+            /** Old Values */
+            old_values: {
+                [key: string]: unknown;
+            };
+        };
+        /** AppointmentListResponse */
+        AppointmentListResponse: {
+            /** Items */
+            items: components["schemas"]["AppointmentResponse"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Total */
+            total: number;
+        };
+        /** AppointmentRescheduleRequest */
+        AppointmentRescheduleRequest: {
+            /**
+             * Duration Minutes
+             * @default 30
+             */
+            duration_minutes: number;
+            /** Expected Version */
+            expected_version: number;
+            /**
+             * Local Start
+             * Format: date-time
+             */
+            local_start: string;
+        };
+        /** AppointmentResponse */
+        AppointmentResponse: {
+            /** Administrative Note */
+            administrative_note: string | null;
+            /** Cancellation Reason */
+            cancellation_reason: string | null;
+            /**
+             * Clinic Id
+             * Format: uuid
+             */
+            clinic_id: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Ends At
+             * Format: date-time
+             */
+            ends_at: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Patient Id
+             * Format: uuid
+             */
+            patient_id: string;
+            /** Patient Name */
+            patient_name: string;
+            /**
+             * Professional Id
+             * Format: uuid
+             */
+            professional_id: string;
+            /** Professional Name */
+            professional_name: string;
+            /** Room Id */
+            room_id: string | null;
+            /** Room Name */
+            room_name: string | null;
+            /**
+             * Starts At
+             * Format: date-time
+             */
+            starts_at: string;
+            status: components["schemas"]["AppointmentStatus"];
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Version */
+            version: number;
+        };
+        /**
+         * AppointmentStatus
+         * @enum {string}
+         */
+        AppointmentStatus: "SCHEDULED" | "CONFIRMED" | "CHECKED_IN" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED" | "NO_SHOW";
+        /** AppointmentStatusRequest */
+        AppointmentStatusRequest: {
+            /** Cancellation Reason */
+            cancellation_reason?: string | null;
+            /** Expected Version */
+            expected_version: number;
+            status: components["schemas"]["AppointmentStatus"];
+        };
+        /** AppointmentUpdateRequest */
+        AppointmentUpdateRequest: {
+            /** Administrative Note */
+            administrative_note?: string | null;
+            /** Duration Minutes */
+            duration_minutes?: number | null;
+            /** Expected Version */
+            expected_version: number;
+            /** Local Start */
+            local_start?: string | null;
+            /** Patient Id */
+            patient_id?: string | null;
+            /** Professional Id */
+            professional_id?: string | null;
+            /** Room Id */
+            room_id?: string | null;
+        };
+        /** AvailabilityResponse */
+        AvailabilityResponse: {
+            /**
+             * Local Date
+             * Format: date
+             */
+            local_date: string;
+            /**
+             * Professional Id
+             * Format: uuid
+             */
+            professional_id: string;
+            /** Starts At */
+            starts_at: string[];
+            /** Timezone */
+            timezone: string;
         };
         /** BleedingPayload */
         BleedingPayload: {
@@ -1363,6 +2019,97 @@ export interface components {
          * @enum {string}
          */
         Role: "OWNER" | "ADMIN" | "DENTIST" | "ASSISTANT" | "RECEPTIONIST";
+        /** ScheduleBlockCancelRequest */
+        ScheduleBlockCancelRequest: {
+            /** Reason */
+            reason?: string | null;
+        };
+        /** ScheduleBlockCreateRequest */
+        ScheduleBlockCreateRequest: {
+            /** Label */
+            label?: string | null;
+            /**
+             * Local End
+             * Format: date-time
+             */
+            local_end: string;
+            /**
+             * Local Start
+             * Format: date-time
+             */
+            local_start: string;
+            /** Professional Id */
+            professional_id?: string | null;
+            /** Room Id */
+            room_id?: string | null;
+        };
+        /** ScheduleBlockListResponse */
+        ScheduleBlockListResponse: {
+            /** Items */
+            items: components["schemas"]["ScheduleBlockResponse"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Total */
+            total: number;
+        };
+        /** ScheduleBlockResponse */
+        ScheduleBlockResponse: {
+            /** Cancellation Reason */
+            cancellation_reason: string | null;
+            /**
+             * Clinic Id
+             * Format: uuid
+             */
+            clinic_id: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Ends At
+             * Format: date-time
+             */
+            ends_at: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Label */
+            label: string | null;
+            /** Professional Id */
+            professional_id: string | null;
+            /** Room Id */
+            room_id: string | null;
+            /**
+             * Starts At
+             * Format: date-time
+             */
+            starts_at: string;
+            /** Status */
+            status: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** ScheduleBlockUpdateRequest */
+        ScheduleBlockUpdateRequest: {
+            /** Label */
+            label?: string | null;
+            /** Local End */
+            local_end?: string | null;
+            /** Local Start */
+            local_start?: string | null;
+            /** Professional Id */
+            professional_id?: string | null;
+            /** Room Id */
+            room_id?: string | null;
+        };
         /** SessionResponse */
         SessionResponse: {
             /**
@@ -1436,6 +2183,39 @@ export interface components {
             msg: string;
             /** Error Type */
             type: string;
+        };
+        /** WorkingHourInterval */
+        WorkingHourInterval: {
+            /**
+             * Ends At
+             * Format: time
+             */
+            ends_at: string;
+            /**
+             * Starts At
+             * Format: time
+             */
+            starts_at: string;
+            /**
+             * Weekday
+             * @description Monday is 0; Sunday is 6
+             */
+            weekday: number;
+        };
+        /** WorkingHoursReplaceRequest */
+        WorkingHoursReplaceRequest: {
+            /** Intervals */
+            intervals: components["schemas"]["WorkingHourInterval"][];
+        };
+        /** WorkingHoursResponse */
+        WorkingHoursResponse: {
+            /** Intervals */
+            intervals: components["schemas"]["WorkingHourInterval"][];
+            /**
+             * Professional Id
+             * Format: uuid
+             */
+            professional_id: string;
         };
         /**
          * YesNoUnknown
@@ -1870,6 +2650,294 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ClinicResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_appointments_api_v1_clinics__clinic_id__appointments_get: {
+        parameters: {
+            query: {
+                starts_at: string;
+                ends_at: string;
+                professional_id?: string | null;
+                room_id?: string | null;
+                patient_id?: string | null;
+                status?: components["schemas"]["AppointmentStatus"] | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppointmentListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_appointment_api_v1_clinics__clinic_id__appointments_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppointmentCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppointmentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_appointment_api_v1_clinics__clinic_id__appointments__appointment_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appointment_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppointmentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_appointment_api_v1_clinics__clinic_id__appointments__appointment_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appointment_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppointmentUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppointmentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    appointment_history_api_v1_clinics__clinic_id__appointments__appointment_id__history_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                appointment_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppointmentHistoryListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reschedule_appointment_api_v1_clinics__clinic_id__appointments__appointment_id__reschedule_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appointment_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppointmentRescheduleRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppointmentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    change_appointment_status_api_v1_clinics__clinic_id__appointments__appointment_id__status_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appointment_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppointmentStatusRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppointmentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    find_availability_api_v1_clinics__clinic_id__availability_get: {
+        parameters: {
+            query: {
+                professional_id: string;
+                local_date: string;
+                duration_minutes?: number;
+                patient_id?: string | null;
+                room_id?: string | null;
+                step_minutes?: number;
+            };
+            header?: never;
+            path: {
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AvailabilityResponse"];
                 };
             };
             /** @description Validation Error */
@@ -2438,6 +3506,41 @@ export interface operations {
             };
         };
     };
+    patient_appointments_api_v1_clinics__clinic_id__patients__patient_id__appointments_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                patient_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppointmentListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     archive_patient_api_v1_clinics__clinic_id__patients__patient_id__archive_post: {
         parameters: {
             query?: never;
@@ -2696,6 +3799,624 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PatientResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_professionals_api_v1_clinics__clinic_id__professionals_get: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["AgendaResourceStatus"];
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgendaProfessionalListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_professional_api_v1_clinics__clinic_id__professionals_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AgendaProfessionalCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgendaProfessionalResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_professional_api_v1_clinics__clinic_id__professionals__professional_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                professional_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgendaProfessionalResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_professional_api_v1_clinics__clinic_id__professionals__professional_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                professional_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AgendaProfessionalUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgendaProfessionalResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    archive_professional_api_v1_clinics__clinic_id__professionals__professional_id__archive_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                professional_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgendaProfessionalResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    restore_professional_api_v1_clinics__clinic_id__professionals__professional_id__restore_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                professional_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgendaProfessionalResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_working_hours_api_v1_clinics__clinic_id__professionals__professional_id__working_hours_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                professional_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkingHoursResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    replace_working_hours_api_v1_clinics__clinic_id__professionals__professional_id__working_hours_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                professional_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkingHoursReplaceRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkingHoursResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_rooms_api_v1_clinics__clinic_id__rooms_get: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["AgendaResourceStatus"];
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgendaRoomListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_room_api_v1_clinics__clinic_id__rooms_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AgendaRoomCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgendaRoomResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_room_api_v1_clinics__clinic_id__rooms__room_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                room_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgendaRoomResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_room_api_v1_clinics__clinic_id__rooms__room_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                room_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AgendaRoomUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgendaRoomResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    archive_room_api_v1_clinics__clinic_id__rooms__room_id__archive_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                room_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgendaRoomResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    restore_room_api_v1_clinics__clinic_id__rooms__room_id__restore_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                room_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgendaRoomResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_schedule_blocks_api_v1_clinics__clinic_id__schedule_blocks_get: {
+        parameters: {
+            query: {
+                starts_at: string;
+                ends_at: string;
+                professional_id?: string | null;
+                room_id?: string | null;
+                include_cancelled?: boolean;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScheduleBlockListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_schedule_block_api_v1_clinics__clinic_id__schedule_blocks_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScheduleBlockCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScheduleBlockResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_schedule_block_api_v1_clinics__clinic_id__schedule_blocks__block_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                block_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScheduleBlockUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScheduleBlockResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_schedule_block_api_v1_clinics__clinic_id__schedule_blocks__block_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                block_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScheduleBlockCancelRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScheduleBlockResponse"];
                 };
             };
             /** @description Validation Error */

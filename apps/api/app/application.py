@@ -8,6 +8,8 @@ from starlette.types import ASGIApp
 
 from app import models as _models  # noqa: F401
 from app.anamnesis.routers import router as anamnesis_router
+from app.appointments.resource_routers import router as agenda_resources_router
+from app.appointments.schedule_routers import router as agenda_router
 from app.auth.emails import SmtpEmailSender
 from app.auth.routers import invitations_router
 from app.auth.routers import router as auth_router
@@ -71,4 +73,6 @@ def create_app() -> FastAPI:
     app.include_router(users_router)
     app.include_router(anamnesis_router)
     app.include_router(documents_router)
+    app.include_router(agenda_resources_router)
+    app.include_router(agenda_router)
     return app

@@ -12,6 +12,7 @@ from app.appointments.models import (
     Appointment,
     AppointmentHistory,
     ProfessionalAvailability,
+    ScheduleBlock,
     ScheduleEvent,
 )
 from app.core.database import Base
@@ -46,6 +47,7 @@ def test_appointment_models_are_registered_in_the_shared_metadata() -> None:
         "agenda_rooms",
         "professional_availabilities",
         "schedule_events",
+        "schedule_blocks",
         "appointments",
         "appointment_history",
     } <= {table.name for table in Base.metadata.tables.values()}
@@ -134,6 +136,14 @@ def test_schedule_events_keep_appointment_and_block_states_separate() -> None:
     assert "occupancy_state IN ('OCCUPYING', 'RELEASED')" in checks
     assert "starts_at < ends_at" in checks
     assert "event_type = 'APPOINTMENT'" in " ".join(checks)
+
+
+def test_schedule_blocks_are_separate_tenant_records_backed_by_events() -> None:
+    # This catches collapsing the public block contract into appointment rows
+    # or allowing a block to point at another clinic's occupancy record.
+    assert ScheduleBlock.__table__.schema == "app"
+    assert ("clinic_id", "schedule_event_id") in _composite_foreign_key_columns(ScheduleBlock)
+    assert "status IN ('ACTIVE', 'CANCELLED')" in _check_expressions(ScheduleBlock)
 
 
 def test_appointment_statuses_cover_the_agenda_lifecycle() -> None:

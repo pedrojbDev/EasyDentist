@@ -11,6 +11,7 @@ M3_TABLES = (
     "agenda_rooms",
     "professional_availabilities",
     "schedule_events",
+    "schedule_blocks",
     "appointments",
     "appointment_history",
 )
@@ -124,25 +125,79 @@ async def test_m3_history_is_append_only_and_excludes_administrative_notes(
         )
 
         with pytest.raises(asyncpg.RaiseError, match="appointment_history_immutable"):
-            await migrator_connection.execute(
-                "UPDATE app.appointment_history SET event_type = 'RESCHEDULED' WHERE id = $1",
-                history_id,
-            )
+            async with migrator_connection.transaction():
+                await migrator_connection.execute(
+                    "UPDATE app.appointment_history SET event_type = 'RESCHEDULED' WHERE id = $1",
+                    history_id,
+                )
         with pytest.raises(asyncpg.RaiseError, match="appointment_history_immutable"):
-            await migrator_connection.execute(
-                "DELETE FROM app.appointment_history WHERE id = $1", history_id
-            )
+            async with migrator_connection.transaction():
+                await migrator_connection.execute(
+                    "DELETE FROM app.appointment_history WHERE id = $1", history_id
+                )
         with pytest.raises(asyncpg.RaiseError, match="appointment_history_note_forbidden"):
-            await migrator_connection.execute(
-                """
-                INSERT INTO app.appointment_history
-                  (clinic_id, appointment_id, appointment_version, event_type,
-                   actor_user_id, new_values)
-                VALUES ($1, $2, 2, 'STATUS_CHANGED', $3, '{"administrative_note":"private"}'::jsonb)
-                """,
-                seeded_tenants.clinic_a,
-                appointment_id,
-                seeded_tenants.user_a,
+            async with migrator_connection.transaction():
+                await migrator_connection.execute(
+                    """
+                    INSERT INTO app.appointment_history
+                      (clinic_id, appointment_id, appointment_version, event_type,
+                       actor_user_id, new_values)
+                    VALUES ($1, $2, 2, 'STATUS_CHANGED', $3,
+                            '{"administrative_note":"private"}'::jsonb)
+                    """,
+                    seeded_tenants.clinic_a,
+                    appointment_id,
+                    seeded_tenants.user_a,
+                )
+        with pytest.raises(asyncpg.RaiseError, match="appointment_history_note_forbidden"):
+            async with migrator_connection.transaction():
+                await migrator_connection.execute(
+                    """
+                    INSERT INTO app.appointment_history
+                      (clinic_id, appointment_id, appointment_version, event_type,
+                       actor_user_id, new_values)
+                    VALUES ($1, $2, 2, 'STATUS_CHANGED', $3,
+                            '{"change":{"administrative_note":"private"}}'::jsonb)
+                    """,
+                    seeded_tenants.clinic_a,
+                    appointment_id,
+                    seeded_tenants.user_a,
+                )
+
+        with pytest.raises(asyncpg.RaiseError, match="linked_appointment_event_type_invalid"):
+            async with migrator_connection.transaction():
+                await migrator_connection.execute(
+                    "UPDATE app.schedule_events SET event_type = 'BLOCK' WHERE id = $1", event_id
+                )
+        with pytest.raises(asyncpg.RaiseError, match="linked_appointment_occupancy_invalid"):
+            async with migrator_connection.transaction():
+                await migrator_connection.execute(
+                    "UPDATE app.schedule_events SET occupancy_state = 'RELEASED' WHERE id = $1",
+                    event_id,
+                )
+
+        await migrator_connection.execute(
+            """
+            UPDATE app.schedule_events
+            SET starts_at = starts_at + interval '1 hour', ends_at = ends_at + interval '1 hour'
+            WHERE id = $1
+            """,
+            event_id,
+        )
+        assert (
+            await migrator_connection.fetchval(
+                "SELECT occupancy_state FROM app.schedule_events WHERE id = $1", event_id
             )
+            == "OCCUPYING"
+        )
+        await migrator_connection.execute(
+            "UPDATE app.appointments SET status = 'CANCELLED' WHERE id = $1", appointment_id
+        )
+        assert (
+            await migrator_connection.fetchval(
+                "SELECT occupancy_state FROM app.schedule_events WHERE id = $1", event_id
+            )
+            == "RELEASED"
+        )
     finally:
         await transaction.rollback()

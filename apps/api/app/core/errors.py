@@ -4,6 +4,7 @@ from sqlalchemy.exc import IntegrityError
 
 FOREIGN_KEY_VIOLATION = "23503"
 UNIQUE_VIOLATION = "23505"
+EXCLUSION_VIOLATION = "23P01"
 
 
 class DomainError(Exception):
@@ -57,6 +58,6 @@ def translate_integrity_error(error: IntegrityError) -> DomainError:
     sqlstate = getattr(error.orig, "sqlstate", None)
     if sqlstate == FOREIGN_KEY_VIOLATION:
         return NotFoundError("referenced resource was not found")
-    if sqlstate == UNIQUE_VIOLATION:
+    if sqlstate in {UNIQUE_VIOLATION, EXCLUSION_VIOLATION}:
         return ConflictError("resource already exists")
     return DomainError("database integrity error")

@@ -144,6 +144,7 @@ def upgrade() -> None:
         sa.Column("weekday", sa.Integer(), nullable=False),
         sa.Column("starts_at", sa.Time(), nullable=False),
         sa.Column("ends_at", sa.Time(), nullable=False),
+        sa.Column("is_active", sa.Boolean(), server_default=sa.text("true"), nullable=False),
         sa.Column(
             "created_at",
             sa.DateTime(timezone=True),
@@ -171,7 +172,7 @@ def upgrade() -> None:
         schema="app",
     )
     op.create_index(
-        "ix_professional_availabilities_clinic_id_professional_id_weekday",
+        "ix_prof_avail_clinic_prof_weekday_start",
         "professional_availabilities",
         ["clinic_id", "professional_id", "weekday", "starts_at"],
         schema="app",
@@ -463,6 +464,43 @@ def _create_integrity_triggers() -> None:
     )
     op.execute(
         """
+        CREATE FUNCTION app.guard_linked_appointment_schedule_event() RETURNS trigger
+        LANGUAGE plpgsql
+        SET search_path = app, pg_temp
+        AS $$
+        DECLARE
+          v_status text;
+          v_occupancy_state text;
+        BEGIN
+          SELECT status INTO v_status
+          FROM app.appointments
+          WHERE clinic_id = NEW.clinic_id AND schedule_event_id = NEW.id;
+          IF FOUND THEN
+            IF NEW.event_type <> 'APPOINTMENT' THEN
+              RAISE EXCEPTION 'linked_appointment_event_type_invalid' USING ERRCODE = 'P0001';
+            END IF;
+            v_occupancy_state := CASE
+              WHEN v_status IN ('CANCELLED', 'NO_SHOW') THEN 'RELEASED'
+              ELSE 'OCCUPYING'
+            END;
+            IF NEW.occupancy_state <> v_occupancy_state THEN
+              RAISE EXCEPTION 'linked_appointment_occupancy_invalid' USING ERRCODE = 'P0001';
+            END IF;
+          END IF;
+          RETURN NEW;
+        END;
+        $$
+        """
+    )
+    op.execute(
+        """
+        CREATE TRIGGER schedule_events_guard_linked_appointment
+        BEFORE UPDATE OF event_type, occupancy_state ON app.schedule_events
+        FOR EACH ROW EXECUTE FUNCTION app.guard_linked_appointment_schedule_event()
+        """
+    )
+    op.execute(
+        """
         CREATE FUNCTION app.reject_appointment_history_mutation() RETURNS trigger
         LANGUAGE plpgsql
         SET search_path = app, pg_temp
@@ -483,12 +521,45 @@ def _create_integrity_triggers() -> None:
     )
     op.execute(
         """
+        CREATE FUNCTION app.jsonb_contains_forbidden_history_key(p_value jsonb) RETURNS boolean
+        LANGUAGE sql
+        IMMUTABLE
+        SET search_path = pg_catalog, pg_temp
+        AS $$
+        WITH RECURSIVE value_tree(value) AS (
+          SELECT p_value
+          UNION ALL
+          SELECT child.value
+          FROM value_tree parent
+          CROSS JOIN LATERAL (
+            SELECT object_child.value
+            FROM jsonb_each(
+              CASE WHEN jsonb_typeof(parent.value) = 'object' THEN parent.value ELSE '{}'::jsonb END
+            ) AS object_child(key, value)
+            UNION ALL
+            SELECT array_child.value
+            FROM jsonb_array_elements(
+              CASE WHEN jsonb_typeof(parent.value) = 'array' THEN parent.value ELSE '[]'::jsonb END
+            ) AS array_child(value)
+          ) AS child
+        )
+        SELECT EXISTS (
+          SELECT 1
+          FROM value_tree
+          WHERE jsonb_typeof(value) = 'object' AND value ? 'administrative_note'
+        )
+        $$
+        """
+    )
+    op.execute(
+        """
         CREATE FUNCTION app.reject_appointment_history_note() RETURNS trigger
         LANGUAGE plpgsql
         SET search_path = app, pg_temp
         AS $$
         BEGIN
-          IF NEW.old_values ? 'administrative_note' OR NEW.new_values ? 'administrative_note' THEN
+          IF app.jsonb_contains_forbidden_history_key(NEW.old_values)
+             OR app.jsonb_contains_forbidden_history_key(NEW.new_values) THEN
             RAISE EXCEPTION 'appointment_history_note_forbidden' USING ERRCODE = 'P0001';
           END IF;
           RETURN NEW;
@@ -524,7 +595,9 @@ def _create_integrity_triggers() -> None:
         "lock_agenda_clinic_settings()",
         "require_appointment_schedule_event()",
         "sync_appointment_occupancy()",
+        "guard_linked_appointment_schedule_event()",
         "reject_appointment_history_mutation()",
+        "jsonb_contains_forbidden_history_key(jsonb)",
         "reject_appointment_history_note()",
         "reject_agenda_resource_deletion()",
     ):
@@ -570,6 +643,9 @@ def downgrade() -> None:
         op.execute(f"DROP TRIGGER IF EXISTS {table}_no_delete ON app.{table}")
     op.execute("DROP TRIGGER IF EXISTS appointment_history_reject_note ON app.appointment_history")
     op.execute("DROP TRIGGER IF EXISTS appointment_history_immutable ON app.appointment_history")
+    op.execute(
+        "DROP TRIGGER IF EXISTS schedule_events_guard_linked_appointment ON app.schedule_events"
+    )
     op.execute("DROP TRIGGER IF EXISTS appointments_sync_occupancy ON app.appointments")
     op.execute("DROP TRIGGER IF EXISTS appointments_require_schedule_event ON app.appointments")
     for table in (
@@ -583,7 +659,9 @@ def downgrade() -> None:
     for function in (
         "reject_agenda_resource_deletion()",
         "reject_appointment_history_note()",
+        "jsonb_contains_forbidden_history_key(jsonb)",
         "reject_appointment_history_mutation()",
+        "guard_linked_appointment_schedule_event()",
         "sync_appointment_occupancy()",
         "require_appointment_schedule_event()",
         "lock_agenda_clinic_settings()",
@@ -602,7 +680,7 @@ def downgrade() -> None:
     )
     op.drop_table("schedule_events", schema="app")
     op.drop_index(
-        "ix_professional_availabilities_clinic_id_professional_id_weekday",
+        "ix_prof_avail_clinic_prof_weekday_start",
         table_name="professional_availabilities",
         schema="app",
     )
