@@ -4,21 +4,26 @@ import { cleanup, render, screen, waitFor, within } from '@testing-library/react
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { archiveDocumentMock, restoreDocumentMock, uploadDocumentMock } = vi.hoisted(() => ({
-  archiveDocumentMock: vi.fn(),
-  restoreDocumentMock: vi.fn(),
-  uploadDocumentMock: vi.fn(),
-}));
+const { archiveDocumentMock, listDocumentsMock, restoreDocumentMock, uploadDocumentMock } =
+  vi.hoisted(() => ({
+    archiveDocumentMock: vi.fn(),
+    listDocumentsMock: vi.fn(),
+    restoreDocumentMock: vi.fn(),
+    uploadDocumentMock: vi.fn(),
+  }));
 
 vi.mock('../api', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../api')>();
   return {
     ...actual,
     archiveDocument: archiveDocumentMock,
+    listDocuments: listDocumentsMock,
     restoreDocument: restoreDocumentMock,
     uploadDocument: uploadDocumentMock,
   };
 });
+
+import { ApiError } from '@/lib/api/problem';
 
 import { documentCapabilities } from '../permissions';
 import { makeDocument } from '../test-fixtures';
@@ -26,6 +31,7 @@ import { DocumentsPanel } from './DocumentsPanel';
 
 beforeEach(() => {
   archiveDocumentMock.mockReset();
+  listDocumentsMock.mockReset();
   restoreDocumentMock.mockReset();
   uploadDocumentMock.mockReset();
 });
@@ -67,20 +73,25 @@ describe('DocumentsPanel', () => {
     expect(screen.getByText('Nenhum documento registrado ainda.')).toBeTruthy();
   });
 
-  it('filters by status and hides archived documents by default', async () => {
+  it('loads archived documents from the API when the status filter changes', async () => {
+    listDocumentsMock.mockResolvedValue({
+      items: [
+        makeDocument({
+          id: 'd2',
+          title: 'Documento antigo',
+          status: 'ARCHIVED',
+          archived_at: '2026-09-21T12:00:00Z',
+        }),
+      ],
+      total: 1,
+      limit: 100,
+      offset: 0,
+    });
     render(
       <DocumentsPanel
         clinicId="c1"
         patientId="p1"
-        documents={[
-          makeDocument({ id: 'd1', title: 'Documento atual' }),
-          makeDocument({
-            id: 'd2',
-            title: 'Documento antigo',
-            status: 'ARCHIVED',
-            archived_at: '2026-09-21T12:00:00Z',
-          }),
-        ]}
+        documents={[makeDocument({ id: 'd1', title: 'Documento atual' })]}
         capabilities={documentCapabilities('OWNER')}
       />,
     );
@@ -90,9 +101,33 @@ describe('DocumentsPanel', () => {
 
     await userEvent.selectOptions(screen.getByLabelText('Filtrar por situação'), 'ARCHIVED');
 
-    expect(screen.getByText('Documento antigo')).toBeTruthy();
+    await waitFor(() => {
+      expect(listDocumentsMock).toHaveBeenCalledWith('c1', 'p1', {
+        status: 'ARCHIVED',
+        limit: 100,
+      });
+    });
+    expect(await screen.findByText('Documento antigo')).toBeTruthy();
     expect(screen.queryByText('Documento atual')).toBeNull();
     expect(within(screen.getByRole('table')).getByText('Arquivado')).toBeTruthy();
+  });
+
+  it('shows an error when loading archived documents fails', async () => {
+    listDocumentsMock.mockRejectedValue(new ApiError({ status: 503, title: 'Indisponível' }));
+    render(
+      <DocumentsPanel
+        clinicId="c1"
+        patientId="p1"
+        documents={[makeDocument()]}
+        capabilities={documentCapabilities('OWNER')}
+      />,
+    );
+
+    await userEvent.selectOptions(screen.getByLabelText('Filtrar por situação'), 'ARCHIVED');
+
+    expect((await screen.findByRole('alert')).textContent).toContain(
+      'O armazenamento de documentos está indisponível. Tente novamente em instantes.',
+    );
   });
 
   it('hides clinical documents from roles without clinical read', () => {
@@ -117,9 +152,12 @@ describe('DocumentsPanel', () => {
   });
 
   it('archives a document and moves it to the archived filter', async () => {
-    archiveDocumentMock.mockResolvedValue(
-      makeDocument({ status: 'ARCHIVED', archived_at: '2026-09-22T12:00:00Z' }),
-    );
+    const archived = makeDocument({
+      status: 'ARCHIVED',
+      archived_at: '2026-09-22T12:00:00Z',
+    });
+    archiveDocumentMock.mockResolvedValue(archived);
+    listDocumentsMock.mockResolvedValue({ items: [archived], total: 1, limit: 100, offset: 0 });
     render(
       <DocumentsPanel
         clinicId="c1"
@@ -139,20 +177,26 @@ describe('DocumentsPanel', () => {
 
     await userEvent.selectOptions(screen.getByLabelText('Filtrar por situação'), 'ARCHIVED');
 
-    expect(within(screen.getByRole('table')).getByText('Arquivado')).toBeTruthy();
+    expect(within(await screen.findByRole('table')).getByText('Arquivado')).toBeTruthy();
   });
 
-  it('restores an archived document back to the active list', async () => {
+  it('restores a document archived before the page load', async () => {
+    const archived = makeDocument({ status: 'ARCHIVED', archived_at: '2026-09-22T12:00:00Z' });
     restoreDocumentMock.mockResolvedValue(makeDocument());
+    listDocumentsMock
+      .mockResolvedValueOnce({ items: [archived], total: 1, limit: 100, offset: 0 })
+      .mockResolvedValueOnce({ items: [makeDocument()], total: 1, limit: 100, offset: 0 });
     render(
       <DocumentsPanel
         clinicId="c1"
         patientId="p1"
-        documents={[makeDocument({ status: 'ARCHIVED', archived_at: '2026-09-22T12:00:00Z' })]}
+        documents={[makeDocument({ id: 'd0', title: 'Documento enviado hoje' })]}
         capabilities={documentCapabilities('OWNER')}
       />,
     );
+
     await userEvent.selectOptions(screen.getByLabelText('Filtrar por situação'), 'ARCHIVED');
+    expect(await screen.findByText('Laudo clínico')).toBeTruthy();
 
     await userEvent.click(screen.getByRole('button', { name: /^Restaurar/ }));
 
@@ -163,7 +207,11 @@ describe('DocumentsPanel', () => {
 
     await userEvent.selectOptions(screen.getByLabelText('Filtrar por situação'), 'ACTIVE');
 
-    expect(within(screen.getByRole('table')).getByText('Ativo')).toBeTruthy();
+    expect(within(await screen.findByRole('table')).getByText('Ativo')).toBeTruthy();
+    expect(listDocumentsMock).toHaveBeenLastCalledWith('c1', 'p1', {
+      status: 'ACTIVE',
+      limit: 100,
+    });
   });
 
   it('hides management actions from read-only roles', () => {
