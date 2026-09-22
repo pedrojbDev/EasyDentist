@@ -18,6 +18,7 @@ import argparse
 import asyncio
 import json
 import os
+import re
 import secrets
 import uuid
 from datetime import UTC, date, datetime
@@ -39,6 +40,7 @@ DEFAULT_LOCALE = "pt-BR"
 DEFAULT_CURRENCY = "BRL"
 E2E_STORAGE_ROOT = "e2e"
 DELETE_BATCH_SIZE = 1000
+RUN_ID_PATTERN = re.compile(r"^[0-9a-f]{12}$")
 
 PATIENT_A_CPF = "52998224725"
 PROFESSIONAL_PROFILE = {
@@ -457,12 +459,18 @@ async def _cleanup(connection: AsyncConnection, run_id: str) -> None:
         await connection.execute(text(statement), parameters)
 
 
+def _validate_run_id(run_id: str) -> str:
+    if not RUN_ID_PATTERN.fullmatch(run_id):
+        raise SystemExit("invalid run id: expected 12 lowercase hexadecimal characters")
+    return run_id
+
+
 def _resolve_run_id(run_id: str, manifest_path: Path | None) -> str:
     if run_id:
-        return run_id
+        return _validate_run_id(run_id)
     if manifest_path is not None and manifest_path.exists():
         manifest: dict[str, Any] = json.loads(manifest_path.read_text(encoding="utf-8"))
-        return str(manifest["run_id"])
+        return _validate_run_id(str(manifest["run_id"]))
     raise SystemExit("--run-id is required when the manifest file does not exist")
 
 
@@ -472,17 +480,20 @@ async def _run(args: argparse.Namespace) -> int:
         raise SystemExit("MIGRATION_DATABASE_URL is required for the E2E seed")
 
     manifest_path: Path | None = args.manifest
+    if args.cleanup:
+        run_id = _resolve_run_id(args.run_id, manifest_path)
+    else:
+        run_id = _validate_run_id(args.run_id or _new_run_id())
+
     engine = create_async_engine(database_url, pool_pre_ping=True)
     try:
         if args.cleanup:
-            run_id = _resolve_run_id(args.run_id, manifest_path)
             await asyncio.to_thread(_delete_run_objects, run_id)
             async with engine.begin() as connection:
                 await _cleanup(connection, run_id)
             print(f"E2E_CLEANUP fixtures removed for run {run_id}")
             return 0
 
-        run_id = args.run_id or _new_run_id()
         async with engine.begin() as connection:
             manifest = await _seed(connection, run_id)
         if manifest_path is not None:
