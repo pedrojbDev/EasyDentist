@@ -27,6 +27,7 @@ class Anamnesis(Base):
     __tablename__ = "anamneses"
     __table_args__ = (
         UniqueConstraint("clinic_id", "id", name="uq_anamneses_clinic_id"),
+        UniqueConstraint("clinic_id", "patient_id", "id", name="uq_anamneses_clinic_id_patient_id"),
         UniqueConstraint(
             "clinic_id", "patient_id", "version_number", name="uq_anamneses_patient_version"
         ),
@@ -53,8 +54,8 @@ class Anamnesis(Base):
             ["app.patients.clinic_id", "app.patients.id"],
         ),
         ForeignKeyConstraint(
-            ["clinic_id", "base_version_id"],
-            ["app.anamneses.clinic_id", "app.anamneses.id"],
+            ["clinic_id", "patient_id", "base_version_id"],
+            ["app.anamneses.clinic_id", "app.anamneses.patient_id", "app.anamneses.id"],
         ),
         Index(
             "uq_anamneses_draft_per_patient",
