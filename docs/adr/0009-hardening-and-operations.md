@@ -60,16 +60,19 @@ e o rewrite same-origin continua sendo o único caminho do navegador até a API.
 
 ### Logging estruturado com allowlist (D3)
 
-Logs de API e web são JSONL com um formatter sobre a biblioteca padrão. Cada
-evento usa allowlist: serviço, ambiente, timestamp, nível, evento, request ID,
-método, rota sem query string, status, duração, tipo de erro e UUIDs de
-usuário/clínica somente quando necessários ao diagnóstico. Nunca entram corpo
-de requisição/resposta, cookies, `Set-Cookie`, tokens, senhas, headers de
-autorização, e-mails, IPs brutos, query strings ou mensagens de exceção com
-dados de entrada. O access log textual do Uvicorn é desativado para não duplicar
-eventos. A auditoria de segurança passa a sanitizar metadata por allowlist de
-evento e a ignorar campos desconhecidos. O request ID correlaciona logs da web e
-da API quando há encaminhamento.
+Logs de API e web são JSONL com um formatter sobre a biblioteca padrão e campos
+em `snake_case`. Cada evento usa allowlist: serviço, ambiente, timestamp, nível,
+evento, request ID, método, rota sem query string, status, duração, tipo de erro
+e UUIDs de usuário/clínica somente quando necessários ao diagnóstico. Nunca
+entram corpo de requisição/resposta, cookies, `Set-Cookie`, tokens, senhas,
+headers de autorização, e-mails, IPs brutos, query strings ou mensagens de
+exceção com dados de entrada. A API emite a rota no formato de template e cobre
+`status`, `duration` e `error_type`; a web emite `method` e rota normalizada
+(UUIDs viram `{id}`) no início da requisição, pois o middleware do Next roda
+antes da renderização e não observa status ou duração. O access log textual do
+Uvicorn é desativado para não duplicar eventos. A auditoria de segurança passa a
+sanitizar metadata por allowlist de evento e a ignorar campos desconhecidos. O
+request ID correlaciona logs da web e da API quando há encaminhamento.
 
 ### Backup, restauração e operação (D4)
 

@@ -177,13 +177,17 @@ permitidas e rewrite `/api/v1` isento para preservar os headers da API); HSTS
 somente em produção. Todas as rotas HTML são renderizadas dinamicamente para
 que o nonce alcance os scripts gerados pelo Next, inclusive a página 404
 customizada, e o `X-Powered-By` foi removido. Logs de API e web são JSONL com
-allowlist — sem corpo, cookie, token, senha, header de autorização, e-mail, IP
-bruto ou query string — correlacionados por request ID (a web gera
-`x-request-id`, o SSR o encaminha e a API o reutiliza quando é um UUID válido),
-com access log textual do Uvicorn desativado (`--no-access-log`), exceções
-reduzidas a `error_type` (sem mensagem ou traceback) e metadata de auditoria
-sanitizada por allowlist de evento (campos desconhecidos são descartados). Os
-detalhes de leitura estão em `docs/operations.md`. O gate
+allowlist em `snake_case` — sem corpo, cookie, token, senha, header de
+autorização, e-mail, IP bruto ou query string — correlacionados por request ID
+(a web gera `x-request-id`, o SSR o encaminha e a API o reutiliza quando é um
+UUID válido), com access log textual do Uvicorn desativado (`--no-access-log`),
+exceções reduzidas a `error_type` (sem mensagem ou traceback) e metadata de
+auditoria sanitizada por allowlist de evento (campos desconhecidos são
+descartados). Na web, o evento registra `method` e `route` normalizada (UUIDs
+viram `{id}`) no início da requisição; `status_code`, `duration_ms` e
+`error_type` são observáveis apenas na API, e respostas 500 também recebem os
+headers de segurança e o `x-request-id`. Os detalhes de leitura estão em
+`docs/operations.md`. O gate
 `scripts/verify-secrets.sh` (também `pnpm run secrets`) varre apenas arquivos
 versionados com padrões explícitos — chaves privadas, access keys, tokens
 conhecidos, URLs com credenciais e segredos atribuídos —, exige que somente

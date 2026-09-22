@@ -168,3 +168,19 @@ criar extensões; por isso a criação pertence ao bootstrap administrativo.
 - **CSP bloqueante exige renderização dinâmica.** Todas as rotas HTML passaram a
   ser dinâmicas (`ƒ`) no build; `/manifest.webmanifest` permanece estático por
   não conter scripts.
+
+## Correções após revisão da PR #6
+
+- **Respostas 500 fora dos middlewares.** No Starlette,
+  `ServerErrorMiddleware` é a camada mais externa; a resposta 500 de uma
+  exceção não tratada é enviada direto ao servidor e não passa pelos
+  middlewares registrados com `add_middleware`, ficando sem headers de
+  segurança e sem `x-request-id`. A aplicação passou a usar `HardenedFastAPI`,
+  que envolve a pilha completa (incluindo o `ServerErrorMiddleware`) com o
+  logging e os headers, e um handler de `Exception` devolve Problem Details 500
+  genérico (sem mensagem da exceção), preservando headers, request ID, evento
+  de acesso com `error_type` e o contrato RFC 9457.
+- **Contrato do log web.** Os campos passaram a `snake_case` e a rota é
+  normalizada (UUIDs viram `{id}`); a documentação passou a explicitar que a
+  web registra o início da requisição, sem `status_code`, `duration_ms` ou
+  `error_type` — observáveis apenas na API e correlacionados pelo `request_id`.

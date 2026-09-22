@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
 import { CSP_HEADER_NAME, buildSecurityHeaders, generateNonce } from '@/lib/security-headers';
-import { logServerEvent } from '@/lib/server-logging';
+import { logServerEvent, normalizeRoute } from '@/lib/server-logging';
 
 export function middleware(request: NextRequest): NextResponse {
   const nonce = generateNonce();
@@ -17,9 +17,9 @@ export function middleware(request: NextRequest): NextResponse {
 
   logServerEvent('INFO', {
     event: 'http.request',
-    requestId,
+    request_id: requestId,
     method: request.method,
-    route: request.nextUrl.pathname,
+    route: normalizeRoute(request.nextUrl.pathname),
   });
 
   const response = NextResponse.next({ request: { headers: requestHeaders } });

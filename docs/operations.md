@@ -63,14 +63,22 @@ A cadeia completa em banco descartável é validada por
 
 ## Observabilidade (M1.6.4)
 
-A API emite um evento JSON por linha em stdout (`service: "api"`) e o servidor
-Next emite o mesmo formato (`service: "web"`). O access log textual do Uvicorn
-é desativado (`--no-access-log`) para não duplicar eventos. Campos emitidos:
-`timestamp`, `service`, `environment`, `level`, `event`, `request_id`, `method`,
-`route` (template sem query string), `status_code`, `duration_ms` e, em falhas,
-`error_type`. Nunca são emitidos corpo de requisição/resposta, cookies, tokens,
-senhas, headers de autorização, e-mails, IPs brutos, query strings ou mensagens
-de exceção.
+Os dois serviços emitem JSON por linha em stdout com campos em `snake_case`.
+O access log textual do Uvicorn é desativado (`--no-access-log`) para não
+duplicar eventos. Campos comuns: `timestamp`, `service`, `environment`, `level`,
+`event`, `request_id`. Nunca são emitidos corpo de requisição/resposta, cookies,
+tokens, senhas, headers de autorização, e-mails, IPs brutos, query strings ou
+mensagens de exceção.
+
+- **API (`service: "api"`)**: `method`, `route` no formato de template (ex.:
+  `/api/v1/clinics/{clinic_id}`, sem query string), `status_code`, `duration_ms`
+  e, em falhas, `error_type`. Exceções não tratadas viram Problem Details 500 e
+  continuam recebendo headers de segurança, `x-request-id` e evento de acesso.
+- **Web (`service: "web"`)**: `method` e `route` normalizada — UUIDs viram
+  `{id}` —, registrados no início da requisição. O middleware do Next roda antes
+  da renderização, então `status_code`, `duration_ms` e `error_type` não são
+  observáveis nele; para respostas SSR, use o `request_id` e consulte os eventos
+  da API gerados pelos `serverFetch`.
 
 O middleware da web gera `x-request-id` por requisição; o SSR encaminha esse
 header ao FastAPI e a API reutiliza request IDs válidos. Assim os logs da web e
