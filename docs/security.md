@@ -171,7 +171,8 @@ expõe essas tabelas neste incremento.
 
 **Implementado no M1.6:** headers de segurança em toda resposta da API
 (`nosniff`, `DENY`, `strict-origin-when-cross-origin`, `Permissions-Policy`,
-COOP/CORP e CSP `default-src 'none'`) e no Next.js (CSP bloqueante com nonce por
+COOP/CORP, CSP `default-src 'none'` e `Cache-Control: private, no-store`, que
+impede que navegador ou proxy retenham conteúdo autenticado) e no Next.js (CSP bloqueante com nonce por
 resposta, sem `unsafe-inline` para scripts, `object-src` bloqueado, recursos,
 conexões, fontes e formulários restritos à mesma origem, imagens `data:`
 permitidas e rewrite `/api/v1` isento para preservar os headers da API); HSTS
@@ -229,8 +230,10 @@ com duas clínicas (`workers: 1` e dados sintéticos removidos no teardown).
   (PDF/JPEG/PNG) e SHA-256 calculados no servidor; upload antes da ativação do
   metadado, com compensação do objeto se a persistência falhar e 503 sem
   metadado ativo se o S3 falhar; download somente após autorização por
-  metadado/RLS, com `Content-Disposition: attachment`. Não há exclusão física de
-  documento nem de objeto.
+  metadado/RLS, com `Content-Disposition: attachment` e
+  `Cache-Control: private, no-store` (toda resposta da API recebe o header; o
+  conteúdo clínico nunca é cacheável). Não há exclusão física de documento nem
+  de objeto.
 - **Dados sensíveis.** CPF, respostas de anamnese, nomes de arquivo, conteúdo e
   chave de storage nunca entram em logs, Problem Details ou metadata de
   auditoria; a auditoria registra apenas IDs, estado, ação e categoria. Não há

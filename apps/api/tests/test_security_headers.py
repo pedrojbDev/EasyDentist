@@ -17,6 +17,7 @@ EXPECTED_API_HEADERS = {
     "cross-origin-opener-policy": "same-origin",
     "cross-origin-resource-policy": "same-origin",
     "content-security-policy": "default-src 'none'; base-uri 'none'; frame-ancestors 'none'",
+    "cache-control": "private, no-store",
 }
 
 

@@ -457,6 +457,7 @@ async def test_download_serves_content_as_attachment_with_detected_mime(
     assert response.status_code == 200, response.text
     assert response.content == PDF_BYTES
     assert response.headers["content-type"].startswith("application/pdf")
+    assert response.headers["cache-control"] == "private, no-store"
     disposition = response.headers["content-disposition"]
     assert disposition.startswith("attachment;")
     assert "\r" not in disposition and "\n" not in disposition
