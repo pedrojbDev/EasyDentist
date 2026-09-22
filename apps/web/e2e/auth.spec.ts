@@ -1,4 +1,4 @@
-import { expect, login, test } from './fixtures';
+import { expect, login, loginWithForm, test } from './fixtures';
 import { findToken } from './helpers/mailpit';
 
 test.describe('autenticação', () => {
@@ -42,7 +42,7 @@ test.describe('autenticação', () => {
     expect(page.url()).not.toContain('token=');
     expect(await page.evaluate(() => window.location.hash)).toBe('');
 
-    await login(page, { email: manifest.users.recovery.email, password: newPassword });
+    await loginWithForm(page, { email: manifest.users.recovery.email, password: newPassword });
   });
 
   test('verificação de e-mail consome o token e confirma o estado', async ({ page, manifest }) => {

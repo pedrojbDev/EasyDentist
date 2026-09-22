@@ -221,7 +221,9 @@ inglês; títulos, enunciados, alternativas e complementos textuais são redaç�
 própria em pt-BR, inspirada na estrutura do Anexo 1 do Manual do Prontuário do
 CFO de 2026 **apenas como referência**, sem cópia de texto. O catálogo cobre
 queixa principal; histórias atual, médica, odontológica, familiar e social; as
-nove condições sistêmicas; alergias, anestesia, sangramento, cicatrização,
+oito seções de condições sistêmicas materializadas (digestivas, hepáticas,
+cardiovasculares, respiratórias, renais, motoras, infecciosas e
+endócrino-metabólicas); alergias, anestesia, sangramento, cicatrização,
 cirurgias, gestação, neoplasias, condições psicológicas, deficiências,
 medicamentos e hábitos; e o inventário odontológico com higiene, dor,
 sangramento, mobilidade, halitose, xerostomia, ATM, sensibilidade, lesões,

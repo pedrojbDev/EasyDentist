@@ -213,19 +213,50 @@ async def delete_anamneses_for_clinics(
 ) -> None:
     """Remove test anamneses, including FINAL rows, for fixture teardown.
 
-    Final versions are immutable by design, so cleanup disables the trigger for
-    the migration role just for this maintenance statement and restores it.
+    Final versions are immutable by design, so cleanup disables the user
+    triggers for the migration role just for this maintenance statement and
+    restores them immediately after, even when the delete fails.
     """
 
-    await connection.execute("ALTER TABLE app.anamneses DISABLE TRIGGER anamneses_final_immutable")
+    await connection.execute("ALTER TABLE app.anamneses DISABLE TRIGGER USER")
     try:
         await connection.execute(
             "DELETE FROM app.anamneses WHERE clinic_id = ANY($1::uuid[])", clinic_ids
         )
     finally:
-        await connection.execute(
-            "ALTER TABLE app.anamneses ENABLE TRIGGER anamneses_final_immutable"
-        )
+        await connection.execute("ALTER TABLE app.anamneses ENABLE TRIGGER USER")
+
+
+async def delete_m2_rows_for_clinics(
+    connection: asyncpg.Connection, clinic_ids: list[uuid.UUID]
+) -> None:
+    """Remove every M2 row of the clinics in FK-safe order.
+
+    Teardown must run this before deleting the clinics (and before the users
+    that authored the rows), otherwise the children block the parent delete and
+    synthetic clinics/patients survive the suite run.
+    """
+
+    await connection.execute(
+        "DELETE FROM app.patient_documents WHERE clinic_id = ANY($1::uuid[])", clinic_ids
+    )
+    await connection.execute(
+        "DELETE FROM app.patient_alerts WHERE clinic_id = ANY($1::uuid[])", clinic_ids
+    )
+    await delete_anamneses_for_clinics(connection, clinic_ids)
+    await connection.execute(
+        "DELETE FROM app.patients WHERE clinic_id = ANY($1::uuid[])", clinic_ids
+    )
+
+
+async def delete_professional_profiles_for_users(
+    connection: asyncpg.Connection, user_ids: list[uuid.UUID]
+) -> None:
+    """Remove the owner-scoped profiles before the users they belong to."""
+
+    await connection.execute(
+        "DELETE FROM app.professional_profiles WHERE user_id = ANY($1::uuid[])", user_ids
+    )
 
 
 async def insert_patient_document(
