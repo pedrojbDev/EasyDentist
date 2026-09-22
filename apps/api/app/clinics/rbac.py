@@ -23,6 +23,12 @@ class Permission(StrEnum):
     MEMBERSHIPS_MANAGE_ROLE = "memberships:manage-role"
     MEMBERSHIPS_REMOVE = "memberships:remove"
     INVITATIONS_CREATE = "invitations:create"
+    PATIENTS_READ = "patients:read"
+    PATIENTS_CREATE = "patients:create"
+    PATIENTS_UPDATE = "patients:update"
+    PATIENTS_ARCHIVE = "patients:archive"
+    PATIENT_ALERTS_READ = "patient-alerts:read"
+    PATIENT_ALERTS_MANAGE = "patient-alerts:manage"
 
 
 _READ_PERMISSIONS = frozenset(
@@ -39,12 +45,21 @@ _MANAGEMENT_PERMISSIONS = frozenset(
     }
 )
 
+_PATIENT_READ = frozenset({Permission.PATIENTS_READ})
+_PATIENT_REGISTRATION = frozenset({Permission.PATIENTS_CREATE, Permission.PATIENTS_UPDATE})
+_PATIENT_ARCHIVE = frozenset({Permission.PATIENTS_ARCHIVE})
+_CLINICAL_ALERTS = frozenset({Permission.PATIENT_ALERTS_READ, Permission.PATIENT_ALERTS_MANAGE})
+
 ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
     Role.OWNER: frozenset(Permission),
-    Role.ADMIN: _READ_PERMISSIONS | _MANAGEMENT_PERMISSIONS,
-    Role.DENTIST: _READ_PERMISSIONS,
-    Role.ASSISTANT: _READ_PERMISSIONS,
-    Role.RECEPTIONIST: _READ_PERMISSIONS,
+    Role.ADMIN: _READ_PERMISSIONS
+    | _MANAGEMENT_PERMISSIONS
+    | _PATIENT_READ
+    | _PATIENT_REGISTRATION
+    | _PATIENT_ARCHIVE,
+    Role.DENTIST: _READ_PERMISSIONS | _PATIENT_READ | _CLINICAL_ALERTS,
+    Role.ASSISTANT: _READ_PERMISSIONS | _PATIENT_READ | frozenset({Permission.PATIENT_ALERTS_READ}),
+    Role.RECEPTIONIST: _READ_PERMISSIONS | _PATIENT_READ | _PATIENT_REGISTRATION,
 }
 
 

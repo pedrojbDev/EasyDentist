@@ -278,6 +278,111 @@ export interface paths {
         patch: operations["update_membership_role_api_v1_clinics__clinic_id__memberships__membership_id__patch"];
         trace?: never;
     };
+    "/api/v1/clinics/{clinic_id}/patients": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Patients */
+        get: operations["list_patients_api_v1_clinics__clinic_id__patients_get"];
+        put?: never;
+        /** Create Patient */
+        post: operations["create_patient_api_v1_clinics__clinic_id__patients_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/patients/{patient_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Patient */
+        get: operations["get_patient_api_v1_clinics__clinic_id__patients__patient_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Patient */
+        patch: operations["update_patient_api_v1_clinics__clinic_id__patients__patient_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/patients/{patient_id}/alerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Patient Alerts */
+        get: operations["list_patient_alerts_api_v1_clinics__clinic_id__patients__patient_id__alerts_get"];
+        put?: never;
+        /** Create Patient Alert */
+        post: operations["create_patient_alert_api_v1_clinics__clinic_id__patients__patient_id__alerts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/patients/{patient_id}/alerts/{alert_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Patient Alert */
+        patch: operations["update_patient_alert_api_v1_clinics__clinic_id__patients__patient_id__alerts__alert_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/patients/{patient_id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Archive Patient */
+        post: operations["archive_patient_api_v1_clinics__clinic_id__patients__patient_id__archive_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/patients/{patient_id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Restore Patient */
+        post: operations["restore_patient_api_v1_clinics__clinic_id__patients__patient_id__restore_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/clinics/{clinic_id}/settings": {
         parameters: {
             query?: never;
@@ -471,6 +576,276 @@ export interface components {
             password: string;
             /** Token */
             token: string;
+        };
+        /** PatientAlertCreateRequest */
+        PatientAlertCreateRequest: {
+            /** Description */
+            description: string;
+            kind: components["schemas"]["PatientAlertKind"];
+        };
+        /**
+         * PatientAlertKind
+         * @enum {string}
+         */
+        PatientAlertKind: "ALLERGY" | "MEDICATION" | "CLINICAL_RISK" | "OTHER";
+        /** PatientAlertListResponse */
+        PatientAlertListResponse: {
+            /** Items */
+            items: components["schemas"]["PatientAlertResponse"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Total */
+            total: number;
+        };
+        /** PatientAlertResponse */
+        PatientAlertResponse: {
+            /**
+             * Clinic Id
+             * Format: uuid
+             */
+            clinic_id: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Created By User Id
+             * Format: uuid
+             */
+            created_by_user_id: string;
+            /** Description */
+            description: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            kind: components["schemas"]["PatientAlertKind"];
+            /**
+             * Patient Id
+             * Format: uuid
+             */
+            patient_id: string;
+            /** Resolved At */
+            resolved_at: string | null;
+            status: components["schemas"]["PatientAlertStatus"];
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * PatientAlertStatus
+         * @enum {string}
+         */
+        PatientAlertStatus: "ACTIVE" | "RESOLVED";
+        /** PatientAlertUpdateRequest */
+        PatientAlertUpdateRequest: {
+            /** Description */
+            description?: string | null;
+            status?: components["schemas"]["PatientAlertStatus"] | null;
+        };
+        /** PatientCreateRequest */
+        PatientCreateRequest: {
+            /** Administrative Notes */
+            administrative_notes?: string | null;
+            /**
+             * Birth Date
+             * Format: date
+             */
+            birth_date: string;
+            /** Birthplace */
+            birthplace?: string | null;
+            /** City */
+            city?: string | null;
+            /** Complement */
+            complement?: string | null;
+            /** Cpf */
+            cpf?: string | null;
+            /** District */
+            district?: string | null;
+            /** Email */
+            email?: string | null;
+            /** Emergency Contact Name */
+            emergency_contact_name?: string | null;
+            /** Emergency Contact Phone */
+            emergency_contact_phone?: string | null;
+            /** Emergency Contact Relationship */
+            emergency_contact_relationship?: string | null;
+            /** Full Name */
+            full_name: string;
+            /** Guardian Name */
+            guardian_name?: string | null;
+            /** Guardian Phone */
+            guardian_phone?: string | null;
+            /** Guardian Relationship */
+            guardian_relationship?: string | null;
+            /** Nationality */
+            nationality?: string | null;
+            /** Number */
+            number?: string | null;
+            /** Occupation */
+            occupation?: string | null;
+            /** Phone */
+            phone: string;
+            /** Phone Secondary */
+            phone_secondary?: string | null;
+            /** Postal Code */
+            postal_code?: string | null;
+            /** Social Name */
+            social_name?: string | null;
+            /** State */
+            state?: string | null;
+            /** Street */
+            street?: string | null;
+        };
+        /** PatientListResponse */
+        PatientListResponse: {
+            /** Items */
+            items: components["schemas"]["PatientResponse"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Total */
+            total: number;
+        };
+        /** PatientResponse */
+        PatientResponse: {
+            /** Administrative Notes */
+            administrative_notes: string | null;
+            /** Archived At */
+            archived_at: string | null;
+            /**
+             * Birth Date
+             * Format: date
+             */
+            birth_date: string;
+            /** Birthplace */
+            birthplace: string | null;
+            /** City */
+            city: string | null;
+            /**
+             * Clinic Id
+             * Format: uuid
+             */
+            clinic_id: string;
+            /** Complement */
+            complement: string | null;
+            /** Cpf */
+            cpf: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** District */
+            district: string | null;
+            /** Email */
+            email: string | null;
+            /** Emergency Contact Name */
+            emergency_contact_name: string | null;
+            /** Emergency Contact Phone */
+            emergency_contact_phone: string | null;
+            /** Emergency Contact Relationship */
+            emergency_contact_relationship: string | null;
+            /** Full Name */
+            full_name: string;
+            /** Guardian Name */
+            guardian_name: string | null;
+            /** Guardian Phone */
+            guardian_phone: string | null;
+            /** Guardian Relationship */
+            guardian_relationship: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Nationality */
+            nationality: string | null;
+            /** Number */
+            number: string | null;
+            /** Occupation */
+            occupation: string | null;
+            /** Phone */
+            phone: string;
+            /** Phone Secondary */
+            phone_secondary: string | null;
+            /** Postal Code */
+            postal_code: string | null;
+            /** Social Name */
+            social_name: string | null;
+            /** State */
+            state: string | null;
+            status: components["schemas"]["PatientStatus"];
+            /** Street */
+            street: string | null;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * PatientStatus
+         * @enum {string}
+         */
+        PatientStatus: "ACTIVE" | "ARCHIVED";
+        /** PatientUpdateRequest */
+        PatientUpdateRequest: {
+            /** Administrative Notes */
+            administrative_notes?: string | null;
+            /** Birth Date */
+            birth_date?: string | null;
+            /** Birthplace */
+            birthplace?: string | null;
+            /** City */
+            city?: string | null;
+            /** Complement */
+            complement?: string | null;
+            /** Cpf */
+            cpf?: string | null;
+            /** District */
+            district?: string | null;
+            /** Email */
+            email?: string | null;
+            /** Emergency Contact Name */
+            emergency_contact_name?: string | null;
+            /** Emergency Contact Phone */
+            emergency_contact_phone?: string | null;
+            /** Emergency Contact Relationship */
+            emergency_contact_relationship?: string | null;
+            /** Full Name */
+            full_name?: string | null;
+            /** Guardian Name */
+            guardian_name?: string | null;
+            /** Guardian Phone */
+            guardian_phone?: string | null;
+            /** Guardian Relationship */
+            guardian_relationship?: string | null;
+            /** Nationality */
+            nationality?: string | null;
+            /** Number */
+            number?: string | null;
+            /** Occupation */
+            occupation?: string | null;
+            /** Phone */
+            phone?: string | null;
+            /** Phone Secondary */
+            phone_secondary?: string | null;
+            /** Postal Code */
+            postal_code?: string | null;
+            /** Social Name */
+            social_name?: string | null;
+            /** State */
+            state?: string | null;
+            /** Street */
+            street?: string | null;
         };
         /**
          * Role
@@ -1016,6 +1391,318 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MembershipResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_patients_api_v1_clinics__clinic_id__patients_get: {
+        parameters: {
+            query?: {
+                search?: string | null;
+                status?: components["schemas"]["PatientStatus"];
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PatientListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_patient_api_v1_clinics__clinic_id__patients_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PatientCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PatientResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_patient_api_v1_clinics__clinic_id__patients__patient_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PatientResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_patient_api_v1_clinics__clinic_id__patients__patient_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PatientUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PatientResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_patient_alerts_api_v1_clinics__clinic_id__patients__patient_id__alerts_get: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["PatientAlertStatus"] | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                patient_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PatientAlertListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_patient_alert_api_v1_clinics__clinic_id__patients__patient_id__alerts_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PatientAlertCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PatientAlertResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_patient_alert_api_v1_clinics__clinic_id__patients__patient_id__alerts__alert_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+                alert_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PatientAlertUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PatientAlertResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    archive_patient_api_v1_clinics__clinic_id__patients__patient_id__archive_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PatientResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    restore_patient_api_v1_clinics__clinic_id__patients__patient_id__restore_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PatientResponse"];
                 };
             };
             /** @description Validation Error */

@@ -4,12 +4,19 @@ import json
 import uuid
 from collections.abc import AsyncIterator
 from dataclasses import dataclass
+from datetime import UTC, datetime
 
 import asyncpg
 import httpx
 import pytest
 from conftest import RecordingEmailSender, make_test_email
-from helpers import insert_clinic, insert_clinic_settings, insert_membership
+from helpers import (
+    insert_clinic,
+    insert_clinic_settings,
+    insert_membership,
+    insert_patient,
+    insert_patient_alert,
+)
 
 from app.clinics.rbac import Role
 
@@ -33,6 +40,9 @@ class MatrixScenario:
         self.foreign_membership_id: uuid.UUID
         self.victims: dict[str, uuid.UUID]
         self.members: dict[Role, Teammate]
+        self.patient_id: uuid.UUID
+        self.archived_patient_id: uuid.UUID
+        self.alert_id: uuid.UUID
 
 
 async def anonymous_csrf(client: httpx.AsyncClient) -> str:
@@ -135,7 +145,34 @@ async def matrix_scenario(
             role="DENTIST",
             status="ACTIVE",
         )
-    yield built
+    built.patient_id = await insert_patient(
+        migrator_connection,
+        clinic_id=built.clinic_id,
+        full_name="Paciente da Matriz",
+        cpf="52998224725",
+    )
+    built.archived_patient_id = await insert_patient(
+        migrator_connection,
+        clinic_id=built.clinic_id,
+        full_name="Paciente Arquivado",
+        status="ARCHIVED",
+        archived_at=datetime.now(UTC),
+    )
+    built.alert_id = await insert_patient_alert(
+        migrator_connection,
+        clinic_id=built.clinic_id,
+        patient_id=built.patient_id,
+        created_by_user_id=built.members[Role.OWNER].user_id,
+    )
+    try:
+        yield built
+    finally:
+        await migrator_connection.execute(
+            "DELETE FROM app.patient_alerts WHERE clinic_id = $1", built.clinic_id
+        )
+        await migrator_connection.execute(
+            "DELETE FROM app.patients WHERE clinic_id = $1", built.clinic_id
+        )
 
 
 def clinic_url(scenario: MatrixScenario, clinic_id: uuid.UUID | None = None) -> str:
@@ -434,3 +471,123 @@ async def test_clinic_audit_metadata_has_no_secrets(
         assert secret not in metadata, name
     event_types = {row["event_type"] for row in rows}
     assert {"membership.invited", "invitation.accepted"} <= event_types
+
+
+PATIENT_OPERATION_EXPECTATIONS: dict[str, dict[Role, int]] = {
+    "list_patients": {role: 200 for role in Role},
+    "get_patient": {role: 200 for role in Role},
+    "create_patient": {
+        Role.OWNER: 201,
+        Role.ADMIN: 201,
+        Role.DENTIST: 403,
+        Role.ASSISTANT: 403,
+        Role.RECEPTIONIST: 201,
+    },
+    "update_patient": {
+        Role.OWNER: 200,
+        Role.ADMIN: 200,
+        Role.DENTIST: 403,
+        Role.ASSISTANT: 403,
+        Role.RECEPTIONIST: 200,
+    },
+    "archive_patient": {
+        Role.OWNER: 200,
+        Role.ADMIN: 200,
+        Role.DENTIST: 403,
+        Role.ASSISTANT: 403,
+        Role.RECEPTIONIST: 403,
+    },
+    "restore_patient": {
+        Role.OWNER: 200,
+        Role.ADMIN: 200,
+        Role.DENTIST: 403,
+        Role.ASSISTANT: 403,
+        Role.RECEPTIONIST: 403,
+    },
+    "list_alerts": {
+        Role.OWNER: 200,
+        Role.ADMIN: 403,
+        Role.DENTIST: 200,
+        Role.ASSISTANT: 200,
+        Role.RECEPTIONIST: 403,
+    },
+    "create_alert": {
+        Role.OWNER: 201,
+        Role.ADMIN: 403,
+        Role.DENTIST: 201,
+        Role.ASSISTANT: 403,
+        Role.RECEPTIONIST: 403,
+    },
+    "resolve_alert": {
+        Role.OWNER: 200,
+        Role.ADMIN: 403,
+        Role.DENTIST: 200,
+        Role.ASSISTANT: 403,
+        Role.RECEPTIONIST: 403,
+    },
+}
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("operation", list(PATIENT_OPERATION_EXPECTATIONS))
+async def test_role_matrix_on_patient_endpoints(
+    api_client: httpx.AsyncClient,
+    matrix_scenario: MatrixScenario,
+    operation: str,
+) -> None:
+    scenario = matrix_scenario
+    patients_url = f"{clinic_url(scenario)}/patients"
+    patient_url = f"{patients_url}/{scenario.patient_id}"
+    for role in Role:
+        token = await login(api_client, scenario.members[role].email)
+        if operation == "list_patients":
+            response = await read(api_client, patients_url, token)
+        elif operation == "get_patient":
+            response = await read(api_client, patient_url, token)
+        elif operation == "create_patient":
+            response = await mutate(
+                api_client,
+                "POST",
+                patients_url,
+                token,
+                {
+                    "full_name": f"Matriz {role.value}",
+                    "birth_date": "1990-01-01",
+                    "phone": "+5571900000000",
+                },
+            )
+        elif operation == "update_patient":
+            response = await mutate(
+                api_client, "PATCH", patient_url, token, {"social_name": "Apelido"}
+            )
+        elif operation == "archive_patient":
+            response = await mutate(api_client, "POST", f"{patient_url}/archive", token)
+        elif operation == "restore_patient":
+            response = await mutate(
+                api_client,
+                "POST",
+                f"{patients_url}/{scenario.archived_patient_id}/restore",
+                token,
+            )
+        elif operation == "list_alerts":
+            response = await read(api_client, f"{patient_url}/alerts", token)
+        elif operation == "create_alert":
+            response = await mutate(
+                api_client,
+                "POST",
+                f"{patient_url}/alerts",
+                token,
+                {"kind": "ALLERGY", "description": "Alerta da matriz"},
+            )
+        else:
+            response = await mutate(
+                api_client,
+                "PATCH",
+                f"{patient_url}/alerts/{scenario.alert_id}",
+                token,
+                {"status": "RESOLVED"},
+            )
+        assert response.status_code == PATIENT_OPERATION_EXPECTATIONS[operation][role], (
+            operation,
+            role,
+        )
