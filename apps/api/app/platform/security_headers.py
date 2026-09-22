@@ -18,6 +18,7 @@ SECURITY_HEADERS: tuple[tuple[bytes, bytes], ...] = (
         b"content-security-policy",
         b"default-src 'none'; base-uri 'none'; frame-ancestors 'none'",
     ),
+    (b"cache-control", b"private, no-store"),
 )
 
 HSTS_HEADER: tuple[bytes, bytes] = (
