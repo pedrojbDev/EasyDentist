@@ -4,6 +4,7 @@ const apiInternalBaseUrl = process.env.API_INTERNAL_BASE_URL ?? 'http://localhos
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  poweredByHeader: false,
   typedRoutes: true,
   async rewrites() {
     return [

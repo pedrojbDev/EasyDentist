@@ -6,12 +6,26 @@ type Credentials = { email: string; password: string };
 
 type Fixtures = {
   manifest: Manifest;
+  cspGuard: void;
 };
 
 export const test = base.extend<Fixtures>({
   manifest: async ({}, provide) => {
     await provide(readManifest());
   },
+  cspGuard: [
+    async ({ page }, provide) => {
+      const violations: string[] = [];
+      page.on('console', (message) => {
+        if (message.type() === 'error' && message.text().includes('Content Security Policy')) {
+          violations.push(message.text());
+        }
+      });
+      await provide();
+      expect(violations, `CSP violations: ${violations.join(' | ')}`).toEqual([]);
+    },
+    { auto: true },
+  ],
 });
 
 export { expect };
