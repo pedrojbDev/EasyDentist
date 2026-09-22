@@ -376,6 +376,43 @@ async def test_patch_patient_rejects_rule_violations(
 
 
 @pytest.mark.anyio
+async def test_patch_patient_rejects_null_and_blank_mandatory_fields(
+    api_client: httpx.AsyncClient, patient_scenario: PatientScenario
+) -> None:
+    scenario = patient_scenario
+    token = await owner_token(api_client, scenario)
+    url = patient_url(scenario)
+
+    nulls = [
+        await mutate(api_client, "PATCH", url, token, {"full_name": None}),
+        await mutate(api_client, "PATCH", url, token, {"phone": None}),
+        await mutate(api_client, "PATCH", url, token, {"birth_date": None}),
+    ]
+    blanks = [
+        await mutate(api_client, "PATCH", url, token, {"full_name": "   "}),
+        await mutate(api_client, "PATCH", url, token, {"phone": ""}),
+    ]
+
+    for response in (*nulls, *blanks):
+        assert response.status_code == 422, response.text
+
+    unchanged = await read(api_client, url, token)
+    assert unchanged.json()["full_name"] == "Ana Souza"
+    assert unchanged.json()["phone"] == "+5571999112222"
+
+    valid = await mutate(
+        api_client,
+        "PATCH",
+        url,
+        token,
+        {"full_name": "Ana Souza Lima", "phone": "+5571900000000"},
+    )
+    assert valid.status_code == 200, valid.text
+    assert valid.json()["full_name"] == "Ana Souza Lima"
+    assert valid.json()["phone"] == "+5571900000000"
+
+
+@pytest.mark.anyio
 async def test_archive_hides_the_patient_from_the_default_list_but_keeps_direct_access(
     api_client: httpx.AsyncClient, patient_scenario: PatientScenario
 ) -> None:

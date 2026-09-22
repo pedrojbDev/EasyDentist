@@ -98,3 +98,26 @@ def test_update_request_validates_cpf_when_provided() -> None:
     assert PatientUpdateRequest(cpf="  ").cpf is None
     with pytest.raises(ValidationError):
         PatientUpdateRequest(cpf="111.111.111-11")
+
+
+@pytest.mark.parametrize("field", ["full_name", "birth_date", "phone"])
+def test_update_request_rejects_explicit_null_on_mandatory_fields(field: str) -> None:
+    with pytest.raises(ValidationError):
+        PatientUpdateRequest(**{field: None})
+
+
+@pytest.mark.parametrize("payload", [{"full_name": "   "}, {"phone": ""}])
+def test_update_request_rejects_blank_mandatory_fields(payload: dict[str, str]) -> None:
+    with pytest.raises(ValidationError):
+        PatientUpdateRequest(**payload)
+
+
+def test_update_request_accepts_valid_partial_mandatory_fields() -> None:
+    payload = PatientUpdateRequest(full_name="  Ana Souza  ", phone=" +5571999112222 ")
+
+    assert payload.full_name == "Ana Souza"
+    assert payload.phone == "+5571999112222"
+    assert payload.model_dump(exclude_unset=True) == {
+        "full_name": "Ana Souza",
+        "phone": "+5571999112222",
+    }
