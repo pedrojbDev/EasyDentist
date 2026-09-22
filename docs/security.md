@@ -277,3 +277,18 @@ exercita AWS Signature v4 e confirma que um objeto privado não é legível sem
 credenciais; ele não é uma aprovação de segurança para produção. Da mesma forma,
 backup/restore local não define retenção, expiração ou criptografia: esses
 requisitos permanecem em `docs/operations.md` como pré-requisitos de produção.
+
+## Fundação de agenda (M3.1, ADR 0011)
+
+As seis tabelas de agenda usam `FORCE ROW LEVEL SECURITY`, as mesmas GUCs de
+`TenantContext`, `app.is_active_member()` e policies fail-closed do domínio
+tenant-aware existente. A role runtime recebe somente `SELECT`, `INSERT` e,
+exceto no histórico, `UPDATE`; não recebe `DELETE`, DDL ou privilégios para
+criar extensões. FKs compostas impedem referências entre clínicas.
+
+O histórico de consultas bloqueia `UPDATE`/`DELETE` no banco e rejeita notas
+administrativas em snapshots JSONB. Essas notas também não devem ser colocadas
+em logs, Problem Details, metadata de auditoria ou cache persistente por APIs
+futuras. O bootstrap administrativo instala `btree_gist`; bancos existentes
+devem ter a extensão instalada por administrador antes de aplicar a migration,
+conforme ADR 0011. Nem a role runtime nem o processo da API executam esse DDL.
