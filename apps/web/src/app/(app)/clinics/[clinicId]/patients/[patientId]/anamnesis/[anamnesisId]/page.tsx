@@ -12,6 +12,7 @@ import { anamnesisCapabilities } from '@/features/anamnesis/permissions';
 import { getAnamnesisOnServer, listAnamnesesOnServer } from '@/features/anamnesis/server';
 import { ClinicNav } from '@/features/clinics/components/ClinicNav';
 import { getClinicOnServer } from '@/features/clinics/server';
+import { canReadAnyDocument, documentCapabilities } from '@/features/documents/permissions';
 import { PatientSectionNav } from '@/features/patients/components/PatientSectionNav';
 import { getPatientOnServer } from '@/features/patients/server';
 import { ApiError } from '@/lib/api/problem';
@@ -50,6 +51,7 @@ export default async function AnamnesisVersionPage({
           patientId={patient.id}
           active="anamnesis"
           canReadAnamnesis={false}
+          canReadDocuments={canReadAnyDocument(documentCapabilities(clinic.role))}
         />
         <AnamnesisRestricted />
       </section>
@@ -97,6 +99,7 @@ export default async function AnamnesisVersionPage({
         patientId={patient.id}
         active="anamnesis"
         canReadAnamnesis={true}
+        canReadDocuments={canReadAnyDocument(documentCapabilities(clinic.role))}
       />
 
       <AnamnesisReadOnly anamnesis={anamnesis} />

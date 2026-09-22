@@ -33,6 +33,10 @@ class Permission(StrEnum):
     ANAMNESIS_CREATE = "anamnesis:create"
     ANAMNESIS_UPDATE = "anamnesis:update"
     ANAMNESIS_FINALIZE = "anamnesis:finalize"
+    DOCUMENTS_ADMINISTRATIVE_READ = "documents-administrative:read"
+    DOCUMENTS_ADMINISTRATIVE_MANAGE = "documents-administrative:manage"
+    DOCUMENTS_CLINICAL_READ = "documents-clinical:read"
+    DOCUMENTS_CLINICAL_MANAGE = "documents-clinical:manage"
 
 
 _READ_PERMISSIONS = frozenset(
@@ -61,6 +65,20 @@ _ANAMNESIS_WRITE = frozenset(
         Permission.ANAMNESIS_FINALIZE,
     }
 )
+_DOCUMENT_ADMIN = frozenset(
+    {
+        Permission.DOCUMENTS_ADMINISTRATIVE_READ,
+        Permission.DOCUMENTS_ADMINISTRATIVE_MANAGE,
+    }
+)
+_DOCUMENT_ADMIN_READ = frozenset({Permission.DOCUMENTS_ADMINISTRATIVE_READ})
+_DOCUMENT_CLINICAL = frozenset(
+    {
+        Permission.DOCUMENTS_CLINICAL_READ,
+        Permission.DOCUMENTS_CLINICAL_MANAGE,
+    }
+)
+_DOCUMENT_CLINICAL_READ = frozenset({Permission.DOCUMENTS_CLINICAL_READ})
 
 ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
     Role.OWNER: frozenset(Permission),
@@ -68,17 +86,28 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
     | _MANAGEMENT_PERMISSIONS
     | _PATIENT_READ
     | _PATIENT_REGISTRATION
-    | _PATIENT_ARCHIVE,
+    | _PATIENT_ARCHIVE
+    | _DOCUMENT_ADMIN,
     Role.DENTIST: (
-        _READ_PERMISSIONS | _PATIENT_READ | _CLINICAL_ALERTS | _ANAMNESIS_READ | _ANAMNESIS_WRITE
+        _READ_PERMISSIONS
+        | _PATIENT_READ
+        | _CLINICAL_ALERTS
+        | _ANAMNESIS_READ
+        | _ANAMNESIS_WRITE
+        | _DOCUMENT_ADMIN_READ
+        | _DOCUMENT_CLINICAL
     ),
     Role.ASSISTANT: (
         _READ_PERMISSIONS
         | _PATIENT_READ
         | frozenset({Permission.PATIENT_ALERTS_READ})
         | _ANAMNESIS_READ
+        | _DOCUMENT_ADMIN_READ
+        | _DOCUMENT_CLINICAL_READ
     ),
-    Role.RECEPTIONIST: _READ_PERMISSIONS | _PATIENT_READ | _PATIENT_REGISTRATION,
+    Role.RECEPTIONIST: (
+        _READ_PERMISSIONS | _PATIENT_READ | _PATIENT_REGISTRATION | _DOCUMENT_ADMIN
+    ),
 }
 
 

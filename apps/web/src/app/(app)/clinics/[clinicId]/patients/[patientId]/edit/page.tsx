@@ -6,6 +6,7 @@ import { PageHeader } from '@/components/ui/page-header';
 import { anamnesisCapabilities } from '@/features/anamnesis/permissions';
 import { ClinicNav } from '@/features/clinics/components/ClinicNav';
 import { getClinicOnServer } from '@/features/clinics/server';
+import { canReadAnyDocument, documentCapabilities } from '@/features/documents/permissions';
 import { PatientForm } from '@/features/patients/components/PatientForm';
 import { PatientSectionNav } from '@/features/patients/components/PatientSectionNav';
 import { patientCapabilities } from '@/features/patients/permissions';
@@ -48,6 +49,7 @@ export default async function EditPatientPage({
         patientId={patient.id}
         active="record"
         canReadAnamnesis={anamnesisCapabilities(clinic.role).canRead}
+        canReadDocuments={canReadAnyDocument(documentCapabilities(clinic.role))}
       />
       {capabilities.canUpdate ? (
         <PatientForm clinicId={clinic.id} mode="edit" patient={patient} />
