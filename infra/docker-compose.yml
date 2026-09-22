@@ -75,7 +75,7 @@ services:
       APP_ENV: ${APP_ENV:-development}
       AUTH_SECRET: ${AUTH_SECRET:-easydentist-development-secret-not-for-production}
       PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:3000}
-      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}
       S3_ENDPOINT_URL: http://storage:8333
       S3_ACCESS_KEY: ${S3_ACCESS_KEY:-easydentist}
       S3_SECRET_KEY: ${S3_SECRET_KEY:-easydentist-local-only}
@@ -112,6 +112,24 @@ services:
       db:
         condition: service_healthy
     command: [alembic, upgrade, head]
+    restart: no
+
+  e2e-seed:
+    profiles: [tools]
+    image: ${API_IMAGE:-easydentist-api:local}
+    build:
+      context: ../apps/api
+      dockerfile: Dockerfile
+    environment:
+      # Fixtures create tenants and memberships, so only the migration
+      # credential is accepted here. The runtime role never seeds state.
+      MIGRATION_DATABASE_URL: ${MIGRATION_DATABASE_URL:-postgresql+asyncpg://${MIGRATION_DB_USER:-easydentist_migrator}:${MIGRATION_DB_PASSWORD:-easydentist-migrator-local-only}@db:5432/${POSTGRES_DB:-easydentist}}
+      APP_ENV: development
+      AUTH_SECRET: ${AUTH_SECRET:-easydentist-development-secret-not-for-production}
+    depends_on:
+      db:
+        condition: service_healthy
+    command: [python, -m, scripts.seed_e2e]
     restart: no
 
   web:

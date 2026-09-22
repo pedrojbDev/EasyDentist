@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { ClinicNav } from '@/features/clinics/components/ClinicNav';
-import { roleLabel, statusLabel } from '@/features/clinics/components/ClinicList';
+import { roleLabel, statusLabel } from '@/features/clinics/labels';
 import { LegalNameForm } from '@/features/clinics/components/LegalNameForm';
 import { getClinicOnServer } from '@/features/clinics/server';
 import { ApiError } from '@/lib/api/problem';

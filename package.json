@@ -15,10 +15,12 @@
     "format:check": "prettier --check .",
     "typecheck": "pnpm --filter @easydentist/web typecheck",
     "gen:api": "pnpm --filter @easydentist/web gen:api",
+    "e2e": "playwright test",
     "licenses": "node scripts/check-js-licenses.mjs",
     "audit": "pnpm audit --audit-level=high"
   },
   "devDependencies": {
+    "@playwright/test": "1.63.0",
     "prettier": "3.6.2"
   }
 }
