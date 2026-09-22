@@ -10,7 +10,7 @@ failures=0
 
 # Local development values documented in infra/.env.example, docker-compose and
 # test fixtures. They are not production secrets; anything else is a finding.
-ALLOWED_LOCAL_VALUES='easydentist-development-secret-not-for-production|easydentist-local-only|easydentist-app-local-only|easydentist-migrator-local-only|test-auth-secret-with-enough-bytes-123|not-for-production|local-only|:secret@|:password@|password-12345|wrong-password-12345|senha-secreta-|senha-nova-|token-value|not-a-stored-token|definitely-not-a-token|too-short|secret-token|token-1|token-4'
+ALLOWED_LOCAL_VALUES='easydentist-development-secret-not-for-production|easydentist-local-only|easydentist-app-local-only|easydentist-migrator-local-only|test-auth-secret-with-enough-bytes-123|not-for-production|local-only|:secret@|:password@|password-12345|wrong-password-12345|senha-secreta-|senha-nova-|token-value|not-a-stored-token|definitely-not-a-token|too-short|secret-token|token-1|token-4|must-not-persist|m16-cookie-password'
 
 report() {
   rule=$1

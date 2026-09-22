@@ -10,6 +10,7 @@ import httpx
 import pytest
 from fastapi import FastAPI
 
+from app.auth.audit import sanitize_event_metadata
 from app.platform.logging import JsonLogFormatter, get_logger
 from app.platform.middleware import RequestLoggingMiddleware, resolve_request_id
 
@@ -101,6 +102,14 @@ def test_formatter_never_serialises_exception_messages() -> None:
 
     assert "super-secret" not in line
     assert json.loads(line)["error_type"] == "RuntimeError"
+
+
+def test_audit_metadata_is_allowlisted_per_event() -> None:
+    assert sanitize_event_metadata(
+        "session_revoked", {"session_id": "session-1", "token": "must-not-persist"}
+    ) == {"session_id": "session-1"}
+    assert sanitize_event_metadata("integration.audit", {"auth_method": "password"}) == {}
+    assert sanitize_event_metadata("session_revoked", None) == {}
 
 
 def test_resolve_request_id_reuses_valid_headers_only() -> None:
