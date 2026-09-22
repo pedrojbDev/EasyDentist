@@ -3,6 +3,64 @@
 Runbook operacional do EasyDentist local e registro dos requisitos ainda
 pendentes para produção. Complementa `docs/security.md` e a ADR 0009.
 
+## Pré-requisitos
+
+- Docker com Compose v2.
+- Node.js 24.19.0 e pnpm 11.10.0.
+- Python 3.12.14 e uv 0.12.5 (via `apps/api`).
+- `curl` com suporte a AWS Signature v4 para o canário de storage.
+
+## Inicialização do Compose
+
+```sh
+docker compose -f infra/docker-compose.yml config --quiet
+docker compose -f infra/docker-compose.yml build
+docker compose -f infra/docker-compose.yml up -d --wait db
+docker compose -f infra/docker-compose.yml --profile tools run --rm migrate
+docker compose -f infra/docker-compose.yml up -d --wait --wait-timeout 180
+```
+
+Serviços publicados em `127.0.0.1`: web `:3000`, api `:8000`, PostgreSQL `:5433`,
+Mailpit SMTP `:1025`/UI `:8025` e storage S3 `:9000`.
+
+## Variáveis e segredos
+
+Os defaults do Compose são exclusivos de desenvolvimento. Em produção, injetar
+externamente no mínimo:
+
+- `APP_ENV=production` (ativa HSTS, cookies `__Host-` e `Secure`);
+- `AUTH_SECRET` aleatório com pelo menos 32 bytes — o valor padrão de
+  desenvolvimento é rejeitado em produção;
+- `POSTGRES_PASSWORD`, `APP_DB_PASSWORD` e `MIGRATION_DB_PASSWORD` próprios;
+- `ALLOWED_ORIGINS` e `PUBLIC_BASE_URL` do domínio real;
+- credenciais SMTP e S3 reais (`SMTP_HOST`, `SMTP_PORT`, `SMTP_SENDER`,
+  `S3_ENDPOINT_URL`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`).
+
+`infra/.env` é ignorado por Git e é a única fonte local aceita. Nenhum valor de
+`infra/.env.example` pode ser reutilizado fora do desenvolvimento.
+
+## Migrations
+
+Aplicar com a role de migration (a API nunca usa essa credencial):
+
+```sh
+docker compose -f infra/docker-compose.yml --profile tools run --rm migrate
+docker compose -f infra/docker-compose.yml --profile tools run --rm migrate alembic check
+```
+
+A cadeia completa em banco descartável é validada por
+`./scripts/verify-migrations.sh` (0001→0008, downgrade e upgrade novamente).
+
+## Health checks
+
+- API: `GET http://127.0.0.1:8000/api/v1/health`
+- Web: `GET http://127.0.0.1:3000/health`
+- Proxy same-origin: `GET http://127.0.0.1:3000/api/v1/health`
+- Banco: `docker compose -f infra/docker-compose.yml exec db pg_isready`
+- Mailpit: `GET http://127.0.0.1:8025/livez`
+- Storage: `./scripts/verify-compose-health.sh` (cobre health, proxy e um
+  round-trip S3 assinado com negação de leitura anônima).
+
 ## Observabilidade (M1.6.4)
 
 A API emite um evento JSON por linha em stdout (`service: "api"`) e o servidor
@@ -25,15 +83,76 @@ docker compose -f infra/docker-compose.yml logs -f api
 docker compose -f infra/docker-compose.yml logs -f web
 ```
 
-## Health checks
+## Backup
 
-- API: `GET /api/v1/health` → `{"service":"api","status":"ok"}`
-- Web: `GET /health` → `{"service":"web","status":"ok"}`
-- Proxy same-origin: `GET /api/v1/health` pela porta 3000
-- Compose completo e canário S3: `./scripts/verify-compose-health.sh`
+O formato suportado é o customizado do PostgreSQL:
+
+```sh
+docker compose -f infra/docker-compose.yml --profile tools run --rm -T \
+  --entrypoint pg_dump pg-client \
+  -h db -U easydentist -d easydentist -Fc > easydentist-$(date +%Y%m%d).dump
+```
+
+Armazenar o arquivo fora do repositório, com retenção e criptografia definidas
+pelo ambiente (ver requisitos de produção). O dump contém dados clínicos: tratá-lo
+como material sensível.
+
+## Restauração em banco descartável
+
+Nunca restaurar sobre o banco em uso. O fluxo automatizado completo é
+`./scripts/verify-backup-restore.sh`: ele cria dois projetos Compose
+descartáveis (origem e destino), aplica migrations, insere duas clínicas com
+sentinelas, gera o dump `pg_dump -Fc`, recria o banco de destino mantendo as
+roles, restaura com `pg_restore --exit-on-error`, confere schema, revisão
+Alembic, grants, policies, `FORCE ROW LEVEL SECURITY`, `NOBYPASSRLS`,
+sentinelas e isolamento sob a role `easydentist_app`, executa `alembic check` e
+remove containers, volumes e arquivos temporários com `trap`. O Compose local
+não é tocado.
+
+Passos manuais equivalentes, para um banco descartável `restored`:
+
+```sh
+docker compose -p easydentist-restore -f infra/docker-compose.yml up -d --wait db
+docker compose -p easydentist-restore -f infra/docker-compose.yml exec db \
+  psql -U easydentist -d postgres -c 'CREATE DATABASE restored OWNER easydentist'
+docker compose -p easydentist-restore -f infra/docker-compose.yml --profile tools \
+  run --rm -T --entrypoint pg_restore pg-client \
+  -h db -U easydentist -d restored --exit-on-error < easydentist.dump
+```
+
+## Validação pós-restore
+
+- `SELECT version_num FROM app.alembic_version` igual ao ambiente de origem.
+- Contagem de clinicas, memberships e clinic_settings igual à origem.
+- `pg_policies` com a mesma contagem; `relforcerowsecurity` verdadeiro nas seis
+  tabelas tenant-aware.
+- `rolbypassrls` falso para `easydentist_app` e `easydentist_migrator`.
+- Teste funcional como `easydentist_app`: cada contexto de usuário/clínica vê
+  somente a própria clínica; contexto ausente ou membership divergente falha
+  fechado.
+- `alembic check` sem divergências.
+
+## Rotação de credenciais
+
+1. Gerar novos valores para `AUTH_SECRET` e para as senhas de banco/S3/SMTP.
+2. Atualizar o segredo no cofre do ambiente e recriar a API e a web.
+3. Para senhas de banco: `ALTER ROLE` na role correspondente e atualizar o
+   segredo; a API lê a credencial na inicialização.
+4. A rotação de `AUTH_SECRET` invalida CSRF emitidos e exige novo login.
+5. Registrar data, responsável e motivo da rotação.
 
 ## Limites do ambiente local
 
-Mailpit e SeaweedFS são ferramentas locais, sem autenticação de produção.
-Segredos vivem em `infra/.env.example` como valores de desenvolvimento; nenhum
-deles pode ser reutilizado em produção.
+Mailpit e SeaweedFS são ferramentas locais, sem autenticação de produção. Os
+segredos vivem em `infra/.env.example` como valores de desenvolvimento. O
+storage local não publica API fora do host; o Mailpit não pode ser exposto.
+
+## Requisitos ainda necessários para produção
+
+- storage gerenciado com criptografia em repouso, controle de acesso e backup;
+- SMTP autenticado com TLS e domínio verificado;
+- retenção, expiração e criptografia dos backups (e teste periódico de restore);
+- gestão externa de segredos com rotação automatizada;
+- HTTPS terminado em proxy confiável e `TRUSTED_PROXIES` configurado;
+- monitoramento e alertas sobre os logs JSON, com retenção definida;
+- revisão LGPD e jurídica antes da comercialização.
