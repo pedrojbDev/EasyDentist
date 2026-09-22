@@ -212,6 +212,10 @@ storage local não publica API fora do host; o Mailpit não pode ser exposto.
 - retenção, expiração e criptografia dos backups (e teste periódico de restore);
 - gestão externa de segredos com rotação automatizada;
 - HTTPS terminado em proxy confiável e `TRUSTED_PROXIES` configurado;
+- limite de corpo no proxy/ingress em produção: a aplicação rejeita com `413`
+  requisições cujo `Content-Length` exceda 11 MiB antes de ler o corpo, mas
+  uploads `Transfer-Encoding: chunked` não declaram tamanho e dependem do limite
+  imposto pelo proxy/ingress;
 - monitoramento e alertas sobre os logs JSON, com retenção definida;
 - processo de ciência/assinatura do paciente: concluir a anamnese registra
   autoria e snapshot profissional, mas **não** é assinatura ICP-Brasil nem
