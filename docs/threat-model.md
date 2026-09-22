@@ -75,4 +75,6 @@ autenticação, backup sem retenção/expiração definida, segredos de
 desenvolvimento versionados apenas em `.env.example`, ausência de monitoramento
 externo e de rotação automática de credenciais. Eles estão registrados em
 `docs/operations.md` e em `docs/security.md` e não são cobertos por teste porque
-dependem de infraestrutura externa.
+dependem de infraestrutura externa. O scanner de secrets é deliberadamente
+conservador (padrões explícitos e poucas exceções locais documentadas) e não
+substitui um gestor externo de segredos.

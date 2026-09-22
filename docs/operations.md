@@ -83,6 +83,19 @@ docker compose -f infra/docker-compose.yml logs -f api
 docker compose -f infra/docker-compose.yml logs -f web
 ```
 
+## Secrets
+
+```sh
+./scripts/verify-secrets.sh   # ou pnpm run secrets
+```
+
+O scanner varre apenas arquivos versionados e imprime `arquivo:linha` (nunca o
+valor). `infra/.env.example` é o único arquivo de exemplo permitido e contém
+somente valores locais documentados. `.env`, dumps (`*.dump`) e artefatos de
+teste são ignorados pelo Git e verificados pelo scanner. Em produção,
+`APP_ENV=production` rejeita o `AUTH_SECRET` padrão de desenvolvimento na
+inicialização.
+
 ## Backup
 
 O formato suportado é o customizado do PostgreSQL:

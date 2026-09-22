@@ -19,6 +19,8 @@ __pycache__/
 !.env.example
 artifacts/
 graphify-out/
+*.dump
+*.dump.gz
 
 # Isolated feature worktrees (default development workflow).
 .worktrees/

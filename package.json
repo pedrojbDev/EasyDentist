@@ -16,6 +16,8 @@
     "typecheck": "pnpm --filter @easydentist/web typecheck",
     "gen:api": "pnpm --filter @easydentist/web gen:api",
     "e2e": "playwright test",
+    "e2e:install": "playwright install chromium",
+    "secrets": "./scripts/verify-secrets.sh",
     "licenses": "node scripts/check-js-licenses.mjs",
     "audit": "pnpm audit --audit-level=high"
   },
