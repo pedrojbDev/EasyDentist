@@ -432,3 +432,21 @@ recuperação, verificação, convite, seletor de clínica, clínica/settings,
 equipe/convites e sessões; os fluxos web completos em Playwright ficam no M1.6,
 junto do hardening (headers, logs estruturados, restauração de banco e
 threat model).
+
+## Estado do M1.6.1
+
+O contrato do hardening está documentado na ADR 0009 e em `docs/threat-model.md`.
+O threat model enumera ativos (sessões, tokens, credenciais, dados clínicos,
+memberships, backups, logs e segredos), fronteiras de confiança (browser,
+Next.js, FastAPI, PostgreSQL runtime, PostgreSQL migrator, Mailpit e storage) e
+15 ameaças com mitigação e evidência — teste automatizado ou limitação
+operacional explícita. A ADR 0009 fixa as decisões de E2E contra o Compose com
+fixtures determinísticas e `workers: 1`, headers de segurança (CSP nonce
+bloqueante na web e CSP restritiva na API, HSTS só em produção), logs JSONL com
+allowlist e redaction, backup/restauração com `pg_dump -Fc`/`pg_restore` em
+PostgreSQL descartável, scanner de secrets, rejeição do segredo padrão de
+desenvolvimento em produção e o critério cross-tenant de ponta a ponta. O M1.6
+não altera domínio clínico; storage, SMTP, retenção de backups, criptografia e
+gestão externa de secrets permanecem pré-requisitos operacionais. O harness
+Playwright (M1.6.2), os headers (M1.6.3), os logs (M1.6.4), o runbook (M1.6.5) e
+a auditoria final (M1.6.6) entram nos incrementos seguintes.

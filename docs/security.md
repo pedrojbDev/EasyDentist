@@ -1,9 +1,22 @@
 # Segurança
 
-Este documento materializa a direção de segurança aprovada. Salvo os limites de
-contêiner, segredos locais de desenvolvimento e health checks, as políticas abaixo
-**ainda não estão implementadas no M1.1**. Elas são requisitos vinculantes dos
-incrementos indicados.
+Este documento materializa a direção de segurança aprovada e registra o estado
+de cada afirmação. O threat model correspondente está em `docs/threat-model.md`
+e as decisões do hardening em `docs/adr/0009-hardening-and-operations.md`.
+
+## Estado das afirmações
+
+| Afirmação                                                                                                              | Estado                                                                                                                                                                        |
+| ---------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Hash de credenciais (Argon2id), sessões opacas, CSRF, rate limiting, tokens de ação, provisioning                      | Implementado no M1.3 e provado em `tests/integration/test_auth_security_matrix.py` e `test_auth_redaction.py`                                                                 |
+| RLS fail-closed, contexto transacional, roles sem `BYPASSRLS`, isolamento por tenant                                   | Implementado no M1.2/M1.4 e provado em `test_tenant_isolation.py`, `test_raw_sql_isolation.py`, `test_rls_fail_closed.py`, `test_pool_tenant_leak.py` e `test_rbac_matrix.py` |
+| Frontend same-origin com guarda de sessão e token só em memória                                                        | Implementado no M1.5 (ADR 0008) e provado em `use-fragment-token.test.tsx`                                                                                                    |
+| Headers de segurança da API e da web com CSP nonce bloqueante                                                          | **Provado no M1.6.3** (`test_security_headers.py`, `security-headers.test.ts` e fluxos Playwright)                                                                            |
+| Logs JSONL com allowlist e redaction sem dados sensíveis                                                               | **Provado no M1.6.4** (`test_structured_logging.py`, `test_logging_redaction.py`, `server-logging.test.ts`)                                                                   |
+| Backup `pg_dump -Fc` restaurável em banco limpo com schema, grants, policies e RLS                                     | **Provado no M1.6.5** (`scripts/verify-backup-restore.sh`)                                                                                                                    |
+| Ausência de secrets versionados e de dependências vulneráveis                                                          | **Provado no M1.6.6** (`scripts/verify-secrets.sh`, `pnpm audit`, `pip-audit`, licenças)                                                                                      |
+| Critério final cross-tenant (duas clínicas, API/SSR/rota/SQL sob role runtime)                                         | **Provado no M1.6.2/M1.6.6** (`isolation.spec.ts`, `test_m16_isolation_gate.py`)                                                                                              |
+| Storage gerenciado, SMTP real, retenção de backups, criptografia em repouso, gestão externa de secrets e monitoramento | **Fora do escopo de produção** — pré-requisitos operacionais listados em `docs/operations.md`                                                                                 |
 
 ## Autenticação (M1.3)
 
@@ -153,15 +166,41 @@ papel fica reservada às funções dedicadas do M1.3/M1.4). RLS e o contexto
 transacional estão implementados no M1.2.3 (ADR 0005). Nenhuma rota da API
 expõe essas tabelas neste incremento.
 
+## Hardening (M1.6, ADR 0009)
+
+**Implementado no M1.6:** headers de segurança em toda resposta da API
+(`nosniff`, `DENY`, `strict-origin-when-cross-origin`, `Permissions-Policy`,
+COOP/CORP e CSP `default-src 'none'`) e no Next.js (CSP bloqueante com nonce por
+resposta, sem `unsafe-inline` para scripts, recursos e formulários restritos à
+mesma origem, rewrite `/api/v1` isento para preservar os headers da API); HSTS
+somente em produção. Logs de API e web são JSONL com allowlist — sem corpo,
+cookie, token, senha, header de autorização, e-mail, IP bruto ou query string —
+correlacionados por request ID, com access log textual do Uvicorn desativado e
+metadata de auditoria sanitizada por allowlist de evento. O gate
+`scripts/verify-secrets.sh` varre arquivos versionados por padrões explícitos e
+produção rejeita o segredo padrão de desenvolvimento. O runbook operacional e a
+prova de restauração estão em `docs/operations.md` e
+`scripts/verify-backup-restore.sh`.
+
+Os fluxos web completos passam a ser exercitados por Playwright contra o
+Compose (`pnpm e2e`), incluindo login, recuperação por Mailpit, verificação,
+convite, seletor de clínica, settings, equipe, sessões e o critério cross-tenant
+com duas clínicas (`workers: 1` e dados sintéticos removidos no teardown).
+
 ## Operação local
 
-`infra/.env.example` contém apenas credenciais de desenvolvimento. O arquivo
-`infra/.env` é ignorado por Git. Produção deverá injetar segredos externamente e
-nunca reutilizar esses valores. SeaweedFS não publica API fora do host; Mailpit é
-estritamente uma ferramenta local e não deve estar em qualquer ambiente público.
+`infra/.env.example` contém apenas credenciais de desenvolvimento e é o único
+arquivo de exemplo permitido pelo scanner de secrets. O arquivo `infra/.env` é
+ignorado por Git. Produção deverá injetar segredos externamente e nunca
+reutilizar esses valores, inclusive o `AUTH_SECRET` padrão de desenvolvimento,
+que é rejeitado explicitamente em `APP_ENV=production`. SeaweedFS não publica API
+fora do host; Mailpit é estritamente uma ferramenta local e não deve estar em
+qualquer ambiente público. O runbook completo está em `docs/operations.md`.
 
 SeaweedFS existe somente para integração local no M1.1. Antes de uma implantação
 de produção, deve haver storage gerenciado ou uma configuração revisada que
 defina signing keys, criptografia em repouso e backup/restauração. O check local
 exercita AWS Signature v4 e confirma que um objeto privado não é legível sem
-credenciais; ele não é uma aprovação de segurança para produção.
+credenciais; ele não é uma aprovação de segurança para produção. Da mesma forma,
+backup/restore local não define retenção, expiração ou criptografia: esses
+requisitos permanecem em `docs/operations.md` como pré-requisitos de produção.
