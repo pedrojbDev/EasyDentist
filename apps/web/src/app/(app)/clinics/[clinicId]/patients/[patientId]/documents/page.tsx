@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { Feedback } from '@/components/ui/feedback';
@@ -6,16 +5,16 @@ import { PageHeader } from '@/components/ui/page-header';
 import { anamnesisCapabilities } from '@/features/anamnesis/permissions';
 import { ClinicNav } from '@/features/clinics/components/ClinicNav';
 import { getClinicOnServer } from '@/features/clinics/server';
+import { DocumentsPanel } from '@/features/documents/components/DocumentsPanel';
 import { canReadAnyDocument, documentCapabilities } from '@/features/documents/permissions';
-import { PatientForm } from '@/features/patients/components/PatientForm';
+import { listDocumentsOnServer } from '@/features/documents/server';
 import { PatientSectionNav } from '@/features/patients/components/PatientSectionNav';
-import { patientCapabilities } from '@/features/patients/permissions';
 import { getPatientOnServer } from '@/features/patients/server';
 import { ApiError } from '@/lib/api/problem';
 
 export const dynamic = 'force-dynamic';
 
-export default async function EditPatientPage({
+export default async function DocumentsPage({
   params,
 }: {
   params: Promise<{ clinicId: string; patientId: string }>;
@@ -34,34 +33,38 @@ export default async function EditPatientPage({
     throw error;
   }
 
-  const capabilities = patientCapabilities(clinic.role);
+  const capabilities = documentCapabilities(clinic.role);
+  const canRead = canReadAnyDocument(capabilities);
+  const documents = canRead ? (await listDocumentsOnServer(clinicId, patientId)).items : [];
 
   return (
     <section className="flex flex-col gap-7">
       <PageHeader
         eyebrow={clinic.legal_name}
-        title={`Editar ${patient.full_name}`}
-        description="Atualize os dados cadastrais. Alterações ficam registradas na auditoria da clínica."
+        title="Documentos"
+        description={`Paciente: ${patient.full_name}`}
       />
       <ClinicNav clinicId={clinic.id} active="patients" />
       <PatientSectionNav
         clinicId={clinic.id}
         patientId={patient.id}
-        active="record"
+        active="documents"
         canReadAnamnesis={anamnesisCapabilities(clinic.role).canRead}
-        canReadDocuments={canReadAnyDocument(documentCapabilities(clinic.role))}
+        canReadDocuments={canRead}
       />
-      {capabilities.canUpdate ? (
-        <PatientForm clinicId={clinic.id} mode="edit" patient={patient} />
+
+      {canRead ? (
+        <DocumentsPanel
+          clinicId={clinic.id}
+          patientId={patient.id}
+          documents={documents}
+          capabilities={capabilities}
+        />
       ) : (
-        <div className="app-panel flex flex-col gap-3">
-          <Feedback tone="error">Seu papel nesta clínica não permite editar pacientes.</Feedback>
-          <Link
-            href={`/clinics/${clinic.id}/patients/${patient.id}`}
-            className="app-link w-fit text-sm"
-          >
-            Voltar para os dados do paciente
-          </Link>
+        <div className="app-panel">
+          <Feedback tone="error">
+            Seu papel nesta clínica não permite visualizar documentos.
+          </Feedback>
         </div>
       )}
     </section>

@@ -30,6 +30,22 @@ class ContextMismatchError(DomainError):
     """The provided context diverges from the transaction context."""
 
 
+class PayloadTooLargeError(DomainError):
+    """The uploaded body exceeds the document size limit."""
+
+
+class UnsupportedMediaTypeError(DomainError):
+    """The uploaded body is empty or its detected format is not accepted."""
+
+
+class StorageObjectNotFoundError(NotFoundError):
+    """The authorized document object is missing from the private storage."""
+
+
+class StorageUnavailableError(DomainError):
+    """The storage backend could not complete the operation."""
+
+
 def translate_integrity_error(error: IntegrityError) -> DomainError:
     """Map database integrity failures to tenant-safe domain errors.
 

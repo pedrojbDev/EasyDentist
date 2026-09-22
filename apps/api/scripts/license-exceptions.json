@@ -35,6 +35,13 @@
     "reason": "Dependência transitiva de mypy; MPL-2.0 aprovada somente para esta versão de ferramenta de desenvolvimento."
   },
   {
+    "package": "python-dateutil",
+    "version": "2.9.0.post0",
+    "license": "Dual License",
+    "reviewed_on": "2026-09-22",
+    "reason": "Dependência transitiva de botocore/boto3; metadados declaram BSD-3-Clause e Apache-2.0 em conjunto, ambas permissivas, aprovadas somente para esta versão."
+  },
+  {
     "package": "typing-extensions",
     "version": "4.16.0",
     "license": "PSF-2.0",

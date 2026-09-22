@@ -8,6 +8,7 @@ import { StatusBadge } from '@/components/ui/status-badge';
 import { anamnesisCapabilities } from '@/features/anamnesis/permissions';
 import { ClinicNav } from '@/features/clinics/components/ClinicNav';
 import { getClinicOnServer } from '@/features/clinics/server';
+import { canReadAnyDocument, documentCapabilities } from '@/features/documents/permissions';
 import { formatCpf } from '@/features/patients/cpf';
 import { PatientAlertsPanel } from '@/features/patients/components/PatientAlertsPanel';
 import { PatientArchiveButton } from '@/features/patients/components/PatientArchiveButton';
@@ -84,6 +85,7 @@ export default async function PatientDetailPage({
         patientId={patient.id}
         active="record"
         canReadAnamnesis={anamnesisCapabilities(clinic.role).canRead}
+        canReadDocuments={canReadAnyDocument(documentCapabilities(clinic.role))}
       />
 
       <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(19rem,0.6fr)]">
