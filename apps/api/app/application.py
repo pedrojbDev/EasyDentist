@@ -16,6 +16,7 @@ from app.clinics.routers import router as clinics_router
 from app.core.database import DatabaseSettings, create_database_engine, create_session_factory
 from app.documents.routers import router as documents_router
 from app.patients.routers import router as patients_router
+from app.platform.body_limit import BodyLimitMiddleware
 from app.platform.health import router as platform_router
 from app.platform.middleware import RequestLoggingMiddleware
 from app.platform.problems import register_problem_handlers
@@ -37,7 +38,7 @@ class HardenedFastAPI(FastAPI):
     def build_middleware_stack(self) -> ASGIApp:
         return RequestLoggingMiddleware(
             SecurityHeadersMiddleware(
-                super().build_middleware_stack(),
+                BodyLimitMiddleware(super().build_middleware_stack()),
                 production=is_production_environment(),
             )
         )

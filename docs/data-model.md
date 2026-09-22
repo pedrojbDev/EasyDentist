@@ -1,12 +1,15 @@
 # Modelo de dados planejado
 
-> **Estado (M2.1):** as 14 tabelas do Marco 1 existem como models SQLAlchemy
-> (`app/users/models.py`, `app/auth/models.py`, `app/clinics/models.py`) e
-> migrations (`0002_global_identity`, `0003_tenant_structure`), com RLS ativo e
-> contexto transacional de tenant implementados (`0004_rls_policies`, ADR 0005).
-> As tabelas do Marco 2 estão **contratadas** na ADR 0010 (M2.1) e ainda não
-> existem: nenhuma migration, model ou rota de pacientes, anamnese ou documentos
-> foi criada. Esta referência fixa o modelo que o M2.2 a M2.5 devem implementar.
+> **Estado (M2 concluído):** as 14 tabelas do Marco 1 existem como models
+> SQLAlchemy (`app/users/models.py`, `app/auth/models.py`,
+> `app/clinics/models.py`) e migrations (`0002_global_identity`,
+> `0003_tenant_structure`), com RLS ativo e contexto transacional de tenant
+> implementados (`0004_rls_policies`, ADR 0005). As tabelas do Marco 2
+> contratadas na ADR 0010 foram entregues nas migrations `0009` a `0012`, com
+> models em `app/users/models.py`, `app/patients/models.py`,
+> `app/anamnesis/models.py` e `app/documents/models.py` e rotas nos módulos
+> `app/patients`, `app/anamnesis` e `app/documents`. Esta referência descreve o
+> modelo implementado.
 
 O M1.1 não cria banco, migration, role ou tabela. Esta referência fixa os
 limites para M1.2 e posteriores, evitando que a fundação induza um modelo errado.
