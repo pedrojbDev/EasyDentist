@@ -144,7 +144,22 @@ class PatientCreateRequest(PatientFields):
 
 
 class PatientUpdateRequest(PatientFields):
-    pass
+    @field_validator("full_name", "phone")
+    @classmethod
+    def clean_required_fields(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        cleaned = _clean_required(value)
+        if not cleaned:
+            raise ValueError("value cannot be blank")
+        return cleaned
+
+    @model_validator(mode="after")
+    def reject_explicit_nulls(self) -> PatientUpdateRequest:
+        for field in ("full_name", "birth_date", "phone"):
+            if field in self.model_fields_set and getattr(self, field) is None:
+                raise ValueError(f"{field} cannot be null")
+        return self
 
 
 class PatientResponse(BaseModel):
