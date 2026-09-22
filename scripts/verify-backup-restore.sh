@@ -23,7 +23,10 @@ slug_a="restore-a-${suffix}"
 slug_b="restore-b-${suffix}"
 sentinel_a="SENTINELA-RESTORE-A-${suffix}"
 sentinel_b="SENTINELA-RESTORE-B-${suffix}"
-tenant_tables="clinics clinic_settings clinic_feature_flags memberships membership_invitations clinic_audit_events"
+# Every table with FORCE ROW LEVEL SECURITY: the six tenant-aware M1 tables
+# plus the four clinic-scoped M2 tables and the owner-scoped professional
+# profile. A backup must restore all of them forced.
+forced_rls_tables="clinics clinic_settings clinic_feature_flags memberships membership_invitations clinic_audit_events patients patient_alerts anamneses patient_documents professional_profiles"
 
 tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/easydentist-backup-verify.XXXXXX")
 dump_file="$tmp_dir/easydentist.dump"
@@ -147,7 +150,7 @@ expect_equal "$(restore_psql -c 'SELECT count(*) FROM pg_policies WHERE schemana
 expect_equal "$(restore_psql -c "
   SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
   WHERE n.nspname = 'app' AND c.relkind = 'r' AND c.relforcerowsecurity")" \
-  "$(printf '%s\n' $tenant_tables | wc -l | tr -d ' ')" 'forced RLS tables'
+  "$(printf '%s\n' $forced_rls_tables | wc -l | tr -d ' ')" 'forced RLS tables'
 expect_equal "$(restore_psql -c "
   SELECT count(*) FROM pg_roles
   WHERE rolname IN ('$app_user', '$migration_user') AND rolbypassrls")" '0' 'roles without BYPASSRLS'

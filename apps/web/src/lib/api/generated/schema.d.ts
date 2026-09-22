@@ -278,6 +278,250 @@ export interface paths {
         patch: operations["update_membership_role_api_v1_clinics__clinic_id__memberships__membership_id__patch"];
         trace?: never;
     };
+    "/api/v1/clinics/{clinic_id}/patients": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Patients */
+        get: operations["list_patients_api_v1_clinics__clinic_id__patients_get"];
+        put?: never;
+        /** Create Patient */
+        post: operations["create_patient_api_v1_clinics__clinic_id__patients_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/patients/{patient_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Patient */
+        get: operations["get_patient_api_v1_clinics__clinic_id__patients__patient_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Patient */
+        patch: operations["update_patient_api_v1_clinics__clinic_id__patients__patient_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/patients/{patient_id}/alerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Patient Alerts */
+        get: operations["list_patient_alerts_api_v1_clinics__clinic_id__patients__patient_id__alerts_get"];
+        put?: never;
+        /** Create Patient Alert */
+        post: operations["create_patient_alert_api_v1_clinics__clinic_id__patients__patient_id__alerts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/patients/{patient_id}/alerts/{alert_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Patient Alert */
+        patch: operations["update_patient_alert_api_v1_clinics__clinic_id__patients__patient_id__alerts__alert_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/patients/{patient_id}/anamneses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Anamneses */
+        get: operations["list_anamneses_api_v1_clinics__clinic_id__patients__patient_id__anamneses_get"];
+        put?: never;
+        /** Create Anamnesis */
+        post: operations["create_anamnesis_api_v1_clinics__clinic_id__patients__patient_id__anamneses_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/patients/{patient_id}/anamneses/{anamnesis_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Anamnesis */
+        get: operations["get_anamnesis_api_v1_clinics__clinic_id__patients__patient_id__anamneses__anamnesis_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Anamnesis */
+        patch: operations["update_anamnesis_api_v1_clinics__clinic_id__patients__patient_id__anamneses__anamnesis_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/patients/{patient_id}/anamneses/{anamnesis_id}/finalize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Finalize Anamnesis */
+        post: operations["finalize_anamnesis_api_v1_clinics__clinic_id__patients__patient_id__anamneses__anamnesis_id__finalize_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/patients/{patient_id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Archive Patient */
+        post: operations["archive_patient_api_v1_clinics__clinic_id__patients__patient_id__archive_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/patients/{patient_id}/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Documents */
+        get: operations["list_documents_api_v1_clinics__clinic_id__patients__patient_id__documents_get"];
+        put?: never;
+        /** Upload Document */
+        post: operations["upload_document_api_v1_clinics__clinic_id__patients__patient_id__documents_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/patients/{patient_id}/documents/{document_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Document */
+        get: operations["get_document_api_v1_clinics__clinic_id__patients__patient_id__documents__document_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/patients/{patient_id}/documents/{document_id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Archive Document */
+        post: operations["archive_document_api_v1_clinics__clinic_id__patients__patient_id__documents__document_id__archive_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/patients/{patient_id}/documents/{document_id}/content": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Document Content */
+        get: operations["get_document_content_api_v1_clinics__clinic_id__patients__patient_id__documents__document_id__content_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/patients/{patient_id}/documents/{document_id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Restore Document */
+        post: operations["restore_document_api_v1_clinics__clinic_id__patients__patient_id__documents__document_id__restore_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/patients/{patient_id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Restore Patient */
+        post: operations["restore_patient_api_v1_clinics__clinic_id__patients__patient_id__restore_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/clinics/{clinic_id}/settings": {
         parameters: {
             query?: never;
@@ -330,10 +574,175 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/users/me/professional-profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get My Professional Profile */
+        get: operations["get_my_professional_profile_api_v1_users_me_professional_profile_get"];
+        /** Put My Professional Profile */
+        put: operations["put_my_professional_profile_api_v1_users_me_professional_profile_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AllergiesPayload */
+        AllergiesPayload: {
+            emergency_care?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            known_allergy?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /**
+         * AnamnesisCreateRequest
+         * @description Starts an empty draft or a revision copied from a final version.
+         */
+        AnamnesisCreateRequest: {
+            /** Base Version Id */
+            base_version_id?: string | null;
+        };
+        /** AnamnesisListResponse */
+        AnamnesisListResponse: {
+            /** Items */
+            items: components["schemas"]["AnamnesisResponse"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Total */
+            total: number;
+        };
+        /** AnamnesisPayload */
+        AnamnesisPayload: {
+            allergies?: components["schemas"]["AllergiesPayload"] | null;
+            anesthesia?: components["schemas"]["AnesthesiaPayload"] | null;
+            bleeding?: components["schemas"]["BleedingPayload"] | null;
+            cardiovascular_conditions?: components["schemas"]["CardiovascularConditionsPayload"] | null;
+            chief_complaint?: components["schemas"]["ChiefComplaintPayload"] | null;
+            current_history?: components["schemas"]["CurrentHistoryPayload"] | null;
+            dental_history?: components["schemas"]["DentalHistoryPayload"] | null;
+            dental_inventory?: components["schemas"]["DentalInventoryPayload"] | null;
+            digestive_conditions?: components["schemas"]["DigestiveConditionsPayload"] | null;
+            disabilities?: components["schemas"]["DisabilitiesPayload"] | null;
+            endocrine_metabolic_conditions?: components["schemas"]["EndocrineMetabolicConditionsPayload"] | null;
+            family_history?: components["schemas"]["FamilyHistoryPayload"] | null;
+            habits?: components["schemas"]["HabitsPayload"] | null;
+            healing?: components["schemas"]["HealingPayload"] | null;
+            hepatic_conditions?: components["schemas"]["HepaticConditionsPayload"] | null;
+            infectious_conditions?: components["schemas"]["InfectiousConditionsPayload"] | null;
+            medical_history?: components["schemas"]["MedicalHistoryPayload"] | null;
+            medications?: components["schemas"]["MedicationsPayload"] | null;
+            motor_conditions?: components["schemas"]["MotorConditionsPayload"] | null;
+            neoplasms?: components["schemas"]["NeoplasmsPayload"] | null;
+            pregnancy?: components["schemas"]["PregnancyPayload"] | null;
+            psychological_conditions?: components["schemas"]["PsychologicalConditionsPayload"] | null;
+            renal_conditions?: components["schemas"]["RenalConditionsPayload"] | null;
+            respiratory_conditions?: components["schemas"]["RespiratoryConditionsPayload"] | null;
+            social_history?: components["schemas"]["SocialHistoryPayload"] | null;
+            surgeries?: components["schemas"]["SurgeriesPayload"] | null;
+        };
+        /** AnamnesisResponse */
+        AnamnesisResponse: {
+            /** Author Cro Number */
+            author_cro_number: string | null;
+            /** Author Cro State */
+            author_cro_state: string | null;
+            /** Author Professional Name */
+            author_professional_name: string | null;
+            /**
+             * Author User Id
+             * Format: uuid
+             */
+            author_user_id: string;
+            /** Base Version Id */
+            base_version_id: string | null;
+            /**
+             * Clinic Id
+             * Format: uuid
+             */
+            clinic_id: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Finalized At */
+            finalized_at: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Patient Id
+             * Format: uuid
+             */
+            patient_id: string;
+            payload: {
+                [key: string]: unknown;
+            };
+            status: components["schemas"]["AnamnesisStatus"];
+            /** Template */
+            template: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Version Number */
+            version_number: number | null;
+        };
+        /**
+         * AnamnesisStatus
+         * @enum {string}
+         */
+        AnamnesisStatus: "DRAFT" | "FINAL";
+        /**
+         * AnamnesisUpdateRequest
+         * @description Partial payload update of a draft.
+         */
+        AnamnesisUpdateRequest: {
+            payload: components["schemas"]["AnamnesisPayload"];
+        };
+        /** AnesthesiaPayload */
+        AnesthesiaPayload: {
+            adverse_reaction?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            previous_exposure?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** BleedingPayload */
+        BleedingPayload: {
+            diagnosed_disorder?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            prolonged_bleeding?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** Body_upload_document_api_v1_clinics__clinic_id__patients__patient_id__documents_post */
+        Body_upload_document_api_v1_clinics__clinic_id__patients__patient_id__documents_post: {
+            category: components["schemas"]["DocumentCategory"];
+            /**
+             * File
+             * @description Arquivo PDF, JPEG ou PNG de até 10 MB
+             */
+            file: string;
+            /** Title */
+            title: string;
+        };
+        /** CardiovascularConditionsPayload */
+        CardiovascularConditionsPayload: {
+            diagnosis?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** ChiefComplaintPayload */
+        ChiefComplaintPayload: {
+            description?: components["schemas"]["TextAnswer"] | null;
+            duration?: components["schemas"]["TextAnswer"] | null;
+            evolution?: components["schemas"]["TextAnswer"] | null;
+        };
         /** ClinicResponse */
         ClinicResponse: {
             /**
@@ -386,15 +795,150 @@ export interface components {
             /** Csrf Token */
             csrf_token: string;
         };
+        /** CurrentHistoryPayload */
+        CurrentHistoryPayload: {
+            associated_symptoms?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            current_medication?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            notes?: components["schemas"]["TextAnswer"] | null;
+            previous_treatment?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** DentalHistoryPayload */
+        DentalHistoryPayload: {
+            last_visit?: components["schemas"]["lastVisitAnswer"] | null;
+            notes?: components["schemas"]["TextAnswer"] | null;
+            previous_treatment?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            treatment_anxiety?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** DentalInventoryPayload */
+        DentalInventoryPayload: {
+            atm?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            bleeding?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            bruxism?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            diet?: components["schemas"]["dietAnswer"] | null;
+            endodontics?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            flossing?: components["schemas"]["flossingAnswer"] | null;
+            halitosis?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            hygiene?: components["schemas"]["hygieneAnswer"] | null;
+            lesions?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            mobility?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            pain?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            previous_surgeries?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            prostheses?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            sensitivity?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            xerostomia?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** DigestiveConditionsPayload */
+        DigestiveConditionsPayload: {
+            diagnosis?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** DisabilitiesPayload */
+        DisabilitiesPayload: {
+            presence?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /**
+         * DocumentCategory
+         * @enum {string}
+         */
+        DocumentCategory: "ADMINISTRATIVE" | "CLINICAL";
+        /** DocumentListResponse */
+        DocumentListResponse: {
+            /** Items */
+            items: components["schemas"]["DocumentResponse"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Total */
+            total: number;
+        };
+        /** DocumentResponse */
+        DocumentResponse: {
+            /** Archived At */
+            archived_at: string | null;
+            category: components["schemas"]["DocumentCategory"];
+            /**
+             * Clinic Id
+             * Format: uuid
+             */
+            clinic_id: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Detected Mime */
+            detected_mime: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Original Filename */
+            original_filename: string;
+            /**
+             * Patient Id
+             * Format: uuid
+             */
+            patient_id: string;
+            /** Sha256 */
+            sha256: string;
+            /** Size Bytes */
+            size_bytes: number;
+            status: components["schemas"]["DocumentStatus"];
+            /** Title */
+            title: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /**
+             * Uploaded By User Id
+             * Format: uuid
+             */
+            uploaded_by_user_id: string;
+        };
+        /**
+         * DocumentStatus
+         * @enum {string}
+         */
+        DocumentStatus: "ACTIVE" | "ARCHIVED";
         /** EmailVerificationConfirmRequest */
         EmailVerificationConfirmRequest: {
             /** Token */
             token: string;
         };
+        /** EndocrineMetabolicConditionsPayload */
+        EndocrineMetabolicConditionsPayload: {
+            diagnosis?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** FamilyHistoryPayload */
+        FamilyHistoryPayload: {
+            conditions?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            notes?: components["schemas"]["TextAnswer"] | null;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** HabitsPayload */
+        HabitsPayload: {
+            alcohol?: components["schemas"]["alcoholAnswer"] | null;
+            other_substances?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            smoking?: components["schemas"]["smokingAnswer"] | null;
+        };
+        /** HealingPayload */
+        HealingPayload: {
+            difficulty?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** HepaticConditionsPayload */
+        HepaticConditionsPayload: {
+            diagnosis?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** InfectiousConditionsPayload */
+        InfectiousConditionsPayload: {
+            diagnosis?: components["schemas"]["YesNoUnknownAnswer"] | null;
         };
         /** InvitationAcceptRequest */
         InvitationAcceptRequest: {
@@ -413,6 +957,18 @@ export interface components {
         /** LoginResponse */
         LoginResponse: {
             user: components["schemas"]["UserResponse"];
+        };
+        /** MedicalHistoryPayload */
+        MedicalHistoryPayload: {
+            continuous_follow_up?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            diagnoses?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            hospitalization?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            notes?: components["schemas"]["TextAnswer"] | null;
+        };
+        /** MedicationsPayload */
+        MedicationsPayload: {
+            anticoagulants?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            continuous_use?: components["schemas"]["YesNoUnknownAnswer"] | null;
         };
         /** MembershipInvitationRequest */
         MembershipInvitationRequest: {
@@ -460,6 +1016,15 @@ export interface components {
         MembershipRoleUpdateRequest: {
             role: components["schemas"]["Role"];
         };
+        /** MotorConditionsPayload */
+        MotorConditionsPayload: {
+            diagnosis?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** NeoplasmsPayload */
+        NeoplasmsPayload: {
+            active_treatment?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            history?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
         /** PasswordForgotRequest */
         PasswordForgotRequest: {
             /** Email */
@@ -471,6 +1036,327 @@ export interface components {
             password: string;
             /** Token */
             token: string;
+        };
+        /** PatientAlertCreateRequest */
+        PatientAlertCreateRequest: {
+            /** Description */
+            description: string;
+            kind: components["schemas"]["PatientAlertKind"];
+        };
+        /**
+         * PatientAlertKind
+         * @enum {string}
+         */
+        PatientAlertKind: "ALLERGY" | "MEDICATION" | "CLINICAL_RISK" | "OTHER";
+        /** PatientAlertListResponse */
+        PatientAlertListResponse: {
+            /** Items */
+            items: components["schemas"]["PatientAlertResponse"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Total */
+            total: number;
+        };
+        /** PatientAlertResponse */
+        PatientAlertResponse: {
+            /**
+             * Clinic Id
+             * Format: uuid
+             */
+            clinic_id: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Created By User Id
+             * Format: uuid
+             */
+            created_by_user_id: string;
+            /** Description */
+            description: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            kind: components["schemas"]["PatientAlertKind"];
+            /**
+             * Patient Id
+             * Format: uuid
+             */
+            patient_id: string;
+            /** Resolved At */
+            resolved_at: string | null;
+            status: components["schemas"]["PatientAlertStatus"];
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * PatientAlertStatus
+         * @enum {string}
+         */
+        PatientAlertStatus: "ACTIVE" | "RESOLVED";
+        /** PatientAlertUpdateRequest */
+        PatientAlertUpdateRequest: {
+            /** Description */
+            description?: string | null;
+            status?: components["schemas"]["PatientAlertStatus"] | null;
+        };
+        /** PatientCreateRequest */
+        PatientCreateRequest: {
+            /** Administrative Notes */
+            administrative_notes?: string | null;
+            /**
+             * Birth Date
+             * Format: date
+             */
+            birth_date: string;
+            /** Birthplace */
+            birthplace?: string | null;
+            /** City */
+            city?: string | null;
+            /** Complement */
+            complement?: string | null;
+            /** Cpf */
+            cpf?: string | null;
+            /** District */
+            district?: string | null;
+            /** Email */
+            email?: string | null;
+            /** Emergency Contact Name */
+            emergency_contact_name?: string | null;
+            /** Emergency Contact Phone */
+            emergency_contact_phone?: string | null;
+            /** Emergency Contact Relationship */
+            emergency_contact_relationship?: string | null;
+            /** Full Name */
+            full_name: string;
+            /** Guardian Name */
+            guardian_name?: string | null;
+            /** Guardian Phone */
+            guardian_phone?: string | null;
+            /** Guardian Relationship */
+            guardian_relationship?: string | null;
+            /** Nationality */
+            nationality?: string | null;
+            /** Number */
+            number?: string | null;
+            /** Occupation */
+            occupation?: string | null;
+            /** Phone */
+            phone: string;
+            /** Phone Secondary */
+            phone_secondary?: string | null;
+            /** Postal Code */
+            postal_code?: string | null;
+            /** Social Name */
+            social_name?: string | null;
+            /** State */
+            state?: string | null;
+            /** Street */
+            street?: string | null;
+        };
+        /** PatientListResponse */
+        PatientListResponse: {
+            /** Items */
+            items: components["schemas"]["PatientResponse"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Total */
+            total: number;
+        };
+        /** PatientResponse */
+        PatientResponse: {
+            /** Administrative Notes */
+            administrative_notes: string | null;
+            /** Archived At */
+            archived_at: string | null;
+            /**
+             * Birth Date
+             * Format: date
+             */
+            birth_date: string;
+            /** Birthplace */
+            birthplace: string | null;
+            /** City */
+            city: string | null;
+            /**
+             * Clinic Id
+             * Format: uuid
+             */
+            clinic_id: string;
+            /** Complement */
+            complement: string | null;
+            /** Cpf */
+            cpf: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** District */
+            district: string | null;
+            /** Email */
+            email: string | null;
+            /** Emergency Contact Name */
+            emergency_contact_name: string | null;
+            /** Emergency Contact Phone */
+            emergency_contact_phone: string | null;
+            /** Emergency Contact Relationship */
+            emergency_contact_relationship: string | null;
+            /** Full Name */
+            full_name: string;
+            /** Guardian Name */
+            guardian_name: string | null;
+            /** Guardian Phone */
+            guardian_phone: string | null;
+            /** Guardian Relationship */
+            guardian_relationship: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Nationality */
+            nationality: string | null;
+            /** Number */
+            number: string | null;
+            /** Occupation */
+            occupation: string | null;
+            /** Phone */
+            phone: string;
+            /** Phone Secondary */
+            phone_secondary: string | null;
+            /** Postal Code */
+            postal_code: string | null;
+            /** Social Name */
+            social_name: string | null;
+            /** State */
+            state: string | null;
+            status: components["schemas"]["PatientStatus"];
+            /** Street */
+            street: string | null;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * PatientStatus
+         * @enum {string}
+         */
+        PatientStatus: "ACTIVE" | "ARCHIVED";
+        /** PatientUpdateRequest */
+        PatientUpdateRequest: {
+            /** Administrative Notes */
+            administrative_notes?: string | null;
+            /** Birth Date */
+            birth_date?: string | null;
+            /** Birthplace */
+            birthplace?: string | null;
+            /** City */
+            city?: string | null;
+            /** Complement */
+            complement?: string | null;
+            /** Cpf */
+            cpf?: string | null;
+            /** District */
+            district?: string | null;
+            /** Email */
+            email?: string | null;
+            /** Emergency Contact Name */
+            emergency_contact_name?: string | null;
+            /** Emergency Contact Phone */
+            emergency_contact_phone?: string | null;
+            /** Emergency Contact Relationship */
+            emergency_contact_relationship?: string | null;
+            /** Full Name */
+            full_name?: string | null;
+            /** Guardian Name */
+            guardian_name?: string | null;
+            /** Guardian Phone */
+            guardian_phone?: string | null;
+            /** Guardian Relationship */
+            guardian_relationship?: string | null;
+            /** Nationality */
+            nationality?: string | null;
+            /** Number */
+            number?: string | null;
+            /** Occupation */
+            occupation?: string | null;
+            /** Phone */
+            phone?: string | null;
+            /** Phone Secondary */
+            phone_secondary?: string | null;
+            /** Postal Code */
+            postal_code?: string | null;
+            /** Social Name */
+            social_name?: string | null;
+            /** State */
+            state?: string | null;
+            /** Street */
+            street?: string | null;
+        };
+        /** PregnancyPayload */
+        PregnancyPayload: {
+            status?: components["schemas"]["statusAnswer"] | null;
+            trimester?: components["schemas"]["TextAnswer"] | null;
+        };
+        /**
+         * ProfessionalProfileRequest
+         * @description Professional name, CRO number and UF as informed by the user.
+         *
+         *     The API does not validate the CRO against an external registry; the value
+         *     is stored and snapshotted exactly as declared here.
+         */
+        ProfessionalProfileRequest: {
+            /** Cro Number */
+            cro_number: string;
+            /** Cro State */
+            cro_state: string;
+            /** Professional Name */
+            professional_name: string;
+        };
+        /** ProfessionalProfileResponse */
+        ProfessionalProfileResponse: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Cro Number */
+            cro_number: string;
+            /** Cro State */
+            cro_state: string;
+            /** Professional Name */
+            professional_name: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** PsychologicalConditionsPayload */
+        PsychologicalConditionsPayload: {
+            diagnosis?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** RenalConditionsPayload */
+        RenalConditionsPayload: {
+            diagnosis?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** RespiratoryConditionsPayload */
+        RespiratoryConditionsPayload: {
+            diagnosis?: components["schemas"]["YesNoUnknownAnswer"] | null;
         };
         /**
          * Role
@@ -502,6 +1388,28 @@ export interface components {
              */
             last_seen_at: string;
         };
+        /** SocialHistoryPayload */
+        SocialHistoryPayload: {
+            care_access?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            notes?: components["schemas"]["TextAnswer"] | null;
+            occupational_exposure?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** SurgeriesPayload */
+        SurgeriesPayload: {
+            history?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            recent?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /**
+         * TextAnswer
+         * @description Free-text answer accepted while the anamnesis is a draft.
+         */
+        TextAnswer: {
+            /**
+             * Text
+             * @default
+             */
+            text: string;
+        };
         /** UserResponse */
         UserResponse: {
             /** Email */
@@ -529,6 +1437,84 @@ export interface components {
             /** Error Type */
             type: string;
         };
+        /**
+         * YesNoUnknown
+         * @description Closed vocabulary for ``YES_NO_UNKNOWN`` answers.
+         * @enum {string}
+         */
+        YesNoUnknown: "YES" | "NO" | "UNKNOWN";
+        /**
+         * YesNoUnknownAnswer
+         * @description Answer of a closed ``YES/NO/UNKNOWN`` question.
+         */
+        YesNoUnknownAnswer: {
+            /** Details */
+            details?: string | null;
+            value: components["schemas"]["YesNoUnknown"];
+        };
+        /** Habits.alcoholAnswer */
+        alcoholAnswer: {
+            value: components["schemas"]["alcoholOption"];
+        };
+        /**
+         * Habits.alcoholOption
+         * @enum {string}
+         */
+        alcoholOption: "never" | "occasionally" | "weekly" | "daily";
+        /** DentalInventory.dietAnswer */
+        dietAnswer: {
+            value: components["schemas"]["dietOption"];
+        };
+        /**
+         * DentalInventory.dietOption
+         * @enum {string}
+         */
+        dietOption: "rarely" | "sometimes" | "daily" | "several_times_daily";
+        /** DentalInventory.flossingAnswer */
+        flossingAnswer: {
+            value: components["schemas"]["flossingOption"];
+        };
+        /**
+         * DentalInventory.flossingOption
+         * @enum {string}
+         */
+        flossingOption: "daily" | "sometimes" | "never";
+        /** DentalInventory.hygieneAnswer */
+        hygieneAnswer: {
+            value: components["schemas"]["hygieneOption"];
+        };
+        /**
+         * DentalInventory.hygieneOption
+         * @enum {string}
+         */
+        hygieneOption: "twice_or_more_daily" | "once_daily" | "occasionally" | "never";
+        /** DentalHistory.lastVisitAnswer */
+        lastVisitAnswer: {
+            value: components["schemas"]["lastVisitOption"];
+        };
+        /**
+         * DentalHistory.lastVisitOption
+         * @enum {string}
+         */
+        lastVisitOption: "less_than_six_months" | "six_to_twelve_months" | "one_to_five_years" | "more_than_five_years" | "never";
+        /** Habits.smokingAnswer */
+        smokingAnswer: {
+            value: components["schemas"]["smokingOption"];
+        };
+        /**
+         * Habits.smokingOption
+         * @enum {string}
+         */
+        smokingOption: "never" | "former" | "current";
+        /** Pregnancy.statusAnswer */
+        statusAnswer: {
+            value: components["schemas"]["statusOption"];
+        };
+        /**
+         * Pregnancy.statusOption
+         * @enum {string}
+         */
+        statusOption: "not_applicable" | "not_pregnant" | "pregnant" | "breastfeeding" | "unknown";
     };
     responses: never;
     parameters: never;
@@ -1029,6 +2015,700 @@ export interface operations {
             };
         };
     };
+    list_patients_api_v1_clinics__clinic_id__patients_get: {
+        parameters: {
+            query?: {
+                search?: string | null;
+                status?: components["schemas"]["PatientStatus"];
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PatientListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_patient_api_v1_clinics__clinic_id__patients_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PatientCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PatientResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_patient_api_v1_clinics__clinic_id__patients__patient_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PatientResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_patient_api_v1_clinics__clinic_id__patients__patient_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PatientUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PatientResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_patient_alerts_api_v1_clinics__clinic_id__patients__patient_id__alerts_get: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["PatientAlertStatus"] | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                patient_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PatientAlertListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_patient_alert_api_v1_clinics__clinic_id__patients__patient_id__alerts_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PatientAlertCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PatientAlertResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_patient_alert_api_v1_clinics__clinic_id__patients__patient_id__alerts__alert_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+                alert_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PatientAlertUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PatientAlertResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_anamneses_api_v1_clinics__clinic_id__patients__patient_id__anamneses_get: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["AnamnesisStatus"] | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                patient_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnamnesisListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_anamnesis_api_v1_clinics__clinic_id__patients__patient_id__anamneses_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["AnamnesisCreateRequest"] | null;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnamnesisResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_anamnesis_api_v1_clinics__clinic_id__patients__patient_id__anamneses__anamnesis_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+                anamnesis_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnamnesisResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_anamnesis_api_v1_clinics__clinic_id__patients__patient_id__anamneses__anamnesis_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+                anamnesis_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnamnesisUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnamnesisResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    finalize_anamnesis_api_v1_clinics__clinic_id__patients__patient_id__anamneses__anamnesis_id__finalize_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+                anamnesis_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnamnesisResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    archive_patient_api_v1_clinics__clinic_id__patients__patient_id__archive_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PatientResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_documents_api_v1_clinics__clinic_id__patients__patient_id__documents_get: {
+        parameters: {
+            query?: {
+                category?: components["schemas"]["DocumentCategory"] | null;
+                status?: components["schemas"]["DocumentStatus"];
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                patient_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_document_api_v1_clinics__clinic_id__patients__patient_id__documents_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_document_api_v1_clinics__clinic_id__patients__patient_id__documents_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_document_api_v1_clinics__clinic_id__patients__patient_id__documents__document_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+                document_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    archive_document_api_v1_clinics__clinic_id__patients__patient_id__documents__document_id__archive_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+                document_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_document_content_api_v1_clinics__clinic_id__patients__patient_id__documents__document_id__content_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+                document_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Conteúdo privado do documento */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": unknown;
+                    "image/jpeg": unknown;
+                    "image/png": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    restore_document_api_v1_clinics__clinic_id__patients__patient_id__documents__document_id__restore_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+                document_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    restore_patient_api_v1_clinics__clinic_id__patients__patient_id__restore_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PatientResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_clinic_settings_api_v1_clinics__clinic_id__settings_get: {
         parameters: {
             query?: never;
@@ -1136,6 +2816,59 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_my_professional_profile_api_v1_users_me_professional_profile_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfessionalProfileResponse"] | null;
+                };
+            };
+        };
+    };
+    put_my_professional_profile_api_v1_users_me_professional_profile_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProfessionalProfileRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfessionalProfileResponse"];
+                };
             };
             /** @description Validation Error */
             422: {

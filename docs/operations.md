@@ -36,6 +36,14 @@ externamente no mínimo:
 - credenciais SMTP e S3 reais (`SMTP_HOST`, `SMTP_PORT`, `SMTP_SENDER`,
   `S3_ENDPOINT_URL`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`).
 
+`S3_KEY_PREFIX` é opcional e vazio por padrão: quando definido, a API prefixa
+toda chave de documento com o valor normalizado (sem barras nas pontas) e o
+adapter continua expondo a mesma chave lógica nos metadados. O harness E2E usa
+esse isolamento para apontar a API a `e2e/{run_id}/` e remover o run sem tocar
+nos demais objetos do bucket (ver "E2E e storage efêmero"). Em produção, deixe o
+valor vazio ou use um prefixo fixo do ambiente; a variável nunca aceita dados do
+cliente.
+
 `infra/.env` é ignorado por Git e é a única fonte local aceita. Nenhum valor de
 `infra/.env.example` pode ser reutilizado fora do desenvolvimento.
 
@@ -49,7 +57,7 @@ docker compose -f infra/docker-compose.yml --profile tools run --rm migrate alem
 ```
 
 A cadeia completa em banco descartável é validada por
-`./scripts/verify-migrations.sh` (0001→0008, downgrade e upgrade novamente).
+`./scripts/verify-migrations.sh` (0001→0012, downgrade e upgrade novamente).
 
 ## Health checks
 
@@ -60,6 +68,32 @@ A cadeia completa em banco descartável é validada por
 - Mailpit: `GET http://127.0.0.1:8025/livez`
 - Storage: `./scripts/verify-compose-health.sh` (cobre health, proxy e um
   round-trip S3 assinado com negação de leitura anônima).
+
+## E2E e storage efêmero
+
+`pnpm e2e` roda o Playwright contra o Compose (`workers: 1`). O `global-setup`
+executa as migrations, roda o seed determinístico (`scripts.seed_e2e`) e cria
+uma sessão por usuário sintético, gravada em `artifacts/e2e/sessions/` e
+removida no teardown. O seed cria duas clínicas, usuários de todos os papéis,
+um paciente por clínica e o perfil profissional do usuário multi-clínica, todos
+com o namespace `e2e-{run_id}`.
+
+Depois do seed, o `global-setup` recria o serviço `api` com
+`S3_KEY_PREFIX=e2e/{run_id}/` e espera o healthcheck; todo objeto enviado pelos
+specs fica sob esse prefixo. No `global-teardown`, o `e2e-seed --cleanup`:
+
+1. lista e remove exclusivamente os objetos sob `e2e/{run_id}/` e confirma que
+   nenhum objeto daquele run permaneceu;
+2. remove `patient_documents`, `patient_alerts`, `anamneses` (desabilitando os
+   triggers de usuário apenas para a manutenção, porque versões finais são
+   imutáveis), `patients`, `professional_profiles` e as demais linhas do run;
+3. restaura `S3_KEY_PREFIX` vazio no serviço `api`.
+
+O teardown roda mesmo com specs falhando e falha de forma explícita se a
+remoção do prefixo não puder ser concluída. `E2E_KEEP_FIXTURES=1` preserva as
+linhas para depuração (sessões e prefixo continuam sendo restaurados). Para
+conferir manualmente, `SELECT count(*) FROM app.clinics` deve voltar a 0 e a
+listagem do bucket com prefixo `e2e/` deve estar vazia.
 
 ## Observabilidade (M1.6.4)
 
@@ -171,9 +205,19 @@ storage local não publica API fora do host; o Mailpit não pode ser exposto.
 ## Requisitos ainda necessários para produção
 
 - storage gerenciado com criptografia em repouso, controle de acesso e backup;
+- verificação antimalware dos uploads antes de disponibilizá-los ao download
+  (o M2 valida vazio, tamanho, MIME por magic bytes e SHA-256, mas não inspeciona
+  o conteúdo malicioso);
 - SMTP autenticado com TLS e domínio verificado;
 - retenção, expiração e criptografia dos backups (e teste periódico de restore);
 - gestão externa de segredos com rotação automatizada;
 - HTTPS terminado em proxy confiável e `TRUSTED_PROXIES` configurado;
+- limite de corpo no proxy/ingress em produção: a aplicação rejeita com `413`
+  requisições cujo `Content-Length` exceda 11 MiB antes de ler o corpo, mas
+  uploads `Transfer-Encoding: chunked` não declaram tamanho e dependem do limite
+  imposto pelo proxy/ingress;
 - monitoramento e alertas sobre os logs JSON, com retenção definida;
+- processo de ciência/assinatura do paciente: concluir a anamnese registra
+  autoria e snapshot profissional, mas **não** é assinatura ICP-Brasil nem
+  substitui a ciência ou a assinatura do paciente (fora do M2);
 - revisão LGPD e jurídica antes da comercialização.
