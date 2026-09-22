@@ -349,6 +349,59 @@ export interface paths {
         patch: operations["update_patient_alert_api_v1_clinics__clinic_id__patients__patient_id__alerts__alert_id__patch"];
         trace?: never;
     };
+    "/api/v1/clinics/{clinic_id}/patients/{patient_id}/anamneses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Anamneses */
+        get: operations["list_anamneses_api_v1_clinics__clinic_id__patients__patient_id__anamneses_get"];
+        put?: never;
+        /** Create Anamnesis */
+        post: operations["create_anamnesis_api_v1_clinics__clinic_id__patients__patient_id__anamneses_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/patients/{patient_id}/anamneses/{anamnesis_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Anamnesis */
+        get: operations["get_anamnesis_api_v1_clinics__clinic_id__patients__patient_id__anamneses__anamnesis_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Anamnesis */
+        patch: operations["update_anamnesis_api_v1_clinics__clinic_id__patients__patient_id__anamneses__anamnesis_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/clinics/{clinic_id}/patients/{patient_id}/anamneses/{anamnesis_id}/finalize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Finalize Anamnesis */
+        post: operations["finalize_anamnesis_api_v1_clinics__clinic_id__patients__patient_id__anamneses__anamnesis_id__finalize_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/clinics/{clinic_id}/patients/{patient_id}/archive": {
         parameters: {
             query?: never;
@@ -435,10 +488,164 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/users/me/professional-profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get My Professional Profile */
+        get: operations["get_my_professional_profile_api_v1_users_me_professional_profile_get"];
+        /** Put My Professional Profile */
+        put: operations["put_my_professional_profile_api_v1_users_me_professional_profile_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AllergiesPayload */
+        AllergiesPayload: {
+            emergency_care?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            known_allergy?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /**
+         * AnamnesisCreateRequest
+         * @description Starts an empty draft or a revision copied from a final version.
+         */
+        AnamnesisCreateRequest: {
+            /** Base Version Id */
+            base_version_id?: string | null;
+        };
+        /** AnamnesisListResponse */
+        AnamnesisListResponse: {
+            /** Items */
+            items: components["schemas"]["AnamnesisResponse"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Total */
+            total: number;
+        };
+        /** AnamnesisPayload */
+        AnamnesisPayload: {
+            allergies?: components["schemas"]["AllergiesPayload"] | null;
+            anesthesia?: components["schemas"]["AnesthesiaPayload"] | null;
+            bleeding?: components["schemas"]["BleedingPayload"] | null;
+            cardiovascular_conditions?: components["schemas"]["CardiovascularConditionsPayload"] | null;
+            chief_complaint?: components["schemas"]["ChiefComplaintPayload"] | null;
+            current_history?: components["schemas"]["CurrentHistoryPayload"] | null;
+            dental_history?: components["schemas"]["DentalHistoryPayload"] | null;
+            dental_inventory?: components["schemas"]["DentalInventoryPayload"] | null;
+            digestive_conditions?: components["schemas"]["DigestiveConditionsPayload"] | null;
+            disabilities?: components["schemas"]["DisabilitiesPayload"] | null;
+            endocrine_metabolic_conditions?: components["schemas"]["EndocrineMetabolicConditionsPayload"] | null;
+            family_history?: components["schemas"]["FamilyHistoryPayload"] | null;
+            habits?: components["schemas"]["HabitsPayload"] | null;
+            healing?: components["schemas"]["HealingPayload"] | null;
+            hepatic_conditions?: components["schemas"]["HepaticConditionsPayload"] | null;
+            infectious_conditions?: components["schemas"]["InfectiousConditionsPayload"] | null;
+            medical_history?: components["schemas"]["MedicalHistoryPayload"] | null;
+            medications?: components["schemas"]["MedicationsPayload"] | null;
+            motor_conditions?: components["schemas"]["MotorConditionsPayload"] | null;
+            neoplasms?: components["schemas"]["NeoplasmsPayload"] | null;
+            pregnancy?: components["schemas"]["PregnancyPayload"] | null;
+            psychological_conditions?: components["schemas"]["PsychologicalConditionsPayload"] | null;
+            renal_conditions?: components["schemas"]["RenalConditionsPayload"] | null;
+            respiratory_conditions?: components["schemas"]["RespiratoryConditionsPayload"] | null;
+            social_history?: components["schemas"]["SocialHistoryPayload"] | null;
+            surgeries?: components["schemas"]["SurgeriesPayload"] | null;
+        };
+        /** AnamnesisResponse */
+        AnamnesisResponse: {
+            /** Author Cro Number */
+            author_cro_number: string | null;
+            /** Author Cro State */
+            author_cro_state: string | null;
+            /** Author Professional Name */
+            author_professional_name: string | null;
+            /**
+             * Author User Id
+             * Format: uuid
+             */
+            author_user_id: string;
+            /** Base Version Id */
+            base_version_id: string | null;
+            /**
+             * Clinic Id
+             * Format: uuid
+             */
+            clinic_id: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Finalized At */
+            finalized_at: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Patient Id
+             * Format: uuid
+             */
+            patient_id: string;
+            payload: {
+                [key: string]: unknown;
+            };
+            status: components["schemas"]["AnamnesisStatus"];
+            /** Template */
+            template: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Version Number */
+            version_number: number | null;
+        };
+        /**
+         * AnamnesisStatus
+         * @enum {string}
+         */
+        AnamnesisStatus: "DRAFT" | "FINAL";
+        /**
+         * AnamnesisUpdateRequest
+         * @description Partial payload update of a draft.
+         */
+        AnamnesisUpdateRequest: {
+            payload: components["schemas"]["AnamnesisPayload"];
+        };
+        /** AnesthesiaPayload */
+        AnesthesiaPayload: {
+            adverse_reaction?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            previous_exposure?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** BleedingPayload */
+        BleedingPayload: {
+            diagnosed_disorder?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            prolonged_bleeding?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** CardiovascularConditionsPayload */
+        CardiovascularConditionsPayload: {
+            diagnosis?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** ChiefComplaintPayload */
+        ChiefComplaintPayload: {
+            description?: components["schemas"]["TextAnswer"] | null;
+            duration?: components["schemas"]["TextAnswer"] | null;
+            evolution?: components["schemas"]["TextAnswer"] | null;
+        };
         /** ClinicResponse */
         ClinicResponse: {
             /**
@@ -491,15 +698,82 @@ export interface components {
             /** Csrf Token */
             csrf_token: string;
         };
+        /** CurrentHistoryPayload */
+        CurrentHistoryPayload: {
+            associated_symptoms?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            current_medication?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            notes?: components["schemas"]["TextAnswer"] | null;
+            previous_treatment?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** DentalHistoryPayload */
+        DentalHistoryPayload: {
+            last_visit?: components["schemas"]["lastVisitAnswer"] | null;
+            notes?: components["schemas"]["TextAnswer"] | null;
+            previous_treatment?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            treatment_anxiety?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** DentalInventoryPayload */
+        DentalInventoryPayload: {
+            atm?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            bleeding?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            bruxism?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            diet?: components["schemas"]["dietAnswer"] | null;
+            endodontics?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            flossing?: components["schemas"]["flossingAnswer"] | null;
+            halitosis?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            hygiene?: components["schemas"]["hygieneAnswer"] | null;
+            lesions?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            mobility?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            pain?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            previous_surgeries?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            prostheses?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            sensitivity?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            xerostomia?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** DigestiveConditionsPayload */
+        DigestiveConditionsPayload: {
+            diagnosis?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** DisabilitiesPayload */
+        DisabilitiesPayload: {
+            presence?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
         /** EmailVerificationConfirmRequest */
         EmailVerificationConfirmRequest: {
             /** Token */
             token: string;
         };
+        /** EndocrineMetabolicConditionsPayload */
+        EndocrineMetabolicConditionsPayload: {
+            diagnosis?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** FamilyHistoryPayload */
+        FamilyHistoryPayload: {
+            conditions?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            notes?: components["schemas"]["TextAnswer"] | null;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** HabitsPayload */
+        HabitsPayload: {
+            alcohol?: components["schemas"]["alcoholAnswer"] | null;
+            other_substances?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            smoking?: components["schemas"]["smokingAnswer"] | null;
+        };
+        /** HealingPayload */
+        HealingPayload: {
+            difficulty?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** HepaticConditionsPayload */
+        HepaticConditionsPayload: {
+            diagnosis?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** InfectiousConditionsPayload */
+        InfectiousConditionsPayload: {
+            diagnosis?: components["schemas"]["YesNoUnknownAnswer"] | null;
         };
         /** InvitationAcceptRequest */
         InvitationAcceptRequest: {
@@ -518,6 +792,18 @@ export interface components {
         /** LoginResponse */
         LoginResponse: {
             user: components["schemas"]["UserResponse"];
+        };
+        /** MedicalHistoryPayload */
+        MedicalHistoryPayload: {
+            continuous_follow_up?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            diagnoses?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            hospitalization?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            notes?: components["schemas"]["TextAnswer"] | null;
+        };
+        /** MedicationsPayload */
+        MedicationsPayload: {
+            anticoagulants?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            continuous_use?: components["schemas"]["YesNoUnknownAnswer"] | null;
         };
         /** MembershipInvitationRequest */
         MembershipInvitationRequest: {
@@ -564,6 +850,15 @@ export interface components {
         /** MembershipRoleUpdateRequest */
         MembershipRoleUpdateRequest: {
             role: components["schemas"]["Role"];
+        };
+        /** MotorConditionsPayload */
+        MotorConditionsPayload: {
+            diagnosis?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** NeoplasmsPayload */
+        NeoplasmsPayload: {
+            active_treatment?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            history?: components["schemas"]["YesNoUnknownAnswer"] | null;
         };
         /** PasswordForgotRequest */
         PasswordForgotRequest: {
@@ -847,6 +1142,57 @@ export interface components {
             /** Street */
             street?: string | null;
         };
+        /** PregnancyPayload */
+        PregnancyPayload: {
+            status?: components["schemas"]["statusAnswer"] | null;
+            trimester?: components["schemas"]["TextAnswer"] | null;
+        };
+        /**
+         * ProfessionalProfileRequest
+         * @description Professional name, CRO number and UF as informed by the user.
+         *
+         *     The API does not validate the CRO against an external registry; the value
+         *     is stored and snapshotted exactly as declared here.
+         */
+        ProfessionalProfileRequest: {
+            /** Cro Number */
+            cro_number: string;
+            /** Cro State */
+            cro_state: string;
+            /** Professional Name */
+            professional_name: string;
+        };
+        /** ProfessionalProfileResponse */
+        ProfessionalProfileResponse: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Cro Number */
+            cro_number: string;
+            /** Cro State */
+            cro_state: string;
+            /** Professional Name */
+            professional_name: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** PsychologicalConditionsPayload */
+        PsychologicalConditionsPayload: {
+            diagnosis?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** RenalConditionsPayload */
+        RenalConditionsPayload: {
+            diagnosis?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** RespiratoryConditionsPayload */
+        RespiratoryConditionsPayload: {
+            diagnosis?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
         /**
          * Role
          * @enum {string}
@@ -877,6 +1223,28 @@ export interface components {
              */
             last_seen_at: string;
         };
+        /** SocialHistoryPayload */
+        SocialHistoryPayload: {
+            care_access?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            notes?: components["schemas"]["TextAnswer"] | null;
+            occupational_exposure?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /** SurgeriesPayload */
+        SurgeriesPayload: {
+            history?: components["schemas"]["YesNoUnknownAnswer"] | null;
+            recent?: components["schemas"]["YesNoUnknownAnswer"] | null;
+        };
+        /**
+         * TextAnswer
+         * @description Free-text answer accepted while the anamnesis is a draft.
+         */
+        TextAnswer: {
+            /**
+             * Text
+             * @default
+             */
+            text: string;
+        };
         /** UserResponse */
         UserResponse: {
             /** Email */
@@ -904,6 +1272,84 @@ export interface components {
             /** Error Type */
             type: string;
         };
+        /**
+         * YesNoUnknown
+         * @description Closed vocabulary for ``YES_NO_UNKNOWN`` answers.
+         * @enum {string}
+         */
+        YesNoUnknown: "YES" | "NO" | "UNKNOWN";
+        /**
+         * YesNoUnknownAnswer
+         * @description Answer of a closed ``YES/NO/UNKNOWN`` question.
+         */
+        YesNoUnknownAnswer: {
+            /** Details */
+            details?: string | null;
+            value: components["schemas"]["YesNoUnknown"];
+        };
+        /** Habits.alcoholAnswer */
+        alcoholAnswer: {
+            value: components["schemas"]["alcoholOption"];
+        };
+        /**
+         * Habits.alcoholOption
+         * @enum {string}
+         */
+        alcoholOption: "never" | "occasionally" | "weekly" | "daily";
+        /** DentalInventory.dietAnswer */
+        dietAnswer: {
+            value: components["schemas"]["dietOption"];
+        };
+        /**
+         * DentalInventory.dietOption
+         * @enum {string}
+         */
+        dietOption: "rarely" | "sometimes" | "daily" | "several_times_daily";
+        /** DentalInventory.flossingAnswer */
+        flossingAnswer: {
+            value: components["schemas"]["flossingOption"];
+        };
+        /**
+         * DentalInventory.flossingOption
+         * @enum {string}
+         */
+        flossingOption: "daily" | "sometimes" | "never";
+        /** DentalInventory.hygieneAnswer */
+        hygieneAnswer: {
+            value: components["schemas"]["hygieneOption"];
+        };
+        /**
+         * DentalInventory.hygieneOption
+         * @enum {string}
+         */
+        hygieneOption: "twice_or_more_daily" | "once_daily" | "occasionally" | "never";
+        /** DentalHistory.lastVisitAnswer */
+        lastVisitAnswer: {
+            value: components["schemas"]["lastVisitOption"];
+        };
+        /**
+         * DentalHistory.lastVisitOption
+         * @enum {string}
+         */
+        lastVisitOption: "less_than_six_months" | "six_to_twelve_months" | "one_to_five_years" | "more_than_five_years" | "never";
+        /** Habits.smokingAnswer */
+        smokingAnswer: {
+            value: components["schemas"]["smokingOption"];
+        };
+        /**
+         * Habits.smokingOption
+         * @enum {string}
+         */
+        smokingOption: "never" | "former" | "current";
+        /** Pregnancy.statusAnswer */
+        statusAnswer: {
+            value: components["schemas"]["statusOption"];
+        };
+        /**
+         * Pregnancy.statusOption
+         * @enum {string}
+         */
+        statusOption: "not_applicable" | "not_pregnant" | "pregnant" | "breastfeeding" | "unknown";
     };
     responses: never;
     parameters: never;
@@ -1652,6 +2098,181 @@ export interface operations {
             };
         };
     };
+    list_anamneses_api_v1_clinics__clinic_id__patients__patient_id__anamneses_get: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["AnamnesisStatus"] | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                patient_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnamnesisListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_anamnesis_api_v1_clinics__clinic_id__patients__patient_id__anamneses_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["AnamnesisCreateRequest"] | null;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnamnesisResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_anamnesis_api_v1_clinics__clinic_id__patients__patient_id__anamneses__anamnesis_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+                anamnesis_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnamnesisResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_anamnesis_api_v1_clinics__clinic_id__patients__patient_id__anamneses__anamnesis_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+                anamnesis_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnamnesisUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnamnesisResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    finalize_anamnesis_api_v1_clinics__clinic_id__patients__patient_id__anamneses__anamnesis_id__finalize_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+                anamnesis_id: string;
+                clinic_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnamnesisResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     archive_patient_api_v1_clinics__clinic_id__patients__patient_id__archive_post: {
         parameters: {
             query?: never;
@@ -1823,6 +2444,59 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_my_professional_profile_api_v1_users_me_professional_profile_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfessionalProfileResponse"] | null;
+                };
+            };
+        };
+    };
+    put_my_professional_profile_api_v1_users_me_professional_profile_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProfessionalProfileRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfessionalProfileResponse"];
+                };
             };
             /** @description Validation Error */
             422: {

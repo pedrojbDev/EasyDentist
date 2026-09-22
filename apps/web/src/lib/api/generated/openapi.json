@@ -1,6 +1,613 @@
 {
   "components": {
     "schemas": {
+      "AllergiesPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "emergency_care": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "known_allergy": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "AllergiesPayload",
+        "type": "object"
+      },
+      "AnamnesisCreateRequest": {
+        "additionalProperties": false,
+        "description": "Starts an empty draft or a revision copied from a final version.",
+        "properties": {
+          "base_version_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Base Version Id"
+          }
+        },
+        "title": "AnamnesisCreateRequest",
+        "type": "object"
+      },
+      "AnamnesisListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AnamnesisResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "AnamnesisListResponse",
+        "type": "object"
+      },
+      "AnamnesisPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "allergies": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AllergiesPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "anesthesia": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AnesthesiaPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "bleeding": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BleedingPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cardiovascular_conditions": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CardiovascularConditionsPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "chief_complaint": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ChiefComplaintPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "current_history": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CurrentHistoryPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "dental_history": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DentalHistoryPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "dental_inventory": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DentalInventoryPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "digestive_conditions": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DigestiveConditionsPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "disabilities": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DisabilitiesPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "endocrine_metabolic_conditions": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EndocrineMetabolicConditionsPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "family_history": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FamilyHistoryPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "habits": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HabitsPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "healing": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HealingPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "hepatic_conditions": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HepaticConditionsPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "infectious_conditions": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/InfectiousConditionsPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "medical_history": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MedicalHistoryPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "medications": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MedicationsPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "motor_conditions": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MotorConditionsPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "neoplasms": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NeoplasmsPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "pregnancy": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PregnancyPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "psychological_conditions": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PsychologicalConditionsPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "renal_conditions": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RenalConditionsPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "respiratory_conditions": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RespiratoryConditionsPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "social_history": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SocialHistoryPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "surgeries": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SurgeriesPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "AnamnesisPayload",
+        "type": "object"
+      },
+      "AnamnesisResponse": {
+        "properties": {
+          "author_cro_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Author Cro Number"
+          },
+          "author_cro_state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Author Cro State"
+          },
+          "author_professional_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Author Professional Name"
+          },
+          "author_user_id": {
+            "format": "uuid",
+            "title": "Author User Id",
+            "type": "string"
+          },
+          "base_version_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Base Version Id"
+          },
+          "clinic_id": {
+            "format": "uuid",
+            "title": "Clinic Id",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "finalized_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finalized At"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "patient_id": {
+            "format": "uuid",
+            "title": "Patient Id",
+            "type": "string"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AnamnesisStatus"
+          },
+          "template": {
+            "title": "Template",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "version_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version Number"
+          }
+        },
+        "required": [
+          "id",
+          "clinic_id",
+          "patient_id",
+          "status",
+          "version_number",
+          "template",
+          "payload",
+          "base_version_id",
+          "author_user_id",
+          "author_professional_name",
+          "author_cro_number",
+          "author_cro_state",
+          "finalized_at",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "AnamnesisResponse",
+        "type": "object"
+      },
+      "AnamnesisStatus": {
+        "enum": [
+          "DRAFT",
+          "FINAL"
+        ],
+        "title": "AnamnesisStatus",
+        "type": "string"
+      },
+      "AnamnesisUpdateRequest": {
+        "additionalProperties": false,
+        "description": "Partial payload update of a draft.",
+        "properties": {
+          "payload": {
+            "$ref": "#/components/schemas/AnamnesisPayload"
+          }
+        },
+        "required": [
+          "payload"
+        ],
+        "title": "AnamnesisUpdateRequest",
+        "type": "object"
+      },
+      "AnesthesiaPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "adverse_reaction": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "previous_exposure": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "AnesthesiaPayload",
+        "type": "object"
+      },
+      "BleedingPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "diagnosed_disorder": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "prolonged_bleeding": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "BleedingPayload",
+        "type": "object"
+      },
+      "CardiovascularConditionsPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "diagnosis": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "CardiovascularConditionsPayload",
+        "type": "object"
+      },
+      "ChiefComplaintPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TextAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "duration": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TextAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "evolution": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TextAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "ChiefComplaintPayload",
+        "type": "object"
+      },
       "ClinicResponse": {
         "properties": {
           "id": {
@@ -151,6 +758,291 @@
         "title": "CsrfTokenResponse",
         "type": "object"
       },
+      "CurrentHistoryPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "associated_symptoms": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "current_medication": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TextAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "previous_treatment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "CurrentHistoryPayload",
+        "type": "object"
+      },
+      "DentalHistoryPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "last_visit": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/lastVisitAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TextAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "previous_treatment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "treatment_anxiety": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "DentalHistoryPayload",
+        "type": "object"
+      },
+      "DentalInventoryPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "atm": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "bleeding": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "bruxism": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "diet": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/dietAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "endodontics": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "flossing": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/flossingAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "halitosis": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "hygiene": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/hygieneAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "lesions": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "mobility": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "pain": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "previous_surgeries": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "prostheses": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sensitivity": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "xerostomia": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "DentalInventoryPayload",
+        "type": "object"
+      },
+      "DigestiveConditionsPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "diagnosis": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "DigestiveConditionsPayload",
+        "type": "object"
+      },
+      "DisabilitiesPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "presence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "DisabilitiesPayload",
+        "type": "object"
+      },
       "EmailVerificationConfirmRequest": {
         "properties": {
           "token": {
@@ -166,6 +1058,50 @@
         "title": "EmailVerificationConfirmRequest",
         "type": "object"
       },
+      "EndocrineMetabolicConditionsPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "diagnosis": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "EndocrineMetabolicConditionsPayload",
+        "type": "object"
+      },
+      "FamilyHistoryPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "conditions": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TextAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "FamilyHistoryPayload",
+        "type": "object"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -177,6 +1113,94 @@
           }
         },
         "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HabitsPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "alcohol": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/alcoholAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "other_substances": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "smoking": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/smokingAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "HabitsPayload",
+        "type": "object"
+      },
+      "HealingPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "difficulty": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "HealingPayload",
+        "type": "object"
+      },
+      "HepaticConditionsPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "diagnosis": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "HepaticConditionsPayload",
+        "type": "object"
+      },
+      "InfectiousConditionsPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "diagnosis": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "InfectiousConditionsPayload",
         "type": "object"
       },
       "InvitationAcceptRequest": {
@@ -239,6 +1263,80 @@
           "user"
         ],
         "title": "LoginResponse",
+        "type": "object"
+      },
+      "MedicalHistoryPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "continuous_follow_up": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "diagnoses": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "hospitalization": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TextAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "MedicalHistoryPayload",
+        "type": "object"
+      },
+      "MedicationsPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "anticoagulants": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "continuous_use": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "MedicationsPayload",
         "type": "object"
       },
       "MembershipInvitationRequest": {
@@ -336,6 +1434,50 @@
           "role"
         ],
         "title": "MembershipRoleUpdateRequest",
+        "type": "object"
+      },
+      "MotorConditionsPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "diagnosis": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "MotorConditionsPayload",
+        "type": "object"
+      },
+      "NeoplasmsPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "active_treatment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "history": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "NeoplasmsPayload",
         "type": "object"
       },
       "PasswordForgotRequest": {
@@ -1468,6 +2610,148 @@
         "title": "PatientUpdateRequest",
         "type": "object"
       },
+      "PregnancyPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/statusAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "trimester": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TextAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "PregnancyPayload",
+        "type": "object"
+      },
+      "ProfessionalProfileRequest": {
+        "additionalProperties": false,
+        "description": "Professional name, CRO number and UF as informed by the user.\n\nThe API does not validate the CRO against an external registry; the value\nis stored and snapshotted exactly as declared here.",
+        "properties": {
+          "cro_number": {
+            "maxLength": 30,
+            "minLength": 1,
+            "title": "Cro Number",
+            "type": "string"
+          },
+          "cro_state": {
+            "title": "Cro State",
+            "type": "string"
+          },
+          "professional_name": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Professional Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "professional_name",
+          "cro_number",
+          "cro_state"
+        ],
+        "title": "ProfessionalProfileRequest",
+        "type": "object"
+      },
+      "ProfessionalProfileResponse": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "cro_number": {
+            "title": "Cro Number",
+            "type": "string"
+          },
+          "cro_state": {
+            "title": "Cro State",
+            "type": "string"
+          },
+          "professional_name": {
+            "title": "Professional Name",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "professional_name",
+          "cro_number",
+          "cro_state",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ProfessionalProfileResponse",
+        "type": "object"
+      },
+      "PsychologicalConditionsPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "diagnosis": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "PsychologicalConditionsPayload",
+        "type": "object"
+      },
+      "RenalConditionsPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "diagnosis": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "RenalConditionsPayload",
+        "type": "object"
+      },
+      "RespiratoryConditionsPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "diagnosis": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "RespiratoryConditionsPayload",
+        "type": "object"
+      },
       "Role": {
         "enum": [
           "OWNER",
@@ -1514,6 +2798,84 @@
           "current"
         ],
         "title": "SessionResponse",
+        "type": "object"
+      },
+      "SocialHistoryPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "care_access": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TextAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "occupational_exposure": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "SocialHistoryPayload",
+        "type": "object"
+      },
+      "SurgeriesPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "history": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "recent": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/YesNoUnknownAnswer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "SurgeriesPayload",
+        "type": "object"
+      },
+      "TextAnswer": {
+        "additionalProperties": false,
+        "description": "Free-text answer accepted while the anamnesis is a draft.",
+        "properties": {
+          "text": {
+            "default": "",
+            "maxLength": 4000,
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "title": "TextAnswer",
         "type": "object"
       },
       "UserResponse": {
@@ -1592,6 +2954,203 @@
         ],
         "title": "ValidationError",
         "type": "object"
+      },
+      "YesNoUnknown": {
+        "description": "Closed vocabulary for ``YES_NO_UNKNOWN`` answers.",
+        "enum": [
+          "YES",
+          "NO",
+          "UNKNOWN"
+        ],
+        "title": "YesNoUnknown",
+        "type": "string"
+      },
+      "YesNoUnknownAnswer": {
+        "additionalProperties": false,
+        "description": "Answer of a closed ``YES/NO/UNKNOWN`` question.",
+        "properties": {
+          "details": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Details"
+          },
+          "value": {
+            "$ref": "#/components/schemas/YesNoUnknown"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "title": "YesNoUnknownAnswer",
+        "type": "object"
+      },
+      "alcoholAnswer": {
+        "additionalProperties": false,
+        "properties": {
+          "value": {
+            "$ref": "#/components/schemas/alcoholOption"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "title": "Habits.alcoholAnswer",
+        "type": "object"
+      },
+      "alcoholOption": {
+        "enum": [
+          "never",
+          "occasionally",
+          "weekly",
+          "daily"
+        ],
+        "title": "Habits.alcoholOption",
+        "type": "string"
+      },
+      "dietAnswer": {
+        "additionalProperties": false,
+        "properties": {
+          "value": {
+            "$ref": "#/components/schemas/dietOption"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "title": "DentalInventory.dietAnswer",
+        "type": "object"
+      },
+      "dietOption": {
+        "enum": [
+          "rarely",
+          "sometimes",
+          "daily",
+          "several_times_daily"
+        ],
+        "title": "DentalInventory.dietOption",
+        "type": "string"
+      },
+      "flossingAnswer": {
+        "additionalProperties": false,
+        "properties": {
+          "value": {
+            "$ref": "#/components/schemas/flossingOption"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "title": "DentalInventory.flossingAnswer",
+        "type": "object"
+      },
+      "flossingOption": {
+        "enum": [
+          "daily",
+          "sometimes",
+          "never"
+        ],
+        "title": "DentalInventory.flossingOption",
+        "type": "string"
+      },
+      "hygieneAnswer": {
+        "additionalProperties": false,
+        "properties": {
+          "value": {
+            "$ref": "#/components/schemas/hygieneOption"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "title": "DentalInventory.hygieneAnswer",
+        "type": "object"
+      },
+      "hygieneOption": {
+        "enum": [
+          "twice_or_more_daily",
+          "once_daily",
+          "occasionally",
+          "never"
+        ],
+        "title": "DentalInventory.hygieneOption",
+        "type": "string"
+      },
+      "lastVisitAnswer": {
+        "additionalProperties": false,
+        "properties": {
+          "value": {
+            "$ref": "#/components/schemas/lastVisitOption"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "title": "DentalHistory.lastVisitAnswer",
+        "type": "object"
+      },
+      "lastVisitOption": {
+        "enum": [
+          "less_than_six_months",
+          "six_to_twelve_months",
+          "one_to_five_years",
+          "more_than_five_years",
+          "never"
+        ],
+        "title": "DentalHistory.lastVisitOption",
+        "type": "string"
+      },
+      "smokingAnswer": {
+        "additionalProperties": false,
+        "properties": {
+          "value": {
+            "$ref": "#/components/schemas/smokingOption"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "title": "Habits.smokingAnswer",
+        "type": "object"
+      },
+      "smokingOption": {
+        "enum": [
+          "never",
+          "former",
+          "current"
+        ],
+        "title": "Habits.smokingOption",
+        "type": "string"
+      },
+      "statusAnswer": {
+        "additionalProperties": false,
+        "properties": {
+          "value": {
+            "$ref": "#/components/schemas/statusOption"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "title": "Pregnancy.statusAnswer",
+        "type": "object"
+      },
+      "statusOption": {
+        "enum": [
+          "not_applicable",
+          "not_pregnant",
+          "pregnant",
+          "breastfeeding",
+          "unknown"
+        ],
+        "title": "Pregnancy.statusOption",
+        "type": "string"
       }
     }
   },
@@ -2708,6 +4267,363 @@
         ]
       }
     },
+    "/api/v1/clinics/{clinic_id}/patients/{patient_id}/anamneses": {
+      "get": {
+        "operationId": "list_anamneses_api_v1_clinics__clinic_id__patients__patient_id__anamneses_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "patient_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Patient Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "clinic_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Clinic Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AnamnesisStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnamnesisListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Anamneses",
+        "tags": [
+          "anamnesis"
+        ]
+      },
+      "post": {
+        "operationId": "create_anamnesis_api_v1_clinics__clinic_id__patients__patient_id__anamneses_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "patient_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Patient Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "clinic_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Clinic Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/AnamnesisCreateRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Payload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnamnesisResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Anamnesis",
+        "tags": [
+          "anamnesis"
+        ]
+      }
+    },
+    "/api/v1/clinics/{clinic_id}/patients/{patient_id}/anamneses/{anamnesis_id}": {
+      "get": {
+        "operationId": "get_anamnesis_api_v1_clinics__clinic_id__patients__patient_id__anamneses__anamnesis_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "patient_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Patient Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "anamnesis_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Anamnesis Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "clinic_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Clinic Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnamnesisResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Anamnesis",
+        "tags": [
+          "anamnesis"
+        ]
+      },
+      "patch": {
+        "operationId": "update_anamnesis_api_v1_clinics__clinic_id__patients__patient_id__anamneses__anamnesis_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "patient_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Patient Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "anamnesis_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Anamnesis Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "clinic_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Clinic Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnamnesisUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnamnesisResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Anamnesis",
+        "tags": [
+          "anamnesis"
+        ]
+      }
+    },
+    "/api/v1/clinics/{clinic_id}/patients/{patient_id}/anamneses/{anamnesis_id}/finalize": {
+      "post": {
+        "operationId": "finalize_anamnesis_api_v1_clinics__clinic_id__patients__patient_id__anamneses__anamnesis_id__finalize_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "patient_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Patient Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "anamnesis_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Anamnesis Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "clinic_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Clinic Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnamnesisResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Finalize Anamnesis",
+        "tags": [
+          "anamnesis"
+        ]
+      }
+    },
     "/api/v1/clinics/{clinic_id}/patients/{patient_id}/archive": {
       "post": {
         "operationId": "archive_patient_api_v1_clinics__clinic_id__patients__patient_id__archive_post",
@@ -2964,6 +4880,74 @@
         "summary": "Accept Invitation",
         "tags": [
           "auth"
+        ]
+      }
+    },
+    "/api/v1/users/me/professional-profile": {
+      "get": {
+        "operationId": "get_my_professional_profile_api_v1_users_me_professional_profile_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ProfessionalProfileResponse"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Get My Professional Profile Api V1 Users Me Professional Profile Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get My Professional Profile",
+        "tags": [
+          "users"
+        ]
+      },
+      "put": {
+        "operationId": "put_my_professional_profile_api_v1_users_me_professional_profile_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfessionalProfileRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfessionalProfileResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put My Professional Profile",
+        "tags": [
+          "users"
         ]
       }
     }
