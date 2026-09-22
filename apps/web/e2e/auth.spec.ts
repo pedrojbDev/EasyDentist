@@ -7,6 +7,10 @@ test.describe('autenticação', () => {
     await expect(page.getByRole('heading', { name: 'Suas clínicas' })).toBeVisible();
     await expect(page.getByText(manifest.clinics.a.sentinel)).toBeVisible();
     await expect(page.getByText(manifest.clinics.b.sentinel)).toBeVisible();
+
+    const cookies = await page.evaluate(() => document.cookie);
+    expect(cookies).not.toContain('easydent_session');
+    expect(cookies).toContain('easydent_csrf');
   });
 
   test('login inválido permanece no formulário com erro genérico', async ({ page, manifest }) => {
@@ -61,12 +65,5 @@ test.describe('autenticação', () => {
     const me = await page.request.get('/api/v1/auth/me');
     const user = (await me.json()) as { email_verified_at: string | null };
     expect(user.email_verified_at).not.toBeNull();
-  });
-
-  test('cookie de sessão não é acessível por JavaScript', async ({ page, manifest }) => {
-    await login(page, manifest.users.multi);
-    const cookies = await page.evaluate(() => document.cookie);
-    expect(cookies).not.toContain('easydent_session');
-    expect(cookies).toContain('easydent_csrf');
   });
 });

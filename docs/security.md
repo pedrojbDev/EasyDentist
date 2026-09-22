@@ -171,9 +171,12 @@ expõe essas tabelas neste incremento.
 **Implementado no M1.6:** headers de segurança em toda resposta da API
 (`nosniff`, `DENY`, `strict-origin-when-cross-origin`, `Permissions-Policy`,
 COOP/CORP e CSP `default-src 'none'`) e no Next.js (CSP bloqueante com nonce por
-resposta, sem `unsafe-inline` para scripts, recursos e formulários restritos à
-mesma origem, rewrite `/api/v1` isento para preservar os headers da API); HSTS
-somente em produção. Logs de API e web são JSONL com allowlist — sem corpo,
+resposta, sem `unsafe-inline` para scripts, `object-src` bloqueado, recursos,
+conexões, fontes e formulários restritos à mesma origem, imagens `data:`
+permitidas e rewrite `/api/v1` isento para preservar os headers da API); HSTS
+somente em produção. Todas as rotas HTML são renderizadas dinamicamente para
+que o nonce alcance os scripts gerados pelo Next, inclusive a página 404
+customizada, e o `X-Powered-By` foi removido. Logs de API e web são JSONL com allowlist — sem corpo,
 cookie, token, senha, header de autorização, e-mail, IP bruto ou query string —
 correlacionados por request ID, com access log textual do Uvicorn desativado e
 metadata de auditoria sanitizada por allowlist de evento. O gate

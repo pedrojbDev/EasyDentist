@@ -13,7 +13,9 @@ RUN pnpm install --frozen-lockfile
 FROM dependencies AS builder
 
 ARG API_INTERNAL_BASE_URL=http://api:8000
+ARG APP_ENV=development
 ENV API_INTERNAL_BASE_URL=$API_INTERNAL_BASE_URL
+ENV APP_ENV=$APP_ENV
 
 COPY apps/web ./apps/web
 RUN pnpm --filter @easydentist/web build

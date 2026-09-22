@@ -138,8 +138,10 @@ services:
       dockerfile: apps/web/Dockerfile
       args:
         API_INTERNAL_BASE_URL: http://api:8000
+        APP_ENV: ${APP_ENV:-development}
     environment:
       API_INTERNAL_BASE_URL: http://api:8000
+      APP_ENV: ${APP_ENV:-development}
     ports:
       - '127.0.0.1:3000:3000'
     depends_on:
