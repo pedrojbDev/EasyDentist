@@ -447,6 +447,26 @@ allowlist e redaction, backup/restauração com `pg_dump -Fc`/`pg_restore` em
 PostgreSQL descartável, scanner de secrets, rejeição do segredo padrão de
 desenvolvimento em produção e o critério cross-tenant de ponta a ponta. O M1.6
 não altera domínio clínico; storage, SMTP, retenção de backups, criptografia e
-gestão externa de secrets permanecem pré-requisitos operacionais. O harness
-Playwright (M1.6.2), os headers (M1.6.3), os logs (M1.6.4), o runbook (M1.6.5) e
-a auditoria final (M1.6.6) entram nos incrementos seguintes.
+gestão externa de secrets permanecem pré-requisitos operacionais.
+
+## Estado do M1.6 (M1.6 concluído)
+
+O hardening do Marco 1 está implementado e provado. O harness Playwright
+(`playwright.config.ts`, `apps/web/e2e/`, `apps/api/scripts/seed_e2e.py`) roda
+contra o Compose com 17 cenários — autenticação, recuperação e verificação por
+Mailpit, convite, seletor, settings, equipe, sessões, headers, CSP sem violações
+e isolamento cross-tenant nas duas direções. A API ganhou
+`SecurityHeadersMiddleware` e o Next.js um middleware de CSP com nonce por
+resposta, sem `unsafe-inline` para scripts. Logs de API e web são JSONL com
+allowlist, `error_type` sem traceback e correlação por request ID
+(`x-request-id` gerado na web e reutilizado na API); o access log textual do
+Uvicorn foi desativado. `scripts/verify-backup-restore.sh` prova
+`pg_dump -Fc`/`pg_restore` em PostgreSQL descartável com schema, revisão
+Alembic, grants, policies, `FORCE ROW LEVEL SECURITY`, `NOBYPASSRLS` e
+isolamento sob a role runtime; `docs/operations.md` registra o runbook.
+`scripts/verify-secrets.sh` varre arquivos versionados e
+`tests/integration/test_m16_isolation_gate.py` consolida a prova de RLS,
+cookies e 404 cross-tenant. O CI ganhou o job `hardening` (secrets, Compose,
+migrations, health, Playwright e backup/restore). O gate global do M1.6 passa
+por completo; produção continua condicionada aos pré-requisitos operacionais de
+`docs/operations.md`.
