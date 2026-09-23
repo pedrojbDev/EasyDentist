@@ -127,9 +127,30 @@ magic bytes.
 
 ### Entidades ainda posteriores
 
-Consultas, histórico de status, evoluções clínicas, achados de odontograma,
-planos e itens de tratamento, orçamentos, faturamento, catálogo de
-procedimentos e salas permanecem nos marcos seguintes. Cada tabela de domínio
+Evoluções clínicas, achados de odontograma, planos e itens de tratamento,
+orçamentos, faturamento e catálogo de procedimentos permanecem nos marcos
+seguintes. Cada tabela de domínio
 terá UUID, `clinic_id NOT NULL`, relações tenant-aware e RLS; temporalidade
 usará `timestamptz` e dinheiro será inteiro em centavos. Objetos de documentos
 não ficam no banco.
+
+## Marco 3 implementado (agenda)
+
+| Tabela | Responsabilidade |
+| --- | --- |
+| `agenda_professionals` | profissional de agenda da clínica, com CRO/UF e vínculo opcional/único a membership |
+| `agenda_rooms` | sala ou cadeira individual ativa/arquivada |
+| `professional_availabilities` | intervalos semanais locais, inclusive horários divididos |
+| `schedule_events` | ocupação interna compartilhada de consultas e bloqueios |
+| `schedule_blocks` | contrato próprio de bloqueio, apoiado por um evento interno |
+| `appointments` | status, versão otimista e nota administrativa privada de uma consulta |
+| `appointment_history` | mudanças de criação, reagendamento e status append-only |
+
+As tabelas são tenant-aware, usam UUID e FKs compostas por `clinic_id`. Eventos
+persistem início/fim como `timestamptz`; as faixas de ocupação são `[)` para que
+intervalos adjacentes sejam válidos. Três exclusões GiST impedem colisão por
+profissional, paciente e sala. O estado `RELEASED` deixa de participar da
+ocupação, enquanto consultas `COMPLETED` permanecem `OCCUPYING`. O histórico
+tem ator, instante, versão e snapshots JSONB, mas proíbe notas administrativas.
+Horários semanais são substituídos sem `DELETE` físico: intervalos anteriores
+ficam inativos e não participam da disponibilidade.

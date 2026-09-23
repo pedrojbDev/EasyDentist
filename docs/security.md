@@ -277,3 +277,28 @@ exercita AWS Signature v4 e confirma que um objeto privado não é legível sem
 credenciais; ele não é uma aprovação de segurança para produção. Da mesma forma,
 backup/restore local não define retenção, expiração ou criptografia: esses
 requisitos permanecem em `docs/operations.md` como pré-requisitos de produção.
+
+## Agenda clínica (M3, ADR 0011)
+
+As sete tabelas de agenda usam `FORCE ROW LEVEL SECURITY`, `TenantContext`,
+`app.is_active_member()` e policies fail-closed. FKs compostas impedem
+referências entre clínicas. A role runtime não recebe `DELETE`, DDL ou
+privilégios para instalar extensões; intervalos semanais são desativados em vez
+de apagados. O cadastro de profissional não referencia o perfil profissional
+global do M2 e o vínculo opcional só aceita membro ativo Dentista/Proprietário.
+
+`schedule_events` é a autoridade concorrente comum a consultas e bloqueios:
+exclusion constraints GiST usam faixas `[)` por profissional, paciente e sala.
+Mutations e alterações de disponibilidade/recursos serializam na linha de
+`clinic_settings`; o backend repete os checks na transação. Mudanças de consulta
+usam `version`, histórico append-only e autorização do Dentista limitada ao
+profissional vinculado. A timezone só pode mudar após resolver consultas
+pendentes e bloqueios futuros.
+
+O histórico de consultas bloqueia `UPDATE`/`DELETE` no banco e rejeita a chave
+`administrative_note` em snapshots JSONB, inclusive aninhadas. Observações e
+motivos de cancelamento não são emitidos em logs nem metadata de auditoria.
+Respostas autenticadas seguem `Cache-Control: private, no-store`. O bootstrap
+administrativo instala `btree_gist`; bancos existentes devem tê-la instalada
+por administrador antes de aplicar a migration. Nem a role runtime nem a API
+executam esse DDL.

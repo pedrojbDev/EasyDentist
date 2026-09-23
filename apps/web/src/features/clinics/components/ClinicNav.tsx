@@ -1,4 +1,4 @@
-import { Building2, Settings, UserRound, Users } from 'lucide-react';
+import { Building2, CalendarDays, Settings, UserRound, Users } from 'lucide-react';
 import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 const items = [
   { key: 'overview', label: 'Visão geral', suffix: '', icon: Building2 },
   { key: 'patients', label: 'Pacientes', suffix: '/patients', icon: UserRound },
+  { key: 'agenda', label: 'Agenda', suffix: '/agenda', icon: CalendarDays },
   { key: 'settings', label: 'Ajustes', suffix: '/settings', icon: Settings },
   { key: 'members', label: 'Equipe', suffix: '/members', icon: Users },
 ] as const;
@@ -15,7 +16,7 @@ export function ClinicNav({
   active,
 }: {
   clinicId: string;
-  active: (typeof items)[number]['key'];
+  active: (typeof items)[number]['key'] | 'agenda-resources';
 }) {
   return (
     <nav
@@ -24,7 +25,8 @@ export function ClinicNav({
     >
       {items.map((item) => {
         const Icon = item.icon;
-        const selected = item.key === active;
+        const selected =
+          item.key === active || (active === 'agenda-resources' && item.key === 'agenda');
         return (
           <Link
             key={item.key}
