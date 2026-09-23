@@ -3,8 +3,10 @@ from __future__ import annotations
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Request, status
+from sqlalchemy import select
 from sqlalchemy.exc import DBAPIError
 
+from app.appointments.models import Appointment, ScheduleBlock, ScheduleEvent
 from app.auth.dependencies import (
     AuthSettingsDep,
     EmailSenderDep,
@@ -21,6 +23,7 @@ from app.auth.templates import (
 )
 from app.auth.tokens import generate_token
 from app.clinics.dependencies import MembershipDep
+from app.clinics.models import ClinicSettings
 from app.clinics.rbac import Permission, Role, require_permission, role_allows
 from app.clinics.repositories.clinic_repository import ClinicRepository
 from app.clinics.repositories.clinic_settings_repository import ClinicSettingsRepository
@@ -36,8 +39,9 @@ from app.clinics.schemas import (
     MembershipRoleUpdateRequest,
 )
 from app.clinics.services import MembershipService, translate_membership_error
+from app.core.clock import utcnow
 from app.core.context import UserContext
-from app.core.errors import NotFoundError
+from app.core.errors import ConflictError, NotFoundError
 from app.core.tenancy import tenant_transaction, user_transaction
 from app.platform.rate_limit import enforce_recovery_rate_limit
 from app.users.repositories.user_repository import UserRepository
@@ -141,6 +145,49 @@ async def update_clinic_settings(
 ) -> ClinicSettingsResponse:
     require_permission(membership.role, Permission.SETTINGS_UPDATE)
     async with tenant_transaction(session_factory, membership.context) as session:
+        if payload.timezone is not None:
+            settings = await session.scalar(
+                select(ClinicSettings)
+                .where(ClinicSettings.clinic_id == membership.context.clinic_id)
+                .with_for_update()
+            )
+            if settings is None:
+                raise NotFoundError("clinic settings not found")
+            if settings.timezone != payload.timezone:
+                pending_appointment = await session.scalar(
+                    select(Appointment.id)
+                    .join(
+                        ScheduleEvent,
+                        (ScheduleEvent.clinic_id == Appointment.clinic_id)
+                        & (ScheduleEvent.id == Appointment.schedule_event_id),
+                    )
+                    .where(
+                        Appointment.clinic_id == membership.context.clinic_id,
+                        Appointment.status.in_(
+                            ("SCHEDULED", "CONFIRMED", "CHECKED_IN", "IN_PROGRESS")
+                        ),
+                    )
+                    .limit(1)
+                )
+                future_block = await session.scalar(
+                    select(ScheduleBlock.id)
+                    .join(
+                        ScheduleEvent,
+                        (ScheduleEvent.clinic_id == ScheduleBlock.clinic_id)
+                        & (ScheduleEvent.id == ScheduleBlock.schedule_event_id),
+                    )
+                    .where(
+                        ScheduleBlock.clinic_id == membership.context.clinic_id,
+                        ScheduleBlock.status == "ACTIVE",
+                        ScheduleEvent.ends_at > utcnow(),
+                    )
+                    .limit(1)
+                )
+                if pending_appointment is not None or future_block is not None:
+                    raise ConflictError(
+                        "resolve pending appointments and future schedule blocks "
+                        "before changing timezone"
+                    )
         settings = await ClinicSettingsRepository(session).update(
             membership.context,
             display_name=payload.display_name,

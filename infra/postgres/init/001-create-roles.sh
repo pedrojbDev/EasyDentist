@@ -45,4 +45,8 @@ SELECT format('REVOKE CREATE ON SCHEMA app FROM %I', :'app_user') \gexec
 
 -- M1.2.2: case-insensitive identifiers (users.email, clinics.slug).
 CREATE EXTENSION IF NOT EXISTS citext;
+-- M3.1: GiST equality operators used by tenant/resource exclusion constraints.
+-- This is administrative bootstrap DDL; the runtime and migration roles never
+-- receive CREATE privileges for extensions.
+CREATE EXTENSION IF NOT EXISTS btree_gist;
 SQL

@@ -421,6 +421,29 @@ async def _cleanup(connection: AsyncConnection, run_id: str) -> None:
     user_scope = "SELECT id FROM app.users WHERE email LIKE :email_prefix"
     parameters = {"clinic_prefix": clinic_prefix, "email_prefix": email_prefix}
 
+    agenda_triggers = (
+        ("app.appointment_history", "appointment_history_immutable"),
+        ("app.schedule_blocks", "schedule_blocks_no_delete"),
+        ("app.agenda_professionals", "agenda_professionals_no_delete"),
+        ("app.agenda_rooms", "agenda_rooms_no_delete"),
+    )
+    for table, trigger in agenda_triggers:
+        await connection.execute(text(f"ALTER TABLE {table} DISABLE TRIGGER {trigger}"))
+    try:
+        for statement in (
+            f"DELETE FROM app.appointment_history WHERE clinic_id IN ({clinic_scope})",
+            f"DELETE FROM app.schedule_blocks WHERE clinic_id IN ({clinic_scope})",
+            f"DELETE FROM app.appointments WHERE clinic_id IN ({clinic_scope})",
+            f"DELETE FROM app.schedule_events WHERE clinic_id IN ({clinic_scope})",
+            f"DELETE FROM app.professional_availabilities WHERE clinic_id IN ({clinic_scope})",
+            f"DELETE FROM app.agenda_professionals WHERE clinic_id IN ({clinic_scope})",
+            f"DELETE FROM app.agenda_rooms WHERE clinic_id IN ({clinic_scope})",
+        ):
+            await connection.execute(text(statement), parameters)
+    finally:
+        for table, trigger in reversed(agenda_triggers):
+            await connection.execute(text(f"ALTER TABLE {table} ENABLE TRIGGER {trigger}"))
+
     # Final anamneses are immutable by trigger, so the maintenance connection
     # disables the user triggers only for the cleanup statement and always
     # restores them, even when a test failed before the teardown.

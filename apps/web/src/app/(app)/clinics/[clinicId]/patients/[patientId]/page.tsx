@@ -6,8 +6,10 @@ import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { anamnesisCapabilities } from '@/features/anamnesis/permissions';
+import { PatientAppointmentHistory } from '@/features/agenda/components/PatientAppointmentHistory';
+import { listPatientAppointmentsOnServer } from '@/features/agenda/server';
 import { ClinicNav } from '@/features/clinics/components/ClinicNav';
-import { getClinicOnServer } from '@/features/clinics/server';
+import { getClinicOnServer, getClinicSettingsOnServer } from '@/features/clinics/server';
 import { canReadAnyDocument, documentCapabilities } from '@/features/documents/permissions';
 import { formatCpf } from '@/features/patients/cpf';
 import { PatientAlertsPanel } from '@/features/patients/components/PatientAlertsPanel';
@@ -31,12 +33,18 @@ export default async function PatientDetailPage({
   let clinic;
   let patient;
   let alerts;
+  let appointments;
+  let settings;
   try {
     clinic = await getClinicOnServer(clinicId);
-    patient = await getPatientOnServer(clinicId, patientId);
-    alerts = patientCapabilities(clinic.role).canReadAlerts
-      ? (await listPatientAlertsOnServer(clinicId, patientId)).items
-      : [];
+    [patient, settings, appointments, alerts] = await Promise.all([
+      getPatientOnServer(clinicId, patientId),
+      getClinicSettingsOnServer(clinicId),
+      listPatientAppointmentsOnServer(clinicId, patientId),
+      patientCapabilities(clinic.role).canReadAlerts
+        ? listPatientAlertsOnServer(clinicId, patientId).then((result) => result.items)
+        : Promise.resolve([]),
+    ]);
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) {
       notFound();
@@ -121,6 +129,11 @@ export default async function PatientDetailPage({
           )}
         </div>
       </div>
+      <PatientAppointmentHistory
+        clinicId={clinic.id}
+        timezone={settings.timezone}
+        appointments={appointments}
+      />
     </section>
   );
 }
