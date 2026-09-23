@@ -241,7 +241,7 @@ def upgrade() -> None:
             name="ex_schedule_events_professional_occupancy",
             using="gist",
             where=sa.text("professional_id IS NOT NULL AND occupancy_state = 'OCCUPYING'"),
-        ),
+        ),  # type: ignore[no-untyped-call]  # sqlalchemy-stubs has no ExcludeConstraint stub
         postgresql.ExcludeConstraint(
             ("clinic_id", "="),
             ("patient_id", "="),
@@ -249,7 +249,7 @@ def upgrade() -> None:
             name="ex_schedule_events_patient_occupancy",
             using="gist",
             where=sa.text("patient_id IS NOT NULL AND occupancy_state = 'OCCUPYING'"),
-        ),
+        ),  # type: ignore[no-untyped-call]  # sqlalchemy-stubs has no ExcludeConstraint stub
         postgresql.ExcludeConstraint(
             ("clinic_id", "="),
             ("room_id", "="),
@@ -257,7 +257,7 @@ def upgrade() -> None:
             name="ex_schedule_events_room_occupancy",
             using="gist",
             where=sa.text("room_id IS NOT NULL AND occupancy_state = 'OCCUPYING'"),
-        ),
+        ),  # type: ignore[no-untyped-call]  # sqlalchemy-stubs has no ExcludeConstraint stub
         schema="app",
     )
     op.create_index(
