@@ -1,3 +1,4 @@
+import type { Route } from 'next';
 import Link from 'next/link';
 
 import { StatusBadge } from '@/components/ui/status-badge';
@@ -40,7 +41,7 @@ export function PatientAppointmentHistory({
         </div>
         <Link
           className="text-sm font-semibold text-primary underline-offset-4 hover:underline"
-          href={`/clinics/${clinicId}/agenda`}
+          href={`/clinics/${clinicId}/agenda` as Route}
         >
           Abrir agenda
         </Link>
