@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CalendarDays, ChevronLeft, ChevronRight, Plus, RefreshCw, Settings2 } from 'lucide-react';
+import type { Route } from 'next';
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
@@ -473,7 +474,7 @@ export function AgendaCalendar({
           </Button>
           <Link
             className="ml-auto inline-flex min-h-10 items-center gap-2 rounded-lg px-3 text-sm font-semibold text-muted-foreground hover:bg-accent hover:text-foreground"
-            href={`${clinicPath}/agenda/resources`}
+            href={`${clinicPath}/agenda/resources` as Route}
           >
             <Settings2 aria-hidden="true" className="size-4" /> Profissionais e salas
           </Link>
@@ -496,7 +497,7 @@ export function AgendaCalendar({
             A agenda só aceita consultas depois do cadastro e da configuração dos horários semanais.
           </p>
           <Button asChild>
-            <Link href={`${clinicPath}/agenda/resources`}>
+            <Link href={`${clinicPath}/agenda/resources` as Route}>
               Cadastrar profissionais e expediente
             </Link>
           </Button>

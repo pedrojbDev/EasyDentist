@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import type { Route } from 'next';
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
@@ -316,7 +317,7 @@ export function AppointmentDialog({
               <p className="font-semibold text-foreground">{appointment.patient_name}</p>
               <Link
                 className="mt-1 inline-block text-sm font-medium text-primary underline-offset-4 hover:underline"
-                href={`${clinicPath}/patients/${appointment.patient_id}`}
+                href={`${clinicPath}/patients/${appointment.patient_id}` as Route}
               >
                 Abrir ficha do paciente
               </Link>
