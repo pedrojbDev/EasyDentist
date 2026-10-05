@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 
 import { Feedback } from '@/components/ui/feedback';
 import { PageHeader } from '@/components/ui/page-header';
-import { ClinicNav } from '@/features/clinics/components/ClinicNav';
 import { getClinicOnServer } from '@/features/clinics/server';
 import { PatientForm } from '@/features/patients/components/PatientForm';
 import { patientCapabilities } from '@/features/patients/permissions';
@@ -37,7 +36,6 @@ export default async function NewPatientPage({
         title="Novo paciente"
         description="Preencha os dados cadastrais. Nome, nascimento e telefone são obrigatórios."
       />
-      <ClinicNav clinicId={clinic.id} active="patients" />
       {capabilities.canCreate ? (
         <PatientForm clinicId={clinic.id} mode="create" />
       ) : (

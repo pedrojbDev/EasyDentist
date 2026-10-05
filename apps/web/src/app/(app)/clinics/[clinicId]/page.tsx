@@ -2,7 +2,6 @@ import { notFound } from 'next/navigation';
 
 import { PageHeader } from '@/components/ui/page-header';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { ClinicNav } from '@/features/clinics/components/ClinicNav';
 import { roleLabel, statusLabel } from '@/features/clinics/labels';
 import { LegalNameForm } from '@/features/clinics/components/LegalNameForm';
 import { getClinicOnServer } from '@/features/clinics/server';
@@ -30,7 +29,6 @@ export default async function ClinicPage({ params }: { params: Promise<{ clinicI
         title={clinic.legal_name}
         description={`Identificador: ${clinic.slug}`}
       />
-      <ClinicNav clinicId={clinic.id} active="overview" />
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(19rem,0.65fr)]">
         <LegalNameForm
           clinicId={clinic.id}

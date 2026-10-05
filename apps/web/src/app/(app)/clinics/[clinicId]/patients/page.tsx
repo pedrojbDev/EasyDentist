@@ -4,7 +4,6 @@ import { notFound } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/ui/page-header';
-import { ClinicNav } from '@/features/clinics/components/ClinicNav';
 import { getClinicOnServer } from '@/features/clinics/server';
 import { PatientPagination } from '@/features/patients/components/PatientPagination';
 import { PatientSearchForm } from '@/features/patients/components/PatientSearchForm';
@@ -65,7 +64,6 @@ export default async function PatientsPage({
           ) : undefined
         }
       />
-      <ClinicNav clinicId={clinic.id} active="patients" />
       <div className="flex flex-col gap-4">
         <PatientSearchForm clinicId={clinic.id} query={query} />
         <PatientStatusTabs clinicId={clinic.id} active={query.status} search={query.search} />

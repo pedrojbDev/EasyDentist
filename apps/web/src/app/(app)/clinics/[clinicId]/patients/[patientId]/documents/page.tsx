@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import { Feedback } from '@/components/ui/feedback';
 import { PageHeader } from '@/components/ui/page-header';
 import { anamnesisCapabilities } from '@/features/anamnesis/permissions';
-import { ClinicNav } from '@/features/clinics/components/ClinicNav';
 import { getClinicOnServer } from '@/features/clinics/server';
 import { DocumentsPanel } from '@/features/documents/components/DocumentsPanel';
 import { canReadAnyDocument, documentCapabilities } from '@/features/documents/permissions';
@@ -44,7 +43,6 @@ export default async function DocumentsPage({
         title="Documentos"
         description={`Paciente: ${patient.full_name}`}
       />
-      <ClinicNav clinicId={clinic.id} active="patients" />
       <PatientSectionNav
         clinicId={clinic.id}
         patientId={patient.id}

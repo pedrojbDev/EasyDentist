@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation';
 
 import { PageHeader } from '@/components/ui/page-header';
-import { ClinicNav } from '@/features/clinics/components/ClinicNav';
 import { getClinicOnServer } from '@/features/clinics/server';
 import { listMembersOnServer } from '@/features/members/server';
 import { getCurrentUser } from '@/features/auth/server';
@@ -41,7 +40,6 @@ export default async function AgendaResourcesPage({
         title="Profissionais e salas"
         description="Cadastre quem atende e os recursos físicos usados pela agenda."
       />
-      <ClinicNav clinicId={clinic.id} active="agenda-resources" />
       <AgendaResourceManager
         clinicId={clinic.id}
         role={clinic.role}

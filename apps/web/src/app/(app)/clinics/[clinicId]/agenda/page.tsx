@@ -2,7 +2,6 @@ import { notFound } from 'next/navigation';
 
 import { PageHeader } from '@/components/ui/page-header';
 import { getCurrentUser } from '@/features/auth/server';
-import { ClinicNav } from '@/features/clinics/components/ClinicNav';
 import { getClinicOnServer, getClinicSettingsOnServer } from '@/features/clinics/server';
 import { listMembersOnServer } from '@/features/members/server';
 import { ApiError } from '@/lib/api/problem';
@@ -12,11 +11,7 @@ import { listAgendaProfessionalsOnServer, listAgendaRoomsOnServer } from '@/feat
 
 export const dynamic = 'force-dynamic';
 
-export default async function AgendaPage({
-  params,
-}: {
-  params: Promise<{ clinicId: string }>;
-}) {
+export default async function AgendaPage({ params }: { params: Promise<{ clinicId: string }> }) {
   const { clinicId } = await params;
   let clinic;
   let settings;
@@ -45,7 +40,6 @@ export default async function AgendaPage({
         title="Agenda clínica"
         description={`Consultas e bloqueios no fuso ${settings.timezone}.`}
       />
-      <ClinicNav clinicId={clinic.id} active="agenda" />
       <AgendaCalendar
         clinicId={clinic.id}
         clinicPath={`/clinics/${clinic.id}`}

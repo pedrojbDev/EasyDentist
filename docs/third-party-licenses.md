@@ -31,6 +31,14 @@ atualizado, verificação de licenças, `pip-audit` e registro neste arquivo no
 mesmo incremento. O Manual do Prontuário do CFO de 2026 é referência clínica
 externa, não um pacote ou dependência de software.
 
+## Patch de desenvolvimento — 2026-10-05
+
+`braces@3.0.3` (MIT), transitivo do ESLint, recebe um patch local que limita a
+profundidade dos walkers/parser. O pacote e sua licença original são preservados.
+Responsável: EasyDentist maintainers; reavaliar no próximo fechamento de marco
+e em toda atualização de braces. A mitigação testada e a exclusão restrita do
+aviso GHSA-vfj7-8cjw-p6xm estão documentadas em `docs/security.md`.
+
 ## Revisões manuais registradas
 
 | Pacote                       | Versão       | Licença         | Motivo                                                                                                                                | Responsável             | Revisão                                   |

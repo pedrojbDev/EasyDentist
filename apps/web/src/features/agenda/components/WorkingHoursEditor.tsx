@@ -33,7 +33,10 @@ export function WorkingHoursEditor({
   const [intervals, setIntervals] = useState<WorkingHourInterval[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [loaded, setLoaded] = useState(false);
+  const resourceKey = `${clinicId}/${professionalId}`;
+  const [loadedResource, setLoadedResource] = useState<string | null>(null);
+  const loaded = loadedResource === resourceKey;
+  const [loadAttempt, setLoadAttempt] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
@@ -41,23 +44,28 @@ export function WorkingHoursEditor({
     if (!expanded || loaded) return;
     let active = true;
     setLoading(true);
+    setLoadedResource(null);
+    setIntervals([]);
+    setError(null);
+    setSaved(false);
     void getWorkingHours(clinicId, professionalId)
       .then((result) => {
-        if (active) setIntervals(result.intervals);
+        if (active) {
+          setIntervals(result.intervals);
+          setLoadedResource(resourceKey);
+          setLoading(false);
+        }
       })
       .catch((cause: unknown) => {
-        if (active) setError(readableError(cause));
-      })
-      .finally(() => {
         if (active) {
+          setError(readableError(cause));
           setLoading(false);
-          setLoaded(true);
         }
       });
     return () => {
       active = false;
     };
-  }, [clinicId, expanded, loaded, professionalId]);
+  }, [clinicId, expanded, loaded, loadAttempt, professionalId, resourceKey]);
 
   function change(index: number, key: keyof WorkingHourInterval, value: string) {
     setIntervals((current) =>
@@ -70,6 +78,7 @@ export function WorkingHoursEditor({
   }
 
   async function save() {
+    if (!loaded || loading || saving || !enabled) return;
     setSaving(true);
     setError(null);
     setSaved(false);
@@ -103,7 +112,7 @@ export function WorkingHoursEditor({
             <p className="text-sm text-muted-foreground" role="status">
               Carregando expediente…
             </p>
-          ) : intervals.length === 0 ? (
+          ) : !loaded ? null : intervals.length === 0 ? (
             <p className="text-sm text-muted-foreground">
               Sem horários semanais. Este profissional ainda não pode receber consultas.
             </p>
@@ -172,7 +181,7 @@ export function WorkingHoursEditor({
                 type="button"
                 variant="outline"
                 size="sm"
-                disabled={saving}
+                disabled={saving || loading || !loaded}
                 onClick={() =>
                   setIntervals((current) => [
                     ...current,
@@ -189,7 +198,7 @@ export function WorkingHoursEditor({
               <Button
                 type="button"
                 size="sm"
-                disabled={saving || loading}
+                disabled={saving || loading || !loaded}
                 onClick={() => void save()}
               >
                 {saving ? 'Salvando…' : 'Salvar expediente'}
@@ -197,6 +206,16 @@ export function WorkingHoursEditor({
             </div>
           )}
           {error && <Feedback tone="error">{error}</Feedback>}
+          {error && !loaded && !loading && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setLoadAttempt((attempt) => attempt + 1)}
+            >
+              Tentar carregar expediente
+            </Button>
+          )}
           {saved && <Feedback tone="success">Expediente atualizado.</Feedback>}
         </div>
       )}

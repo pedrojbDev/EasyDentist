@@ -81,6 +81,17 @@ psql "$ADMIN_DATABASE_URL" -v ON_ERROR_STOP=1 -c 'CREATE EXTENSION IF NOT EXISTS
 A role runtime não recebe `CREATE` em schema ou extensão, nem executa DDL. A
 credencial de migration também não é entregue ao processo normal da API.
 
+### Correção de vínculo no fechamento do M3
+
+A revisão 0016 adiciona `app.lock_agenda_membership(uuid, uuid)`, uma função
+`SECURITY DEFINER` com `search_path` fixo, execução pública revogada e acesso
+restrito à role runtime. Ela exige contexto da clínica e membership ativa do
+ator com papel OWNER/ADMIN, e trava apenas a membership solicitada da mesma
+clínica. O service consulta e valida o vínculo sob essa trava. Isso preserva a
+coordenação com alterações de equipe sem conceder UPDATE direto em
+`memberships` à aplicação, privilégio necessário para um `SELECT FOR UPDATE`
+executado diretamente pela role runtime.
+
 ## Consequências
 
 Rotas, RBAC, validação local, bloqueios e interface implementam esta fronteira.

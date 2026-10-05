@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "pnpm --filter @easydentist/web build",
-    "test": "node scripts/check-js-licenses.test.mjs && pnpm --filter @easydentist/web test",
+    "test": "node scripts/check-js-licenses.test.mjs && node scripts/check-braces-patch.test.mjs && node --test scripts/audit-js.test.mjs && pnpm --filter @easydentist/web test",
     "lint": "pnpm --filter @easydentist/web lint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -19,7 +19,7 @@
     "e2e:install": "playwright install chromium",
     "secrets": "./scripts/verify-secrets.sh",
     "licenses": "node scripts/check-js-licenses.mjs",
-    "audit": "pnpm audit --audit-level=high"
+    "audit": "node scripts/check-braces-patch.test.mjs && node --test scripts/audit-js.test.mjs && node scripts/audit-js.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.63.0",

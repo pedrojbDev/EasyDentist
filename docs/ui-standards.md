@@ -25,8 +25,7 @@ A tipografia padrão é Geist, carregada no layout raiz. Textos corridos usam no
 - `Feedback`: mensagens persistentes de erro, sucesso ou informação com ícone e sem depender apenas de cor.
 - `ConfirmButton`: confirmação explícita para ações destrutivas.
 - `AuthShell`: composição única das telas públicas de autenticação.
-- `AppShell`, `AppSidebar` e `AppHeader`: estrutura responsiva da área autenticada.
-- `ClinicNav`: navegação local das seções de uma clínica.
+- `AppShell`, `AppSidebar` e `AppHeader`: estrutura responsiva da área autenticada. Agenda, Pacientes e Visão geral ficam na lateral; Ajustes e Equipe aparecem em Administração. A clínica ativa é mostrada como contexto, e a troca de clínica aparece quando há mais de uma.
 
 Utilitários compartilhados:
 
@@ -37,7 +36,7 @@ Utilitários compartilhados:
 
 ## Responsividade e acessibilidade
 
-Garanta foco visível, rótulos associados aos campos, regiões `alert`/`status` para feedback e texto alternativo apenas quando o ícone acrescenta informação. Tabelas podem rolar horizontalmente dentro do próprio painel; o restante da página não deve criar rolagem lateral. A navegação principal vira barra inferior no celular e lateral em telas grandes.
+Garanta foco visível, rótulos associados aos campos, regiões `alert`/`status` para feedback e texto alternativo apenas quando o ícone acrescenta informação. Tabelas podem rolar horizontalmente dentro do próprio painel; o restante da página não deve criar rolagem lateral. A navegação principal fica na lateral em telas grandes e em um menu recolhível no topo do celular.
 
 ## PWA
 

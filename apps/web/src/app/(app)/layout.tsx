@@ -3,14 +3,16 @@ import type { ReactNode } from 'react';
 
 import { AppShell } from '@/components/layout/app-shell';
 import { getCurrentUser } from '@/features/auth/server';
+import { listClinicsOnServer } from '@/features/clinics/server';
 import { ApiError } from '@/lib/api/problem';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AuthenticatedLayout({ children }: { children: ReactNode }) {
   let user;
+  let clinics;
   try {
-    user = await getCurrentUser();
+    [user, clinics] = await Promise.all([getCurrentUser(), listClinicsOnServer()]);
   } catch (error) {
     if (error instanceof ApiError && error.status === 401) {
       redirect('/login');
@@ -18,5 +20,9 @@ export default async function AuthenticatedLayout({ children }: { children: Reac
     throw error;
   }
 
-  return <AppShell user={user}>{children}</AppShell>;
+  return (
+    <AppShell user={user} clinics={clinics}>
+      {children}
+    </AppShell>
+  );
 }
