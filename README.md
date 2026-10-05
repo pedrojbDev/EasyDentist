@@ -52,15 +52,30 @@ docker compose -f infra/docker-compose.yml config --quiet && \
 ./scripts/verify-migrations.sh
 ```
 
-`scripts/verify-migrations.sh` é destrutivo: remove os volumes locais do
-Compose e reexecuta a cadeia completa (upgrade, `alembic check`, downgrade até
-`base` e upgrade novamente) contra um banco recém-criado, provando que as
-migrations são aplicáveis do zero e reversíveis.
+`scripts/verify-migrations.sh` usa um projeto Compose descartável com porta e
+volumes próprios. Verifica o upgrade de um banco M2 com paciente existente,
+`alembic check`, downgrade até `base` e upgrade em banco limpo; os volumes de
+desenvolvimento são preservados.
 
-O M1.2 entrega o schema do Marco 1 (oito tabelas globais e seis tenant-aware),
+## Estado do projeto
+
+O M1 entrega autenticação, sessões, membership, RBAC, isolamento por clínica,
+interface operacional e hardening. O M2 acrescenta pacientes, anamnese
+versionada e documentos privados. O M3 entrega profissionais, salas,
+disponibilidade, bloqueios, consultas e histórico de status.
+
+A navegação autenticada reúne Agenda, Pacientes e Visão geral na clínica ativa,
+com Ajustes e Equipe em Administração. Quem participa de uma única clínica
+ativa segue diretamente para a agenda; quem participa de várias escolhe a
+clínica. No celular, o menu é recolhível.
+
+O próximo marco é o M4: prontuário com histórico imutável e odontograma. Seu
+planejamento está em `docs/plans/2026-10-05-m4-prontuario-odontograma.md`;
+a implementação ainda não começou.
+
+O M1.2 introduziu o schema do Marco 1 (oito tabelas globais e seis tenant-aware),
 RLS fail-closed por tenant com `TenantContext`, repositories tenant-aware com
-`FeatureFlagService` tipado e a suíte de isolamento entre duas clínicas. Ainda
-não há autenticação, RBAC ou rotas de domínio; nenhuma rota da API expõe dados.
+`FeatureFlagService` tipado e a suíte de isolamento entre duas clínicas.
 Não há código copiado ou adaptado do OpenDentist.
 
 SeaweedFS é infraestrutura exclusivamente local nesta fase. Antes de produção,

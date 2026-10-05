@@ -32,6 +32,7 @@ export function startOfClinicWeek(value: string): string {
 }
 
 export function clinicLocalInstant(value: string, timeZone: string): Date {
+  if (!value.includes('T')) return clinicDayBoundary(value, timeZone);
   const [datePart, timePart] = value.split('T');
   const [year, month, day] = datePart.split('-').map(Number);
   const [hour = 0, minute = 0, second = 0] = (timePart ?? '00:00:00').split(':').map(Number);
@@ -63,6 +64,29 @@ export function clinicLocalInstant(value: string, timeZone: string): Date {
     guess += difference;
   }
   throw new Error('Não foi possível converter a data no fuso da clínica.');
+}
+
+export function clinicDayBoundary(value: string, timeZone: string): Date {
+  // Find the first instant of the local date, including midnight offset changes.
+  // Keep this separate from conversion of appointment times, which must exist.
+  const nominalMidnight = Date.parse(`${value}T00:00:00Z`);
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  let before = nominalMidnight - 48 * 60 * 60_000;
+  let after = nominalMidnight + 48 * 60 * 60_000;
+  while (after - before > 1) {
+    const middle = Math.floor((before + after) / 2);
+    const parts = formatter.formatToParts(new Date(middle));
+    const get = (type: string) => parts.find((part) => part.type === type)?.value ?? '00';
+    const localDate = `${get('year')}-${get('month')}-${get('day')}`;
+    if (localDate < value) before = middle;
+    else after = middle;
+  }
+  return new Date(after);
 }
 
 export function clinicLocalDateTimeInput(value: string, timeZone: string): string {
@@ -104,7 +128,7 @@ export function formatClinicDate(value: string, timeZone: string): string {
     weekday: 'short',
     day: '2-digit',
     month: '2-digit',
-  }).format(clinicLocalInstant(value, timeZone));
+  }).format(clinicLocalInstant(`${value}T12:00`, timeZone));
 }
 
 export function clinicDateRange(value: string, view: 'day' | 'week', timeZone: string) {

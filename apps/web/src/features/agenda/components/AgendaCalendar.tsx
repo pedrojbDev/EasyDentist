@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CalendarDays, ChevronLeft, ChevronRight, Plus, RefreshCw, Settings2 } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
@@ -60,7 +60,7 @@ function dateTitle(value: string, timeZone: string): string {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
-  }).format(clinicLocalInstant(value, timeZone));
+  }).format(clinicLocalInstant(`${value}T12:00`, timeZone));
 }
 
 function statusTone(status: AppointmentStatus): 'neutral' | 'info' | 'success' | 'warning' {
@@ -100,6 +100,7 @@ export function AgendaCalendar({
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [reload, setReload] = useState(0);
+  const refreshGeneration = useRef(0);
   const [appointmentDialog, setAppointmentDialog] = useState<{
     appointment: Appointment | null;
     localStart?: string;
@@ -143,6 +144,7 @@ export function AgendaCalendar({
   );
 
   const refreshAgenda = useCallback(async () => {
+    const generation = ++refreshGeneration.current;
     setRefreshing(true);
     setError(null);
     try {
@@ -153,6 +155,7 @@ export function AgendaCalendar({
         ...(roomFilter ? { room_id: roomFilter } : {}),
         ...(statusFilter ? { status: statusFilter } : {}),
       });
+      if (generation !== refreshGeneration.current) return;
       const blockItems: ScheduleBlock[] = [];
       let offset = 0;
       let total = 0;
@@ -165,6 +168,7 @@ export function AgendaCalendar({
           limit: 100,
           offset,
         });
+        if (generation !== refreshGeneration.current) return;
         blockItems.push(...page.items);
         total = page.total;
         offset += page.items.length;
@@ -172,15 +176,38 @@ export function AgendaCalendar({
       setAppointments(appointmentItems);
       setBlocks(blockItems);
     } catch (cause) {
-      setError(errorMessage(cause));
+      if (generation === refreshGeneration.current) setError(errorMessage(cause));
     } finally {
-      setLoading(false);
-      setRefreshing(false);
+      if (generation === refreshGeneration.current) {
+        setLoading(false);
+        setRefreshing(false);
+      }
     }
   }, [clinicId, professionalFilter, roomFilter, selectedRange, statusFilter]);
 
+  async function appointmentSaved(appointment: Appointment) {
+    refreshGeneration.current += 1;
+    setAppointments((current) => [
+      ...current.filter((item) => item.id !== appointment.id),
+      appointment,
+    ]);
+    await refreshAgenda();
+  }
+
+  async function blockSaved(block: ScheduleBlock) {
+    refreshGeneration.current += 1;
+    setBlocks((current) => [
+      ...current.filter((item) => item.id !== block.id),
+      ...(block.status === 'CANCELLED' ? [] : [block]),
+    ]);
+    await refreshAgenda();
+  }
+
   useEffect(() => {
     void refreshAgenda();
+    return () => {
+      refreshGeneration.current += 1;
+    };
   }, [refreshAgenda, reload]);
 
   useEffect(() => {
@@ -369,7 +396,11 @@ export function AgendaCalendar({
               className="app-field w-40"
               type="date"
               value={selectedDate}
-              onChange={(event) => setSelectedDate(event.target.value)}
+              onChange={(event) => {
+                if (event.target.validity.valid && event.target.value) {
+                  setSelectedDate(event.target.value);
+                }
+              }}
             />
             <span className="hidden text-sm font-medium capitalize text-muted-foreground sm:inline">
               {view === 'week'
@@ -676,7 +707,7 @@ export function AgendaCalendar({
               appointmentDialog.appointment === null)
           }
           onClose={() => setAppointmentDialog(null)}
-          onSaved={() => setReload((value) => value + 1)}
+          onSaved={appointmentSaved}
         />
       )}
       {blockDialog && (
@@ -689,7 +720,7 @@ export function AgendaCalendar({
           allowRoomOnly={role !== 'DENTIST'}
           initialLocalStart={blockDialog.localStart}
           onClose={() => setBlockDialog(null)}
-          onSaved={() => setReload((value) => value + 1)}
+          onSaved={blockSaved}
         />
       )}
     </div>

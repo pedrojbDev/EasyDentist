@@ -76,7 +76,8 @@ test.describe('clínicas, settings e equipe', () => {
     expect(await inviteePage.evaluate(() => window.location.hash)).toBe('');
 
     await login(inviteePage, { email, password });
-    await expect(inviteePage.getByText(manifest.clinics.a.sentinel)).toBeVisible();
+    await expect(inviteePage).toHaveURL(new RegExp(`/clinics/${manifest.clinics.a.id}/agenda$`));
+    await expect(inviteePage.getByRole('heading', { name: 'Agenda clínica' })).toBeVisible();
     await inviteeContext.close();
   });
 

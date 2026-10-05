@@ -45,7 +45,7 @@ export async function login(page: Page, user: Credentials): Promise<void> {
     const state = JSON.parse(readFileSync(statePath, 'utf8')) as StoredSession;
     await page.context().addCookies(state.cookies);
     await page.goto('/clinics');
-    await expect(page).toHaveURL(/\/clinics$/);
+    await expect(page).toHaveURL(/\/clinics(?:\/[^/]+\/agenda)?$/);
     return;
   }
   await loginWithForm(page, user);
@@ -56,7 +56,7 @@ export async function loginWithForm(page: Page, user: Credentials): Promise<void
   await page.getByLabel('E-mail', { exact: true }).fill(user.email);
   await page.getByLabel('Senha', { exact: true }).fill(user.password);
   await page.getByRole('button', { name: 'Entrar' }).click();
-  await expect(page).toHaveURL(/\/clinics$/);
+  await expect(page).toHaveURL(/\/clinics(?:\/[^/]+\/agenda)?$/);
 }
 
 export function pdfFixture(marker: string): Buffer {

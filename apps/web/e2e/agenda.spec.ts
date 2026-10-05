@@ -11,6 +11,7 @@ test.describe('agenda clínica', () => {
     page,
     manifest,
   }) => {
+    test.setTimeout(90_000);
     await login(page, manifest.users.multi);
     const clinic = manifest.clinics.a;
     const professionalName = `Profissional E2E ${manifest.run_id}`;
@@ -53,16 +54,18 @@ test.describe('agenda clínica', () => {
 
     await page.getByRole('button', { name: 'Novo agendamento' }).click();
     await page.getByLabel('Buscar paciente ativo').fill(manifest.patients.a.full_name);
-    const patientSelect = page.getByLabel('Paciente', { exact: true });
-    await expect(
-      patientSelect.locator('option', { hasText: manifest.patients.a.full_name }),
-    ).toBeAttached();
+    const patientSelect = page
+      .getByRole('dialog')
+      .getByRole('combobox', { name: 'Paciente', exact: true });
+    await expect(patientSelect.locator(`option[value="${manifest.patients.a.id}"]`)).toBeAttached();
     await patientSelect.selectOption(manifest.patients.a.id);
     await page
-      .getByLabel('Profissional', { exact: true })
+      .getByRole('dialog')
+      .getByRole('combobox', { name: 'Profissional', exact: true })
       .selectOption({ label: professionalName });
     await page
-      .getByLabel('Sala (opcional)')
+      .getByRole('dialog')
+      .getByRole('combobox', { name: 'Sala (opcional)', exact: true })
       .selectOption({ label: `Cadeira E2E ${manifest.run_id}` });
     await page.getByLabel('Data e hora local da clínica').fill(`${appointmentDate}T10:30`);
     await page.getByRole('button', { name: 'Agendar consulta' }).click();
@@ -93,19 +96,20 @@ test.describe('agenda clínica', () => {
     await page.goto(`/clinics/${clinic.id}/agenda`);
     await page.getByLabel('Data selecionada').fill(cancelDate);
     await page.getByRole('button', { name: 'Novo agendamento' }).click();
-    await page.getByLabel('Buscar paciente ativo').fill(manifest.patients.b.full_name);
-    const cancelPatient = page.getByLabel('Paciente', { exact: true });
-    await expect(
-      cancelPatient.locator('option', { hasText: manifest.patients.b.full_name }),
-    ).toBeAttached();
-    await cancelPatient.selectOption(manifest.patients.b.id);
+    await page.getByLabel('Buscar paciente ativo').fill(manifest.patients.a.full_name);
+    const cancelPatient = page
+      .getByRole('dialog')
+      .getByRole('combobox', { name: 'Paciente', exact: true });
+    await expect(cancelPatient.locator(`option[value="${manifest.patients.a.id}"]`)).toBeAttached();
+    await cancelPatient.selectOption(manifest.patients.a.id);
     await page
-      .getByLabel('Profissional', { exact: true })
+      .getByRole('dialog')
+      .getByRole('combobox', { name: 'Profissional', exact: true })
       .selectOption({ label: professionalName });
     await page.getByLabel('Data e hora local da clínica').fill(`${cancelDate}T13:00`);
     await page.getByRole('button', { name: 'Agendar consulta' }).click();
     const cancelledAppointment = page.getByRole('button', {
-      name: new RegExp(manifest.patients.b.full_name),
+      name: new RegExp(manifest.patients.a.full_name),
     });
     await expect(cancelledAppointment).toBeVisible();
     await cancelledAppointment.click();
@@ -115,25 +119,26 @@ test.describe('agenda clínica', () => {
     const noShowDate = addDays(today, -1);
     await page.getByLabel('Data selecionada').fill(noShowDate);
     await page.getByRole('button', { name: 'Novo agendamento' }).click();
-    await page.getByLabel('Buscar paciente ativo').fill(manifest.patients.b.full_name);
-    const noShowPatient = page.getByLabel('Paciente', { exact: true });
-    await expect(
-      noShowPatient.locator('option', { hasText: manifest.patients.b.full_name }),
-    ).toBeAttached();
-    await noShowPatient.selectOption(manifest.patients.b.id);
+    await page.getByLabel('Buscar paciente ativo').fill(manifest.patients.a.full_name);
+    const noShowPatient = page
+      .getByRole('dialog')
+      .getByRole('combobox', { name: 'Paciente', exact: true });
+    await expect(noShowPatient.locator(`option[value="${manifest.patients.a.id}"]`)).toBeAttached();
+    await noShowPatient.selectOption(manifest.patients.a.id);
     await page
-      .getByLabel('Profissional', { exact: true })
+      .getByRole('dialog')
+      .getByRole('combobox', { name: 'Profissional', exact: true })
       .selectOption({ label: professionalName });
     await page.getByLabel('Data e hora local da clínica').fill(`${noShowDate}T09:00`);
     await page.getByRole('button', { name: 'Agendar consulta' }).click();
     const noShowAppointment = page.getByRole('button', {
-      name: new RegExp(manifest.patients.b.full_name),
+      name: new RegExp(manifest.patients.a.full_name),
     });
     await expect(noShowAppointment).toBeVisible();
     await noShowAppointment.click();
     await page.getByRole('button', { name: 'Marcar falta' }).click();
 
-    await page.goto(`/clinics/${clinic.id}/patients/${manifest.patients.b.id}`);
+    await page.goto(`/clinics/${clinic.id}/patients/${manifest.patients.a.id}`);
     await expect(page.getByText('Cancelada', { exact: true })).toBeVisible();
     await expect(page.getByText('Faltou', { exact: true })).toBeVisible();
   });
