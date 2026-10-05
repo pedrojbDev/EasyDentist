@@ -13,7 +13,3 @@ ignoredOptionalDependencies:
 
 patchedDependencies:
   braces@3.0.3: patches/braces@3.0.3.patch
-
-auditConfig:
-  ignoreGhsas:
-    - GHSA-vfj7-8cjw-p6xm

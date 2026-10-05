@@ -31,6 +31,7 @@ O fechamento corrigiu os seguintes problemas encontrados nos gates:
 | Web                                             | 257 testes aprovados em 60 arquivos                                  |
 | Playwright Chromium                             | 29 cenários aprovados, incluindo desktop, celular e isolamento       |
 | Scripts de licenças e mitigação braces          | 11 + 3 testes aprovados                                              |
+| Filtro do relatório completo de auditoria       | 6 testes aprovados                                                   |
 | Ruff, formatação Python, mypy                   | Aprovados                                                            |
 | ESLint, Prettier, TypeScript                    | Aprovados                                                            |
 | OpenAPI e tipos gerados                         | Sem drift                                                            |

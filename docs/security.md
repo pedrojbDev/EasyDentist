@@ -15,7 +15,11 @@ pelo ESLint e exige rejeição controlada de padrões e ASTs profundos, preserva
 globs comuns, alternativas e intervalos.
 
 `pnpm run audit` executa esse teste antes de excluir somente esse GHSA do
-scanner. A exclusão representa uma mitigação local testada; não significa que
+relatório completo via `scripts/audit-js.mjs`, sem alterar configurações globais.
+O filtro só aceita `braces@3.0.3` nos caminhos de desenvolvimento do ESLint;
+versões/caminhos diferentes, outros avisos high/critical, erros do registry e
+relatórios incompletos bloqueiam o gate. A exclusão representa uma mitigação
+local testada; não significa que
 o pacote upstream recebeu uma correção. Os demais avisos continuam sujeitos
 ao gate de severidade high. Remover patch, teste e exclusão juntos quando uma
 versão upstream corrigida estiver disponível e validada. A auditoria direta
