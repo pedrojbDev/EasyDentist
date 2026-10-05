@@ -8,7 +8,6 @@ import { StatusBadge } from '@/components/ui/status-badge';
 import { anamnesisCapabilities } from '@/features/anamnesis/permissions';
 import { PatientAppointmentHistory } from '@/features/agenda/components/PatientAppointmentHistory';
 import { listPatientAppointmentsOnServer } from '@/features/agenda/server';
-import { ClinicNav } from '@/features/clinics/components/ClinicNav';
 import { getClinicOnServer, getClinicSettingsOnServer } from '@/features/clinics/server';
 import { canReadAnyDocument, documentCapabilities } from '@/features/documents/permissions';
 import { formatCpf } from '@/features/patients/cpf';
@@ -87,7 +86,6 @@ export default async function PatientDetailPage({
           </>
         }
       />
-      <ClinicNav clinicId={clinic.id} active="patients" />
       <PatientSectionNav
         clinicId={clinic.id}
         patientId={patient.id}

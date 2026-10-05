@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -303,10 +303,11 @@ class AgendaResourceService:
             return
         if not isinstance(membership_id, UUID):
             raise InvalidInputError("membership_id must be a UUID")
+        await session.scalar(func.app.lock_agenda_membership(context.clinic_id, membership_id))
         membership = await session.scalar(
-            select(Membership)
-            .where(Membership.clinic_id == context.clinic_id, Membership.id == membership_id)
-            .with_for_update()
+            select(Membership).where(
+                Membership.clinic_id == context.clinic_id, Membership.id == membership_id
+            )
         )
         if membership is None:
             raise NotFoundError("clinic member not found")

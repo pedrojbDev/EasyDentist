@@ -77,7 +77,7 @@ async function createSessionStates(baseURL: string, manifest: Manifest): Promise
         await page.getByLabel('E-mail', { exact: true }).fill(user.email);
         await page.getByLabel('Senha', { exact: true }).fill(user.password);
         await page.getByRole('button', { name: 'Entrar' }).click();
-        await page.waitForURL(/\/clinics$/);
+        await page.waitForURL(/\/clinics(?:\/[^/]+\/agenda)?$/);
         const path = sessionStatePath(user.email);
         mkdirSync(dirname(path), { recursive: true });
         await context.storageState({ path });

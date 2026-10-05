@@ -44,3 +44,34 @@ When an allowed third-party source file is adapted, add its origin URL, pinned
 commit, license text or notice, and a concise description of changes here before
 merging it. Dependency licences are inventoried and checked in CI; this file is
 reserved for notices that must travel with copied or adapted source material.
+
+## braces 3.0.3 — development patch
+
+- Origin: https://github.com/micromatch/braces/tree/3.0.3
+- License: MIT; Copyright (c) 2014-present, Jon Schlinkert.
+- Local change: patches/braces@3.0.3.patch adds a maximum nesting depth of 64
+  to parsing and recursive compile/expand/stringify traversal.
+- The installed dependency retains its original LICENSE. Its MIT terms are
+  reproduced below for the modified source fragments distributed in the patch.
+
+The MIT License (MIT)
+
+Copyright (c) 2014-present, Jon Schlinkert.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.

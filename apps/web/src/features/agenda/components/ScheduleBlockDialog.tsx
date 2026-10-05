@@ -45,7 +45,7 @@ export function ScheduleBlockDialog({
   allowRoomOnly?: boolean;
   initialLocalStart?: string;
   onClose: () => void;
-  onSaved: () => void;
+  onSaved: (block: ScheduleBlock) => Promise<void>;
 }) {
   const [localStart, setLocalStart] = useState(
     block ? clinicLocalDateTimeInput(block.starts_at, timezone) : (initialLocalStart ?? ''),
@@ -70,8 +70,9 @@ export function ScheduleBlockDialog({
     setPending(true);
     setError(null);
     try {
+      let savedBlock: ScheduleBlock;
       if (block) {
-        await updateScheduleBlock(clinicId, block.id, {
+        savedBlock = await updateScheduleBlock(clinicId, block.id, {
           local_start: localStart,
           local_end: localEnd,
           professional_id: professionalId || null,
@@ -79,7 +80,7 @@ export function ScheduleBlockDialog({
           label: label.trim() || null,
         });
       } else {
-        await createScheduleBlock(clinicId, {
+        savedBlock = await createScheduleBlock(clinicId, {
           local_start: localStart,
           local_end: localEnd,
           professional_id: professionalId || null,
@@ -87,7 +88,7 @@ export function ScheduleBlockDialog({
           label: label.trim() || null,
         });
       }
-      onSaved();
+      await onSaved(savedBlock);
       onClose();
     } catch (cause) {
       setError(readableError(cause));
@@ -100,8 +101,8 @@ export function ScheduleBlockDialog({
     setPending(true);
     setError(null);
     try {
-      await cancelScheduleBlock(clinicId, block.id);
-      onSaved();
+      const savedBlock = await cancelScheduleBlock(clinicId, block.id);
+      await onSaved(savedBlock);
       onClose();
     } catch (cause) {
       setError(readableError(cause));
@@ -121,7 +122,7 @@ export function ScheduleBlockDialog({
           <h2 id="block-dialog-title" className="text-lg font-semibold text-foreground">
             {block ? 'Editar bloqueio' : 'Bloquear horário'}
           </h2>
-          <Button type="button" variant="ghost" size="sm" onClick={onClose}>
+          <Button type="button" variant="ghost" size="sm" disabled={pending} onClick={onClose}>
             Fechar
           </Button>
         </div>
@@ -205,7 +206,7 @@ export function ScheduleBlockDialog({
                 Cancelar bloqueio
               </Button>
             )}
-            <Button type="button" variant="ghost" onClick={onClose}>
+            <Button type="button" variant="ghost" disabled={pending} onClick={onClose}>
               Fechar
             </Button>
           </div>

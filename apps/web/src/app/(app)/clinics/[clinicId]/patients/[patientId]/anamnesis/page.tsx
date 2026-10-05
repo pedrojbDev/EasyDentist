@@ -9,7 +9,6 @@ import { AnamnesisRestricted } from '@/features/anamnesis/components/AnamnesisRe
 import { AnamnesisStartActions } from '@/features/anamnesis/components/AnamnesisStartActions';
 import { anamnesisCapabilities } from '@/features/anamnesis/permissions';
 import { getProfessionalProfileOnServer, listAnamnesesOnServer } from '@/features/anamnesis/server';
-import { ClinicNav } from '@/features/clinics/components/ClinicNav';
 import { getClinicOnServer } from '@/features/clinics/server';
 import { canReadAnyDocument, documentCapabilities } from '@/features/documents/permissions';
 import { PatientSectionNav } from '@/features/patients/components/PatientSectionNav';
@@ -51,7 +50,6 @@ export default async function AnamnesisPage({
         title="Anamnese"
         description={`Paciente: ${patient.full_name}`}
       />
-      <ClinicNav clinicId={clinic.id} active="patients" />
       <PatientSectionNav
         clinicId={clinic.id}
         patientId={patient.id}

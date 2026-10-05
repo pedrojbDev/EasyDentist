@@ -136,15 +136,15 @@ não ficam no banco.
 
 ## Marco 3 implementado (agenda)
 
-| Tabela | Responsabilidade |
-| --- | --- |
-| `agenda_professionals` | profissional de agenda da clínica, com CRO/UF e vínculo opcional/único a membership |
-| `agenda_rooms` | sala ou cadeira individual ativa/arquivada |
-| `professional_availabilities` | intervalos semanais locais, inclusive horários divididos |
-| `schedule_events` | ocupação interna compartilhada de consultas e bloqueios |
-| `schedule_blocks` | contrato próprio de bloqueio, apoiado por um evento interno |
-| `appointments` | status, versão otimista e nota administrativa privada de uma consulta |
-| `appointment_history` | mudanças de criação, reagendamento e status append-only |
+| Tabela                        | Responsabilidade                                                                    |
+| ----------------------------- | ----------------------------------------------------------------------------------- |
+| `agenda_professionals`        | profissional de agenda da clínica, com CRO/UF e vínculo opcional/único a membership |
+| `agenda_rooms`                | sala ou cadeira individual ativa/arquivada                                          |
+| `professional_availabilities` | intervalos semanais locais, inclusive horários divididos                            |
+| `schedule_events`             | ocupação interna compartilhada de consultas e bloqueios                             |
+| `schedule_blocks`             | contrato próprio de bloqueio, apoiado por um evento interno                         |
+| `appointments`                | status, versão otimista e nota administrativa privada de uma consulta               |
+| `appointment_history`         | mudanças de criação, reagendamento e status append-only                             |
 
 As tabelas são tenant-aware, usam UUID e FKs compostas por `clinic_id`. Eventos
 persistem início/fim como `timestamptz`; as faixas de ocupação são `[)` para que
