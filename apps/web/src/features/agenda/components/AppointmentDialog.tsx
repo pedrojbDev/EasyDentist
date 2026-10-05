@@ -73,7 +73,7 @@ export function AppointmentDialog({
   initialLocalStart?: string;
   canManage: boolean;
   onClose: () => void;
-  onSaved: () => void;
+  onSaved: (appointment: Appointment) => Promise<void>;
 }) {
   const [editing, setEditing] = useState(appointment === null);
   const [localStart, setLocalStart] = useState(
@@ -208,6 +208,7 @@ export function AppointmentDialog({
     setPending(true);
     setError(null);
     try {
+      let savedAppointment: Appointment;
       if (appointment) {
         const payload: AppointmentUpdateRequest = {
           expected_version: appointment.version,
@@ -220,14 +221,14 @@ export function AppointmentDialog({
           payload.local_start = localStart;
           payload.duration_minutes = duration;
         }
-        await updateAppointment(clinicId, appointment.id, payload);
+        savedAppointment = await updateAppointment(clinicId, appointment.id, payload);
       } else {
         if (!patientId) {
           setError('Escolha um paciente ativo.');
           setPending(false);
           return;
         }
-        await createAppointment(clinicId, {
+        savedAppointment = await createAppointment(clinicId, {
           patient_id: patientId,
           professional_id: professionalId,
           room_id: roomId || null,
@@ -236,7 +237,7 @@ export function AppointmentDialog({
           administrative_note: note.trim() || null,
         });
       }
-      onSaved();
+      await onSaved(savedAppointment);
       onClose();
     } catch (cause) {
       setError(readableError(cause));
@@ -249,12 +250,12 @@ export function AppointmentDialog({
     setPending(true);
     setError(null);
     try {
-      await setAppointmentStatus(clinicId, appointment.id, {
+      const savedAppointment = await setAppointmentStatus(clinicId, appointment.id, {
         expected_version: appointment.version,
         status,
         ...(status === 'CANCELLED' ? { cancellation_reason: cancellationReason } : {}),
       });
-      onSaved();
+      await onSaved(savedAppointment);
       onClose();
     } catch (cause) {
       setError(readableError(cause));
@@ -286,7 +287,7 @@ export function AppointmentDialog({
                 : 'Novo agendamento'}
             </h2>
           </div>
-          <Button type="button" variant="ghost" size="sm" onClick={onClose}>
+          <Button type="button" variant="ghost" size="sm" disabled={pending} onClick={onClose}>
             Fechar
           </Button>
         </div>
@@ -577,6 +578,7 @@ export function AppointmentDialog({
               <Button
                 type="button"
                 variant="outline"
+                disabled={pending}
                 onClick={() => (appointment ? setEditing(false) : onClose())}
               >
                 Voltar

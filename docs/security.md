@@ -1,5 +1,26 @@
 # Segurança
 
+## Mitigação de dependência de desenvolvimento — 2026-10-05
+
+O aviso [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm)
+afeta `braces@3.0.3`, usado por `eslint-config-next` via `fast-glob` e
+`micromatch`. A consulta ao registro npm confirmou que não há versão corrigida
+publicada nesta data. Não é uma dependência do frontend em produção.
+
+`patches/braces@3.0.3.patch` limita a 64 níveis o parser e os walkers de
+compile, expand e stringify, incluindo ASTs recebidas diretamente. O patch
+é aplicado pelo pnpm e fica registrado no lockfile. O teste
+`scripts/check-braces-patch.test.mjs` usa a dependência efetivamente resolvida
+pelo ESLint e exige rejeição controlada de padrões e ASTs profundos, preservando
+globs comuns, alternativas e intervalos.
+
+`pnpm run audit` executa esse teste antes de excluir somente esse GHSA do
+scanner. A exclusão representa uma mitigação local testada; não significa que
+o pacote upstream recebeu uma correção. Os demais avisos continuam sujeitos
+ao gate de severidade high. Remover patch, teste e exclusão juntos quando uma
+versão upstream corrigida estiver disponível e validada. A auditoria direta
+`pnpm audit` continua mostrando o aviso da versão original.
+
 Este documento materializa a direção de segurança aprovada e registra o estado
 de cada afirmação. O threat model correspondente está em `docs/threat-model.md`
 e as decisões do hardening em `docs/adr/0009-hardening-and-operations.md`.
@@ -14,7 +35,7 @@ e as decisões do hardening em `docs/adr/0009-hardening-and-operations.md`.
 | Headers de segurança da API e da web com CSP nonce bloqueante                                                                                                      | **Provado no M1.6.3** (`test_security_headers.py`, `security-headers.test.ts` e fluxos Playwright)                                                                            |
 | Logs JSONL com allowlist e redaction sem dados sensíveis                                                                                                           | **Provado no M1.6.4** (`test_structured_logging.py`, `test_logging_redaction.py`, `server-logging.test.ts`)                                                                   |
 | Backup `pg_dump -Fc` restaurável em banco limpo com schema, grants, policies e RLS                                                                                 | **Provado no M1.6.5** (`scripts/verify-backup-restore.sh`)                                                                                                                    |
-| Ausência de secrets versionados e de dependências vulneráveis                                                                                                      | **Provado no M1.6.6** (`scripts/verify-secrets.sh`, `pnpm audit`, `pip-audit`, licenças)                                                                                      |
+| Ausência de secrets versionados e verificação de dependências                                                                                                      | **Verificado em 2026-10-05** (`scripts/verify-secrets.sh`, `pnpm run audit`, `pip-audit`, licenças); `braces` usa a mitigação local descrita acima                            |
 | Critério final cross-tenant (duas clínicas, API/SSR/rota/SQL sob role runtime)                                                                                     | **Provado no M1.6.2/M1.6.6** (`isolation.spec.ts`, `test_m16_isolation_gate.py`)                                                                                              |
 | Contrato de segurança do M2 (pacientes, anamnese, documentos, storage privado)                                                                                     | **Provado no M2.6** (ADR 0010; RBAC, isolamento, redaction, E2E e limpeza de `e2e/{run_id}/`)                                                                                 |
 | Storage gerenciado, SMTP real, retenção/criptografia de backups, antimalware de uploads, ciência/assinatura do paciente, gestão externa de secrets e monitoramento | **Fora do escopo de produção** — pré-requisitos operacionais listados em `docs/operations.md`                                                                                 |

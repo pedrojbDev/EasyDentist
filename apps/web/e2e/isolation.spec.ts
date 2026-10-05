@@ -11,7 +11,7 @@ async function expectNoAccess(
   protectedClinic: ClinicFixture,
 ): Promise<void> {
   await login(page, restrictedUser);
-  await expect(page.getByText(restrictedClinic.sentinel)).toBeVisible();
+  await expect(page.locator('main').getByText(restrictedClinic.sentinel)).toBeVisible();
   expect(await page.content()).not.toContain(protectedClinic.sentinel);
 
   const list = await page.request.get('/api/v1/clinics');

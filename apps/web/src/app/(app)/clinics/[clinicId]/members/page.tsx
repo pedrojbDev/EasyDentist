@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation';
 
 import { PageHeader } from '@/components/ui/page-header';
-import { ClinicNav } from '@/features/clinics/components/ClinicNav';
 import { getClinicOnServer } from '@/features/clinics/server';
 import { InviteMemberForm } from '@/features/members/components/InviteMemberForm';
 import { MembersTable } from '@/features/members/components/MembersTable';
@@ -34,7 +33,6 @@ export default async function MembersPage({ params }: { params: Promise<{ clinic
         title="Equipe"
         description="Gerencie os vínculos, papéis e convites desta clínica."
       />
-      <ClinicNav clinicId={clinic.id} active="members" />
       <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_20rem]">
         <MembersTable clinicId={clinic.id} actorRole={clinic.role} members={members} />
         <InviteMemberForm clinicId={clinic.id} actorRole={clinic.role} />

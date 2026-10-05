@@ -10,7 +10,6 @@ import { AnamnesisRestricted } from '@/features/anamnesis/components/AnamnesisRe
 import { AnamnesisRevisionButton } from '@/features/anamnesis/components/AnamnesisStartActions';
 import { anamnesisCapabilities } from '@/features/anamnesis/permissions';
 import { getAnamnesisOnServer, listAnamnesesOnServer } from '@/features/anamnesis/server';
-import { ClinicNav } from '@/features/clinics/components/ClinicNav';
 import { getClinicOnServer } from '@/features/clinics/server';
 import { canReadAnyDocument, documentCapabilities } from '@/features/documents/permissions';
 import { PatientSectionNav } from '@/features/patients/components/PatientSectionNav';
@@ -45,7 +44,6 @@ export default async function AnamnesisVersionPage({
     return (
       <section className="flex flex-col gap-7">
         <PageHeader eyebrow={clinic.legal_name} title="Anamnese" />
-        <ClinicNav clinicId={clinic.id} active="patients" />
         <PatientSectionNav
           clinicId={clinic.id}
           patientId={patient.id}
@@ -93,7 +91,6 @@ export default async function AnamnesisVersionPage({
           </Button>
         }
       />
-      <ClinicNav clinicId={clinic.id} active="patients" />
       <PatientSectionNav
         clinicId={clinic.id}
         patientId={patient.id}

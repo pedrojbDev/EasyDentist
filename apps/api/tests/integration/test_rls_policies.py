@@ -66,6 +66,28 @@ POLICY_MATRIX = {
     ],
 }
 
+# Keep the complete catalog assertion: new milestones must declare every
+# policy rather than making the query ignore additional tenant tables.
+for _table in (
+    "agenda_professionals",
+    "agenda_rooms",
+    "professional_availabilities",
+    "schedule_events",
+    "appointments",
+    "schedule_blocks",
+):
+    POLICY_MATRIX[_table] = [
+        (f"{_table}_tenant_select", "SELECT", "easydentist_app"),
+        (f"{_table}_tenant_insert", "INSERT", "easydentist_app"),
+        (f"{_table}_tenant_update", "UPDATE", "easydentist_app"),
+        (f"{_table}_migrator_all", "ALL", "easydentist_migrator"),
+    ]
+POLICY_MATRIX["appointment_history"] = [
+    ("appointment_history_tenant_select", "SELECT", "easydentist_app"),
+    ("appointment_history_tenant_insert", "INSERT", "easydentist_app"),
+    ("appointment_history_migrator_all", "ALL", "easydentist_migrator"),
+]
+
 
 async def _set_context(
     connection: asyncpg.Connection, *, user_id: object, clinic_id: object | None = None

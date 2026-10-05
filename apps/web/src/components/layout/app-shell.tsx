@@ -4,8 +4,17 @@ import { AppSidebar } from '@/components/layout/app-sidebar';
 import { ConnectivityNotice } from '@/components/ui/connectivity-notice';
 import { AppHeader } from '@/features/auth/components/AppHeader';
 import type { User } from '@/features/auth/api';
+import type { Clinic } from '@/features/clinics/api';
 
-export function AppShell({ user, children }: { user: User; children: ReactNode }) {
+export function AppShell({
+  user,
+  clinics,
+  children,
+}: {
+  user: User;
+  clinics: Clinic[];
+  children: ReactNode;
+}) {
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[15rem_minmax(0,1fr)]">
       <a
@@ -14,7 +23,7 @@ export function AppShell({ user, children }: { user: User; children: ReactNode }
       >
         Ir para o conteúdo
       </a>
-      <AppSidebar />
+      <AppSidebar clinics={clinics} />
       <div className="min-w-0">
         <AppHeader user={user} />
         <ConnectivityNotice />
